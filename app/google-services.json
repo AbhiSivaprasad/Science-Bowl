@@ -1,0 +1,42 @@
+{
+  "project_info": {
+    "project_number": "568327038315",
+    "firebase_url": "https://science-bowl.firebaseio.com",
+    "project_id": "science-bowl",
+    "storage_bucket": "science-bowl.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:568327038315:android:5cf4163d3687f192",
+        "android_client_info": {
+          "package_name": "com.abhi.android.sciencebowl"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "568327038315-cl0v7puhpc4n9i38te6ftt7mnl4817cr.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyC5vrJU4FkBRmGzAYMvtqYXu3F06OC7bQM"
+        }
+      ],
+      "services": {
+        "analytics_service": {
+          "status": 1
+        },
+        "appinvite_service": {
+          "status": 1,
+          "other_platform_oauth_client": []
+        },
+        "ads_service": {
+          "status": 2
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
