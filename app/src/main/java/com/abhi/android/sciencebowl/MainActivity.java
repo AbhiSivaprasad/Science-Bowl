@@ -82,7 +82,6 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 updateQuestion();
             }
         });
-
     }
 
     //update UI and mCurrQuestion

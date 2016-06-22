@@ -1,4 +1,8 @@
 <resources>
     <string name="app_name">Science Bowl</string>
     <string name="next_button">NEXT</string>
+    <string name="play_button">PLAY</string>
+    <string name="statistics_button">VIEW STATISTICS</string>
+    <string name="leaderboard_button">LEADERBOARDS</string>
+    <string name="settings_button">SETTINGS</string>
 </resources>
