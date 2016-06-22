@@ -1,6 +1,7 @@
 package com.abhi.android.sciencebowl;
 
 import android.content.Context;
+import android.content.Intent;
 import android.graphics.Color;
 import android.graphics.PorterDuff;
 import android.support.v7.app.AppCompatActivity;
@@ -21,19 +22,25 @@ import java.util.HashMap;
 import java.util.List;
 
 public class MainActivity extends AppCompatActivity implements View.OnClickListener {
+    private static final String EXTRA_STATISTICS_STORED =
+            "com.abhi.android.sb.statistics_stored";
+
     private Firebase mFirebaseRef;
     private TextView mQuestion;
     private Button mChoiceW;
     private Button mChoiceX;
     private Button mChoiceY;
     private Button mChoiceZ;
-    private Button[] mChoiceButtonList; //List of buttons eases setEnabled and correct/incorrectChoice buttons.
+    private Button[] mChoiceButtonList;
 
     private Button mNextButton;
 
     private List<Question> mQuestionBank = new ArrayList<Question>();
     private Question mCurrQuestion = null;
     private int mCurrQuestionIndex = 0;
+
+    //scoring vars preserve over screen rotation
+    private int mQuestionsCorrect = 0;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -69,8 +76,10 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         mChoiceZ = (Button) findViewById(R.id.choiceZ);
 
         mChoiceButtonList = new Button[] {mChoiceW, mChoiceX, mChoiceY, mChoiceZ};
-        for(Button choiceButton : mChoiceButtonList)
+        for(Button choiceButton : mChoiceButtonList) {
+            choiceButton.setBackgroundColor(Color.TRANSPARENT);
             choiceButton.setOnClickListener(this);
+        }
 
         //attach listener to NextButton and make it initially invisible
         mNextButton = (Button) findViewById(R.id.next_button);
@@ -95,7 +104,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         mChoiceZ.setText("Z) " + mCurrQuestion.getZ());
 
         for(Button choiceButton : mChoiceButtonList)
-            choiceButton.setBackgroundColor(Color.LTGRAY);
+            choiceButton.setTextColor(Color.BLACK);
 
         choiceButtonsEnabled(true);
     }
@@ -110,22 +119,32 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         boolean isCorrect = (answer == choiceLetter);
 
         Button correctChoice = getChoiceButton(answer);
-        correctChoice.setBackgroundColor(Color.GREEN); //correct answer effect always shown
+        correctChoice.setTextColor(Color.GREEN); //correct answer effect always shown
 
         String result;
-        if(isCorrect)
+        if(isCorrect) {
             result = "Correct";
+            mQuestionsCorrect++;
+        }
         else {
             result = "Incorrect";
             Button inCorrectChoice = (Button) getChoiceButton(choiceLetter);
-            inCorrectChoice.setBackgroundColor(Color.RED); //incorrect answer effect
+            inCorrectChoice.setTextColor(Color.RED); //incorrect answer effect
         }
 
         Toast t = Toast.makeText(this , result, Toast.LENGTH_SHORT);
         t.show(); //turn this to actual display on screen
 
-        mNextButton.setVisibility(View.VISIBLE);
         choiceButtonsEnabled(false);
+
+        //stop at last question
+        //need different end condition. Index will not be incremented constantly by 1.
+        if(mCurrQuestionIndex != mQuestionBank.size() - 1)
+            mNextButton.setVisibility(View.VISIBLE);
+        else {
+            setAnswerShownResult(mQuestionsCorrect);
+        }
+
     }
 
     private Button getChoiceButton(char letter)
@@ -143,5 +162,22 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     {
         for(Button choiceButton : mChoiceButtonList)
             choiceButton.setEnabled(isEnabled);
+    }
+
+    //Put in all information necessary when starting MainActivity
+    public static Intent newIntent(Context packageContext) {
+        Intent i = new Intent(packageContext, MainActivity.class);
+        return i;
+    }
+
+    public static int getQuestionsCorrect(Intent data) {
+        return data.getIntExtra(EXTRA_STATISTICS_STORED, 0);
+    }
+
+    private void setAnswerShownResult (int questionsCorrect)
+    {
+        Intent data = new Intent();
+        data.putExtra(EXTRA_STATISTICS_STORED, questionsCorrect);
+        setResult(RESULT_OK, data);
     }
 }
