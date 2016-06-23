@@ -2,7 +2,7 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
           package="com.abhi.android.sciencebowl">
 
-    <uses-permission android:name="android.permission.INTERNET" />
+    <uses-permission android:name="android.permission.INTERNET"/>
 
     <application
         android:allowBackup="true"
@@ -23,5 +23,10 @@
         </activity>
         <activity android:name=".MainMenuActivity">
         </activity>
+        <activity android:name=".LeaderboardActivity">
+        </activity>
+        <activity android:name=".SettingsActivity">
+        </activity>
     </application>
+
 </manifest>
