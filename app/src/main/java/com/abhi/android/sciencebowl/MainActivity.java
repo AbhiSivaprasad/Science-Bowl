@@ -163,12 +163,6 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             choiceButton.setEnabled(isEnabled);
     }
 
-    //Put in all information necessary when starting MainActivity
-    public static Intent newIntent(Context packageContext) {
-        Intent i = new Intent(packageContext, MainActivity.class);
-        return i;
-    }
-
     public static int getQuestionsCorrect(Intent data) {
         return data.getIntExtra(EXTRA_STATISTICS_STORED, 0);
     }

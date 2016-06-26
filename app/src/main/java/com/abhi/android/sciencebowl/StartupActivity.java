@@ -11,10 +11,9 @@ import android.widget.Button;
  * Created by Abhinand on 6/22/2016.
  */
 public class StartupActivity extends AppCompatActivity {
-    private static final int REQUEST_CODE_LOGIN = 0;
 
-    Button loginButton;
-    Button signupButton;
+    Button mLoginButton;
+    Button mSignupButton; //Generate default user settings during signup
 
     @Override
     protected void onCreate(Bundle savedInstanceState)
@@ -22,8 +21,8 @@ public class StartupActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_startup);
 
-        loginButton = (Button) findViewById(R.id.login_button);
-        loginButton.setOnClickListener(new View.OnClickListener() {
+        mLoginButton = (Button) findViewById(R.id.login_button);
+        mLoginButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 Intent loginStartupIntent = new Intent(StartupActivity.this, LoginActivity.class);

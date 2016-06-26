@@ -18,9 +18,6 @@ import com.firebase.client.ValueEventListener;
  */
 public class MainMenuActivity extends AppCompatActivity {
     private static final int REQUEST_CODE_MAIN = 0;
-    private static final String EXTRA_USERNAME =
-            "com.abhi.android.sb.username";
-
 
     private Button mPlayButton;
     private Button mStatisticsButton;
@@ -60,7 +57,7 @@ public class MainMenuActivity extends AppCompatActivity {
         mPlayButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Intent i = MainActivity.newIntent(MainMenuActivity.this); //start MainActivity
+                Intent i = new Intent(MainMenuActivity.this, MainActivity.class); //start MainActivity
                 startActivityForResult(i, REQUEST_CODE_MAIN);
             }
         });

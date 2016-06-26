@@ -8,4 +8,11 @@
     <string name="login_button">LOGIN</string>
     <string name="signup_button">SIGN UP</string>
     <string name="difficulty_seekbar_hint">Pick a Difficulty</string>
+
+    <string name="earth_science_button">Earth Science</string>
+    <string name="biology_button">Biology</string>
+    <string name="physics_button">Physics</string>
+    <string name="chemistry_button">Chemistry</string>
+    <string name="energy_button">Energy</string>
+    <string name="math_button">Math</string>
 </resources>
