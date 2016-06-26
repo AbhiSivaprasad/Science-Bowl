@@ -8,7 +8,10 @@ import android.support.v7.app.AppCompatActivity;
 import android.view.View;
 import android.widget.Button;
 
+import com.firebase.client.DataSnapshot;
 import com.firebase.client.Firebase;
+import com.firebase.client.FirebaseError;
+import com.firebase.client.ValueEventListener;
 
 /**
  * Created by Abhinand on 6/21/2016.
@@ -32,14 +35,32 @@ public class MainMenuActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main_menu);
 
-        mUsername = getIntent().getStringExtra(EXTRA_USERNAME);
+        mUsername = UserInformation.getUsername();
+
+        //Get user settings from Firebase. Ideally should be done during login
+        Firebase.setAndroidContext(this);
+
+        Firebase mFirebaseRef = new Firebase("https://science-bowl.firebaseio.com/user-settings/" + mUsername);
+        mFirebaseRef.addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                Settings userSettings = dataSnapshot.getValue(Settings.class);
+                UserInformation.setUserSettings(userSettings);
+            }
+
+            @Override
+            public void onCancelled(FirebaseError firebaseError) {
+                System.out.println("The read failed: " + firebaseError.getMessage());
+            }
+        });
+
 
         //Initialize Buttons
         mPlayButton = (Button) findViewById(R.id.play_button);
         mPlayButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Intent i = MainActivity.newIntent(MainMenuActivity.this);
+                Intent i = MainActivity.newIntent(MainMenuActivity.this); //start MainActivity
                 startActivityForResult(i, REQUEST_CODE_MAIN);
             }
         });
@@ -54,6 +75,13 @@ public class MainMenuActivity extends AppCompatActivity {
 
         mStatisticsButton = (Button) findViewById(R.id.statistics_button);
         mSettingsButton = (Button) findViewById(R.id.settings_button);
+        mSettingsButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(MainMenuActivity.this, SettingsActivity.class);
+                startActivity(intent);
+            }
+        });
     }
 
     @Override
@@ -69,14 +97,6 @@ public class MainMenuActivity extends AppCompatActivity {
                 writeToFirebaseLeaderboard(mUsername, mQuestionsCorrect);
             }
         }
-    }
-
-    //starting up MainMenuActivity from LoginActivity
-    public static Intent newIntent (Context packageContext, String mUsername)
-    {
-        Intent i = new Intent(packageContext, MainMenuActivity.class);
-        i.putExtra(EXTRA_USERNAME, mUsername);
-        return i;
     }
 
     private void writeToFirebaseLeaderboard(String userName, int toWrite)

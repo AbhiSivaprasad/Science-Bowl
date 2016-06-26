@@ -25,7 +25,6 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     private static final String EXTRA_STATISTICS_STORED =
             "com.abhi.android.sb.statistics_stored";
 
-    private Firebase mFirebaseRef;
     private TextView mQuestion;
     private Button mChoiceW;
     private Button mChoiceX;
@@ -50,7 +49,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         Firebase.setAndroidContext(this);
         //Takes some time to get data. Executes subsequent code before data is retrieved causing a lag between inflation of
         //XML and the appearance of question/answers. Need to fix this.
-        mFirebaseRef = new Firebase("https://science-bowl.firebaseio.com/quizlist");
+        Firebase mFirebaseRef = new Firebase("https://science-bowl.firebaseio.com/quizlist");
         mFirebaseRef.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {

@@ -7,4 +7,5 @@
     <string name="settings_button">SETTINGS</string>
     <string name="login_button">LOGIN</string>
     <string name="signup_button">SIGN UP</string>
+    <string name="difficulty_seekbar_hint">Pick a Difficulty</string>
 </resources>
