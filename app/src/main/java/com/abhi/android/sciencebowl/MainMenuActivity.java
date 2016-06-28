@@ -23,6 +23,7 @@ public class MainMenuActivity extends AppCompatActivity {
     private Button mStatisticsButton;
     private Button mLeaderboardButton;
     private Button mSettingsButton;
+    private Button mReviewButton;
 
     private int mQuestionsCorrect;
 
@@ -76,6 +77,15 @@ public class MainMenuActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 Intent intent = new Intent(MainMenuActivity.this, SettingsActivity.class);
+                startActivity(intent);
+            }
+        });
+
+        mReviewButton = (Button) findViewById(R.id.review_button);
+        mReviewButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(MainMenuActivity.this, ReviewActivity.class);
                 startActivity(intent);
             }
         });

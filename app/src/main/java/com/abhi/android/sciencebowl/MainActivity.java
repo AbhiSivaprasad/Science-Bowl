@@ -25,26 +25,37 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     private static final String EXTRA_STATISTICS_STORED =
             "com.abhi.android.sb.statistics_stored";
 
-    private TextView mQuestion;
-    private Button mChoiceW;
-    private Button mChoiceX;
-    private Button mChoiceY;
-    private Button mChoiceZ;
-    private Button[] mChoiceButtonList;
+    private static TextView mQuestion;
+    private static Button mChoiceW;
+    private static Button mChoiceX;
+    private static Button mChoiceY;
+    private static Button mChoiceZ;
+    private static Button[] mChoiceButtonList;
 
-    private Button mNextButton;
+    private static Button mNextButton;
 
-    private List<Question> mQuestionBank = new ArrayList<Question>();
-    private Question mCurrQuestion = null;
-    private int mCurrQuestionIndex = 0;
+    private static List<Question> mQuestionBank = new ArrayList<Question>();
+    private static Question mCurrQuestion = null;
+    private static int mCurrQuestionIndex = 0;
 
     //scoring vars preserve over screen rotation
     private int mQuestionsCorrect = 0;
+    private List<QuestionAnswer> mReviewQuestionsBank = new ArrayList<QuestionAnswer>();
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        UserInformation.setReviewQuestionBank(mReviewQuestionsBank);
+    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
+        //use setting to pull questions of correct difficulty and subject from Firebase
+        Settings userSetting = UserInformation.getUserSettings();
+
 
         Firebase.setAndroidContext(this);
         //Takes some time to get data. Executes subsequent code before data is retrieved causing a lag between inflation of
@@ -87,14 +98,21 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             @Override
             public void onClick(View view) {
                 mCurrQuestionIndex = (mCurrQuestionIndex + 1) % mQuestionBank.size(); //questions fed in circular loop. Need more sophisticated order.
+
                 updateQuestion();
             }
         });
     }
 
     //update UI and mCurrQuestion
-    private void updateQuestion() {
+    private static void updateQuestion() {
         mNextButton.setVisibility(View.GONE);
+        updateQuestionWidgets();
+
+        choiceButtonsEnabled(true);
+    }
+
+    public static void updateQuestionWidgets() {
         mCurrQuestion = mQuestionBank.get(mCurrQuestionIndex);
         mQuestion.setText(mCurrQuestion.getQuestion());
         mChoiceW.setText("W) " + mCurrQuestion.getW());
@@ -104,8 +122,6 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
         for(Button choiceButton : mChoiceButtonList)
             choiceButton.setTextColor(Color.BLACK);
-
-        choiceButtonsEnabled(true);
     }
 
     @Override
@@ -117,7 +133,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
         boolean isCorrect = (answer == choiceLetter);
 
-        Button correctChoice = getChoiceButton(answer);
+        Button correctChoice = getChoiceButton(answer, mChoiceW, mChoiceX, mChoiceY, mChoiceZ);
         correctChoice.setTextColor(Color.GREEN); //correct answer effect always shown
 
         String result;
@@ -127,8 +143,11 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         }
         else {
             result = "Incorrect";
-            Button inCorrectChoice = (Button) getChoiceButton(choiceLetter);
-            inCorrectChoice.setTextColor(Color.RED); //incorrect answer effect
+
+            mReviewQuestionsBank.add(new QuestionAnswer(mCurrQuestion, choiceLetter));
+
+            Button incorrectChoice = getChoiceButton(choiceLetter, mChoiceW, mChoiceX, mChoiceY, mChoiceZ);
+            incorrectChoice.setTextColor(Color.RED); //incorrect answer effect
         }
 
         Toast t = Toast.makeText(this , result, Toast.LENGTH_SHORT);
@@ -141,12 +160,12 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         if(mCurrQuestionIndex != mQuestionBank.size() - 1)
             mNextButton.setVisibility(View.VISIBLE);
         else {
-            setAnswerShownResult(mQuestionsCorrect);
+            sendBackStatistics(mQuestionsCorrect);
         }
 
     }
 
-    private Button getChoiceButton(char letter)
+    public static Button getChoiceButton(char letter, Button mChoiceW, Button mChoiceX, Button mChoiceY, Button mChoiceZ)
     {
         switch(letter) {
             case 'W': return mChoiceW;
@@ -157,7 +176,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         }
     }
 
-    private void choiceButtonsEnabled(boolean isEnabled)
+    private static void choiceButtonsEnabled(boolean isEnabled)
     {
         for(Button choiceButton : mChoiceButtonList)
             choiceButton.setEnabled(isEnabled);
@@ -167,7 +186,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         return data.getIntExtra(EXTRA_STATISTICS_STORED, 0);
     }
 
-    private void setAnswerShownResult (int questionsCorrect)
+    private void sendBackStatistics (int questionsCorrect)
     {
         Intent data = new Intent();
         data.putExtra(EXTRA_STATISTICS_STORED, questionsCorrect);
