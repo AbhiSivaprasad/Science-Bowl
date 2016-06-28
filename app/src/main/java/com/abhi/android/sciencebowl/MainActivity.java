@@ -24,8 +24,10 @@ import java.util.List;
 public class MainActivity extends AppCompatActivity implements View.OnClickListener {
     private static final String EXTRA_STATISTICS_STORED =
             "com.abhi.android.sb.statistics_stored";
+    private static final String FIREBASE_QUIZLIST_URL =
+            "https://science-bowl.firebaseio.com/quizlist";
 
-    private static TextView mQuestion;
+    private static TextView mQuestionButton;
     private static Button mChoiceW;
     private static Button mChoiceX;
     private static Button mChoiceY;
@@ -35,12 +37,14 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     private static Button mNextButton;
 
     private static List<Question> mQuestionBank = new ArrayList<Question>();
-    private static Question mCurrQuestion = null;
-    private static int mCurrQuestionIndex = 0;
+    private static Question mCurrentQuestion;
+    private static int mCurrentQuestionIndex = 0;
 
     //scoring vars preserve over screen rotation
     private int mQuestionsCorrect = 0;
-    private List<QuestionAnswer> mReviewQuestionsBank = new ArrayList<QuestionAnswer>();
+    private List<QuestionAnswer> mReviewQuestionsBank;
+
+    private Settings userSetting;
 
     @Override
     protected void onDestroy() {
@@ -52,15 +56,12 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-
-        //use setting to pull questions of correct difficulty and subject from Firebase
-        Settings userSetting = UserInformation.getUserSettings();
-
+        initializeVariables();
 
         Firebase.setAndroidContext(this);
         //Takes some time to get data. Executes subsequent code before data is retrieved causing a lag between inflation of
         //XML and the appearance of question/answers. Need to fix this.
-        Firebase mFirebaseRef = new Firebase("https://science-bowl.firebaseio.com/quizlist");
+        Firebase mFirebaseRef = new Firebase(FIREBASE_QUIZLIST_URL);
         mFirebaseRef.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
@@ -69,7 +70,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                     Question q = snapshot.getValue(Question.class);
                     mQuestionBank.add(q);
                 }
-                updateQuestion(); //load first question
+                goToNextQuestion(); //load first question
             }
 
             @Override
@@ -78,47 +79,38 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             }
         });
 
-        //initialize buttons
-        mQuestion = (TextView) findViewById(R.id.question);
-        mChoiceW = (Button) findViewById(R.id.choiceW);
-        mChoiceX = (Button) findViewById(R.id.choiceX);
-        mChoiceY = (Button) findViewById(R.id.choiceY);
-        mChoiceZ = (Button) findViewById(R.id.choiceZ);
-
-        mChoiceButtonList = new Button[] {mChoiceW, mChoiceX, mChoiceY, mChoiceZ};
         for(Button choiceButton : mChoiceButtonList) {
             choiceButton.setBackgroundColor(Color.TRANSPARENT);
             choiceButton.setOnClickListener(this);
         }
 
         //attach listener to NextButton and make it initially invisible
-        mNextButton = (Button) findViewById(R.id.next_button);
         mNextButton.setVisibility(View.GONE);
         mNextButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                mCurrQuestionIndex = (mCurrQuestionIndex + 1) % mQuestionBank.size(); //questions fed in circular loop. Need more sophisticated order.
+                mCurrentQuestionIndex = (mCurrentQuestionIndex + 1) % mQuestionBank.size(); //questions fed in circular loop. Need more sophisticated order.
 
-                updateQuestion();
+                goToNextQuestion();
             }
         });
     }
 
     //update UI and mCurrQuestion
-    private static void updateQuestion() {
+    private static void goToNextQuestion() {
         mNextButton.setVisibility(View.GONE);
         updateQuestionWidgets();
 
-        choiceButtonsEnabled(true);
+        setChoiceButtonsEnabled(true);
     }
 
     public static void updateQuestionWidgets() {
-        mCurrQuestion = mQuestionBank.get(mCurrQuestionIndex);
-        mQuestion.setText(mCurrQuestion.getQuestion());
-        mChoiceW.setText("W) " + mCurrQuestion.getW());
-        mChoiceX.setText("X) " + mCurrQuestion.getX());
-        mChoiceY.setText("Y) " + mCurrQuestion.getY());
-        mChoiceZ.setText("Z) " + mCurrQuestion.getZ());
+        mCurrentQuestion = mQuestionBank.get(mCurrentQuestionIndex);
+        mQuestionButton.setText(mCurrentQuestion.getQuestion());
+        mChoiceW.setText("W) " + mCurrentQuestion.getW());
+        mChoiceX.setText("X) " + mCurrentQuestion.getX());
+        mChoiceY.setText("Y) " + mCurrentQuestion.getY());
+        mChoiceZ.setText("Z) " + mCurrentQuestion.getZ());
 
         for(Button choiceButton : mChoiceButtonList)
             choiceButton.setTextColor(Color.BLACK);
@@ -129,7 +121,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         Button selectedChoice = (Button) view;
 
         char choiceLetter = ((String) selectedChoice.getText()).charAt(0); // Letter comes first in answer choice
-        char answer = mCurrQuestion.getCorrect().toUpperCase().charAt(0);
+        char answer = mCurrentQuestion.getCorrect().toUpperCase().charAt(0);
 
         boolean isCorrect = (answer == choiceLetter);
 
@@ -144,7 +136,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         else {
             result = "Incorrect";
 
-            mReviewQuestionsBank.add(new QuestionAnswer(mCurrQuestion, choiceLetter));
+            mReviewQuestionsBank.add(new QuestionAnswer(mCurrentQuestion, choiceLetter));
 
             Button incorrectChoice = getChoiceButton(choiceLetter, mChoiceW, mChoiceX, mChoiceY, mChoiceZ);
             incorrectChoice.setTextColor(Color.RED); //incorrect answer effect
@@ -153,16 +145,15 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         Toast t = Toast.makeText(this , result, Toast.LENGTH_SHORT);
         t.show(); //turn this to actual display on screen
 
-        choiceButtonsEnabled(false);
+        setChoiceButtonsEnabled(false);
 
         //stop at last question
         //need different end condition. Index will not be incremented constantly by 1.
-        if(mCurrQuestionIndex != mQuestionBank.size() - 1)
+        if(mCurrentQuestionIndex != mQuestionBank.size() - 1)
             mNextButton.setVisibility(View.VISIBLE);
         else {
             sendBackStatistics(mQuestionsCorrect);
         }
-
     }
 
     public static Button getChoiceButton(char letter, Button mChoiceW, Button mChoiceX, Button mChoiceY, Button mChoiceZ)
@@ -176,13 +167,13 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         }
     }
 
-    private static void choiceButtonsEnabled(boolean isEnabled)
+    private static void setChoiceButtonsEnabled(boolean isEnabled)
     {
         for(Button choiceButton : mChoiceButtonList)
             choiceButton.setEnabled(isEnabled);
     }
 
-    public static int getQuestionsCorrect(Intent data) {
+    public static int getAmountOfCorrectQuestions(Intent data) {
         return data.getIntExtra(EXTRA_STATISTICS_STORED, 0);
     }
 
@@ -191,5 +182,20 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         Intent data = new Intent();
         data.putExtra(EXTRA_STATISTICS_STORED, questionsCorrect);
         setResult(RESULT_OK, data);
+    }
+
+    private void initializeVariables()
+    {
+        mReviewQuestionsBank = UserInformation.getReviewQuestionBank();
+        userSetting = UserInformation.getUserSettings();
+
+        mQuestionButton = (TextView) findViewById(R.id.question);
+        mChoiceW = (Button) findViewById(R.id.choiceW);
+        mChoiceX = (Button) findViewById(R.id.choiceX);
+        mChoiceY = (Button) findViewById(R.id.choiceY);
+        mChoiceZ = (Button) findViewById(R.id.choiceZ);
+        mChoiceButtonList = new Button[] {mChoiceW, mChoiceX, mChoiceY, mChoiceZ};
+
+        mNextButton = (Button) findViewById(R.id.next_button);
     }
 }

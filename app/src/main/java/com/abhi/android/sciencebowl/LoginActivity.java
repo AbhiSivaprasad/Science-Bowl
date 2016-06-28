@@ -11,9 +11,6 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
 
-/**
- * Created by Abhinand on 6/22/2016.
- */
 public class LoginActivity extends AppCompatActivity {
 
     private EditText mUsernameButton;

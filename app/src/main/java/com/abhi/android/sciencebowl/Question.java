@@ -1,8 +1,5 @@
 package com.abhi.android.sciencebowl;
 
-/**
- * Created by Abhinand on 6/20/2016.
- */
 public class Question {
     private String question;
     private String correct;

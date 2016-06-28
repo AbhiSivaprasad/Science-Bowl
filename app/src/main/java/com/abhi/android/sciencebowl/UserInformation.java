@@ -3,9 +3,6 @@ package com.abhi.android.sciencebowl;
 import java.util.ArrayList;
 import java.util.List;
 
-/**
- * Created by abhi on 6/26/2016.
- */
 public final class UserInformation {
     private static String username;
     private static Settings userSettings;

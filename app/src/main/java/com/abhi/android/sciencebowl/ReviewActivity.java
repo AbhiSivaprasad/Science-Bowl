@@ -11,7 +11,7 @@ import java.util.List;
 
 public class ReviewActivity extends AppCompatActivity {
 
-    private TextView mQuestion;
+    private TextView mQuestionButton;
     private Button mChoiceW;
     private Button mChoiceX;
     private Button mChoiceY;
@@ -22,48 +22,37 @@ public class ReviewActivity extends AppCompatActivity {
 
     private Button mNextButton;
 
-    private int mCurrQuestionIndex;
+    private int mCurrentQuestionIndex;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_review);
+        initializeVariables();
 
-        //initialize buttons
-        mQuestion = (TextView) findViewById(R.id.question);
-        mChoiceW = (Button) findViewById(R.id.choiceW);
-        mChoiceX = (Button) findViewById(R.id.choiceX);
-        mChoiceY = (Button) findViewById(R.id.choiceY);
-        mChoiceZ = (Button) findViewById(R.id.choiceZ);
-
-        mChoiceButtonList = new Button[] {mChoiceW, mChoiceX, mChoiceY, mChoiceZ};
         for(Button choiceButton : mChoiceButtonList) {
             choiceButton.setBackgroundColor(Color.TRANSPARENT);
             choiceButton.setEnabled(false);
         }
 
-        mReviewQuestionBank = UserInformation.getReviewQuestionBank();
-
-        mNextButton = (Button) findViewById(R.id.next_button);
         mNextButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                mCurrQuestionIndex = mCurrQuestionIndex + 1;
+                mCurrentQuestionIndex = mCurrentQuestionIndex + 1;
 
-                updateQuestionWidgets();
+                goToNextQuestion();
             }
         });
 
-        updateQuestionWidgets();
-
+        goToNextQuestion();
     }
 
     //similar method in mainactivity. try to merge.
-    private void updateQuestionWidgets() {
-        if(mCurrQuestionIndex == mReviewQuestionBank.size()) {
+    private void goToNextQuestion() {
+        if(mCurrentQuestionIndex == mReviewQuestionBank.size()) {
             mNextButton.setVisibility(View.GONE);
 
-            mQuestion.setText("No More Questions to Review");
+            mQuestionButton.setText("No More Questions to Review");
             for(Button choiceButton : mChoiceButtonList)
                 choiceButton.setText("");
 
@@ -73,10 +62,10 @@ public class ReviewActivity extends AppCompatActivity {
         for(Button choiceButton : mChoiceButtonList)
             choiceButton.setTextColor(Color.BLACK);
 
-        QuestionAnswer mCurrQuestionAnswer = mReviewQuestionBank.get(mCurrQuestionIndex);
+        QuestionAnswer mCurrQuestionAnswer = mReviewQuestionBank.get(mCurrentQuestionIndex);
 
         Question mCurrQuestion = mCurrQuestionAnswer.getQuestion();
-        mQuestion.setText(mCurrQuestion.getQuestion());
+        mQuestionButton.setText(mCurrQuestion.getQuestion());
         mChoiceW.setText("W) " + mCurrQuestion.getW());
         mChoiceX.setText("X) " + mCurrQuestion.getX());
         mChoiceY.setText("Y) " + mCurrQuestion.getY());
@@ -90,5 +79,19 @@ public class ReviewActivity extends AppCompatActivity {
 
         correctChoice.setTextColor(Color.GREEN);
         incorrectChoice.setTextColor(Color.RED);
+    }
+
+    private void initializeVariables()
+    {
+        mReviewQuestionBank = UserInformation.getReviewQuestionBank();
+
+        mQuestionButton = (TextView) findViewById(R.id.question);
+        mChoiceW = (Button) findViewById(R.id.choiceW);
+        mChoiceX = (Button) findViewById(R.id.choiceX);
+        mChoiceY = (Button) findViewById(R.id.choiceY);
+        mChoiceZ = (Button) findViewById(R.id.choiceZ);
+        mChoiceButtonList = new Button[] {mChoiceW, mChoiceX, mChoiceY, mChoiceZ};
+
+        mNextButton = (Button) findViewById(R.id.next_button);
     }
 }

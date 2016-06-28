@@ -13,9 +13,6 @@ import com.firebase.client.Firebase;
 import com.firebase.client.FirebaseError;
 import com.firebase.client.ValueEventListener;
 
-/**
- * Created by Abhinand on 6/21/2016.
- */
 public class MainMenuActivity extends AppCompatActivity {
     private static final int REQUEST_CODE_MAIN = 0;
 
@@ -72,6 +69,7 @@ public class MainMenuActivity extends AppCompatActivity {
         });
 
         mStatisticsButton = (Button) findViewById(R.id.statistics_button);
+
         mSettingsButton = (Button) findViewById(R.id.settings_button);
         mSettingsButton.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -100,7 +98,7 @@ public class MainMenuActivity extends AppCompatActivity {
         if(requestCode == REQUEST_CODE_MAIN)
         {
             if(data != null){
-                mQuestionsCorrect = MainActivity.getQuestionsCorrect(data);
+                mQuestionsCorrect = MainActivity.getAmountOfCorrectQuestions(data);
                 writeToFirebaseLeaderboard(mUsername, mQuestionsCorrect);
             }
         }

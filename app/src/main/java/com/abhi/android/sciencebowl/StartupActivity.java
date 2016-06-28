@@ -7,13 +7,10 @@ import android.support.v7.app.AppCompatActivity;
 import android.view.View;
 import android.widget.Button;
 
-/**
- * Created by Abhinand on 6/22/2016.
- */
 public class StartupActivity extends AppCompatActivity {
 
-    Button mLoginButton;
-    Button mSignupButton; //Generate default user settings during signup
+    private Button mLoginButton;
+    private Button mSignupButton; //Generate default user settings during signup
 
     @Override
     protected void onCreate(Bundle savedInstanceState)

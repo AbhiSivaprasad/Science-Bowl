@@ -1,22 +1,19 @@
 package com.abhi.android.sciencebowl;
 
-/**
- * Created by abhi on 6/27/2016.
- */
 public class QuestionAnswer {
-    private Question mQuestion;
-    private char mAnswer;
+    private Question question;
+    private char answer;
 
     public QuestionAnswer(Question question, char answer) {
-        this.mQuestion = question;
-        this.mAnswer = answer;
+        this.question = question;
+        this.answer = answer;
     }
 
     public Question getQuestion() {
-        return mQuestion;
+        return question;
     }
 
     public char getAnswer() {
-        return mAnswer;
+        return answer;
     }
 }

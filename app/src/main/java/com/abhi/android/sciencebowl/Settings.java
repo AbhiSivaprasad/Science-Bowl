@@ -1,8 +1,5 @@
 package com.abhi.android.sciencebowl;
 
-/**
- * Created by abhi on 6/26/2016.
- */
 public class Settings {
     private String subject;
     private int difficulty;

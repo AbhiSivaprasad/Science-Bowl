@@ -14,11 +14,11 @@ import com.firebase.client.FirebaseError;
 import com.firebase.client.ValueEventListener;
 
 public class SettingsActivity extends AppCompatActivity implements View.OnClickListener {
-
+    
     private SeekBar mDifficultySeekBar;
     private TextView mDifficultySeekBarHint;
 
-    Settings newUserSettings;
+    private Settings newUserSettings;
 
     private Button mEarthButton;
     private Button mBiologyButton;
@@ -26,7 +26,6 @@ public class SettingsActivity extends AppCompatActivity implements View.OnClickL
     private Button mMathButton;
     private Button mChemistryButton;
     private Button mEnergyButton;
-
     private Button[] mSubjectButtonList;
 
     private boolean[] mIsSubjectButtonSelected;
@@ -113,20 +112,22 @@ public class SettingsActivity extends AppCompatActivity implements View.OnClickL
     }
 
     private void setSelectedState(View v, boolean isSelected) {
-        if(isSelected)
-            v.setBackgroundColor(Color.GRAY);
-        else
-            v.setBackgroundColor(Color.LTGRAY);
+        int setColor;
+
+        if(isSelected) {setColor = Color.GRAY;}
+        else {setColor = Color.LTGRAY;}
+
+        v.setBackgroundColor(setColor);
     }
 
     private int getSubjectButtonIndex(String buttonName)
     {
-        if(buttonName == getString(R.string.earth_science_button))  return 0;
-        else if(buttonName == getString(R.string.biology_button))   return 1;
-        else if(buttonName == getString(R.string.physics_button))   return 2;
-        else if(buttonName == getString(R.string.chemistry_button)) return 3;
-        else if(buttonName == getString(R.string.energy_button))    return 4;
-        else if(buttonName == getString(R.string.math_button))      return 5;
+        if(buttonName.equals(getString(R.string.earth_science_button)))  return 0;
+        else if(buttonName.equals(getString(R.string.biology_button)))   return 1;
+        else if(buttonName.equals(getString(R.string.physics_button)))   return 2;
+        else if(buttonName.equals(getString(R.string.chemistry_button))) return 3;
+        else if(buttonName.equals(getString(R.string.energy_button)))    return 4;
+        else if(buttonName.equals(getString(R.string.math_button)))      return 5;
         else throw new IllegalArgumentException();
     }
 
