@@ -23,6 +23,7 @@ public class SettingsActivity extends AppCompatActivity implements View.OnClickL
     private Button mEarthButton;
     private Button mBiologyButton;
     private Button mPhysicsButton;
+    private Button mAstroButton;
     private Button mMathButton;
     private Button mChemistryButton;
     private Button mEnergyButton;
