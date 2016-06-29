@@ -21,6 +21,7 @@ public class ReviewActivity extends AppCompatActivity {
     private List<QuestionAnswer> mReviewQuestionBank;
 
     private Button mNextButton;
+    private Button mPrevButton;
 
     private int mCurrentQuestionIndex;
 
@@ -38,26 +39,42 @@ public class ReviewActivity extends AppCompatActivity {
         mNextButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                mCurrentQuestionIndex = mCurrentQuestionIndex + 1;
+                mCurrentQuestionIndex++;
+                goToNextQuestion();
+                if(mCurrentQuestionIndex == mReviewQuestionBank.size() - 1) {
+                    mNextButton.setVisibility(View.GONE);
+                }
+            }
+        });
 
+        mPrevButton.setVisibility(View.GONE);
+        mPrevButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                mCurrentQuestionIndex--;
+                if(mCurrentQuestionIndex == 0) {
+                    mPrevButton.setVisibility(View.GONE);
+                }
                 goToNextQuestion();
             }
         });
 
-        goToNextQuestion();
+        if(mReviewQuestionBank.size() != 0) {goToNextQuestion(); }
+        else {
+            mQuestionButton.setText("No Questions to Review");
+            mNextButton.setVisibility(View.GONE);
+            mPrevButton.setVisibility(View.GONE);
+        }
     }
 
     //similar method in mainactivity. try to merge.
     private void goToNextQuestion() {
-        if(mCurrentQuestionIndex == mReviewQuestionBank.size()) {
-            mNextButton.setVisibility(View.GONE);
 
-            mQuestionButton.setText("No More Questions to Review");
-            for(Button choiceButton : mChoiceButtonList)
-                choiceButton.setText("");
+        if (mCurrentQuestionIndex != 0 && mPrevButton.getVisibility() == View.GONE)
+            mPrevButton.setVisibility(View.VISIBLE);
 
-            return;
-        }
+        if (mCurrentQuestionIndex < mReviewQuestionBank.size())
+            mNextButton.setVisibility(View.VISIBLE);
 
         for(Button choiceButton : mChoiceButtonList)
             choiceButton.setTextColor(Color.BLACK);
@@ -93,5 +110,6 @@ public class ReviewActivity extends AppCompatActivity {
         mChoiceButtonList = new Button[] {mChoiceW, mChoiceX, mChoiceY, mChoiceZ};
 
         mNextButton = (Button) findViewById(R.id.next_button);
+        mPrevButton = (Button) findViewById(R.id.prev_button);
     }
 }

@@ -14,7 +14,6 @@ import com.firebase.client.FirebaseError;
 import com.firebase.client.ValueEventListener;
 
 public class MainMenuActivity extends AppCompatActivity {
-    private static final int REQUEST_CODE_MAIN = 0;
 
     private Button mPlayButton;
     private Button mStatisticsButton;
@@ -55,8 +54,8 @@ public class MainMenuActivity extends AppCompatActivity {
         mPlayButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Intent i = new Intent(MainMenuActivity.this, MainActivity.class); //start MainActivity
-                startActivityForResult(i, REQUEST_CODE_MAIN);
+                Intent intent = new Intent(MainMenuActivity.this, MainActivity.class); //start MainActivity
+                startActivity(intent);
             }
         });
 
@@ -88,7 +87,7 @@ public class MainMenuActivity extends AppCompatActivity {
             }
         });
     }
-
+    /*
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data)
     {
@@ -102,11 +101,5 @@ public class MainMenuActivity extends AppCompatActivity {
                 writeToFirebaseLeaderboard(mUsername, mQuestionsCorrect);
             }
         }
-    }
-
-    private void writeToFirebaseLeaderboard(String userName, int toWrite)
-    {
-        Firebase mFirebaseRef = new Firebase("https://science-bowl.firebaseio.com/leaderboard");
-        mFirebaseRef.child(userName).setValue(toWrite);
-    }
+    } */
 }

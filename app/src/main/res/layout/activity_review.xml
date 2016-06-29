@@ -13,4 +13,31 @@
 
     <include layout="@layout/question" />
 
+
+    <LinearLayout
+        android:orientation="horizontal"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center_horizontal"
+        android:gravity="center_horizontal">
+
+        <Button
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/prev_button"
+            android:id="@+id/prev_button"
+            android:layout_gravity="center_horizontal"
+            android:drawableLeft="@drawable/arrow_left"
+            android:drawablePadding="2dp" />
+
+        <Button
+            android:id="@+id/next_button"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/next_button"
+            android:layout_gravity="center_horizontal"
+            android:drawableRight="@drawable/arrow_right"
+            android:drawablePadding="2dp" />
+    </LinearLayout>
+
 </LinearLayout>

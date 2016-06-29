@@ -7,6 +7,8 @@ public final class UserInformation {
     private static String username;
     private static Settings userSettings;
     private static List<QuestionAnswer> reviewQuestionBank;
+    private static int currentQuestionIndex;
+    private static int questionsCorrect; //tracked statistics
 
     public static String getUsername() {
         return username;
@@ -30,5 +32,15 @@ public final class UserInformation {
     }
     public static void setReviewQuestionBank(List<QuestionAnswer> reviewQuestionBank) {
         UserInformation.reviewQuestionBank = reviewQuestionBank;
+    }
+
+    public static int getCurrentQuestionIndex() {return currentQuestionIndex; }
+    public static void setCurrentQuestionIndex(int currentQuestionIndex) {
+        UserInformation.currentQuestionIndex = currentQuestionIndex;
+    }
+
+    public static int getQuestionsCorrect() {return questionsCorrect; }
+    public static void setQuestionsCorrect(int questionsCorrect) {
+        UserInformation.questionsCorrect = questionsCorrect;
     }
 }

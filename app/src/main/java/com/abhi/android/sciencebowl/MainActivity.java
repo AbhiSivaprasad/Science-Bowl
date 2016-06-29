@@ -22,8 +22,6 @@ import java.util.HashMap;
 import java.util.List;
 
 public class MainActivity extends AppCompatActivity implements View.OnClickListener {
-    private static final String EXTRA_STATISTICS_STORED =
-            "com.abhi.android.sb.statistics_stored";
     private static final String FIREBASE_QUIZLIST_URL =
             "https://science-bowl.firebaseio.com/quizlist";
 
@@ -36,12 +34,12 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
     private static Button mNextButton;
 
-    private static List<Question> mQuestionBank = new ArrayList<Question>();
+    private static List<Question> mQuestionBank;
     private static Question mCurrentQuestion;
-    private static int mCurrentQuestionIndex = 0;
+    private static int mCurrentQuestionIndex;
 
     //scoring vars preserve over screen rotation
-    private int mQuestionsCorrect = 0;
+    private int mQuestionsCorrect;
     private List<QuestionAnswer> mReviewQuestionsBank;
 
     private Settings userSetting;
@@ -49,14 +47,33 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     @Override
     protected void onDestroy() {
         super.onDestroy();
-        UserInformation.setReviewQuestionBank(mReviewQuestionsBank);
+        UserInformation.setReviewQuestionBank(mReviewQuestionsBank); //should this be here
+        UserInformation.setCurrentQuestionIndex(mCurrentQuestionIndex + 1); //set to next question to be displayed
+        UserInformation.setQuestionsCorrect(mQuestionsCorrect); //set statistics
+
+        writeToFirebaseLeaderboard(UserInformation.getUsername(), mQuestionsCorrect);
     }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        initializeVariables();
+
+        mQuestionBank = new ArrayList<Question>();
+
+        mReviewQuestionsBank = UserInformation.getReviewQuestionBank();
+        mCurrentQuestionIndex = UserInformation.getCurrentQuestionIndex();
+        mQuestionsCorrect = UserInformation.getQuestionsCorrect();
+        userSetting = UserInformation.getUserSettings();
+
+        mQuestionButton = (TextView) findViewById(R.id.question);
+        mChoiceW = (Button) findViewById(R.id.choiceW);
+        mChoiceX = (Button) findViewById(R.id.choiceX);
+        mChoiceY = (Button) findViewById(R.id.choiceY);
+        mChoiceZ = (Button) findViewById(R.id.choiceZ);
+        mChoiceButtonList = new Button[] {mChoiceW, mChoiceX, mChoiceY, mChoiceZ};
+
+        mNextButton = (Button) findViewById(R.id.next_button);
 
         Firebase.setAndroidContext(this);
         //Takes some time to get data. Executes subsequent code before data is retrieved causing a lag between inflation of
@@ -151,9 +168,6 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         //need different end condition. Index will not be incremented constantly by 1.
         if(mCurrentQuestionIndex != mQuestionBank.size() - 1)
             mNextButton.setVisibility(View.VISIBLE);
-        else {
-            sendBackStatistics(mQuestionsCorrect);
-        }
     }
 
     public static Button getChoiceButton(char letter, Button mChoiceW, Button mChoiceX, Button mChoiceY, Button mChoiceZ)
@@ -173,29 +187,9 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             choiceButton.setEnabled(isEnabled);
     }
 
-    public static int getAmountOfCorrectQuestions(Intent data) {
-        return data.getIntExtra(EXTRA_STATISTICS_STORED, 0);
-    }
-
-    private void sendBackStatistics (int questionsCorrect)
+    private void writeToFirebaseLeaderboard(String userName, int toWrite)
     {
-        Intent data = new Intent();
-        data.putExtra(EXTRA_STATISTICS_STORED, questionsCorrect);
-        setResult(RESULT_OK, data);
-    }
-
-    private void initializeVariables()
-    {
-        mReviewQuestionsBank = UserInformation.getReviewQuestionBank();
-        userSetting = UserInformation.getUserSettings();
-
-        mQuestionButton = (TextView) findViewById(R.id.question);
-        mChoiceW = (Button) findViewById(R.id.choiceW);
-        mChoiceX = (Button) findViewById(R.id.choiceX);
-        mChoiceY = (Button) findViewById(R.id.choiceY);
-        mChoiceZ = (Button) findViewById(R.id.choiceZ);
-        mChoiceButtonList = new Button[] {mChoiceW, mChoiceX, mChoiceY, mChoiceZ};
-
-        mNextButton = (Button) findViewById(R.id.next_button);
+        Firebase mFirebaseRef = new Firebase("https://science-bowl.firebaseio.com/leaderboard");
+        mFirebaseRef.child(userName).setValue(toWrite);
     }
 }

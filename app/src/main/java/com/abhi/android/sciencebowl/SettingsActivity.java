@@ -14,7 +14,7 @@ import com.firebase.client.FirebaseError;
 import com.firebase.client.ValueEventListener;
 
 public class SettingsActivity extends AppCompatActivity implements View.OnClickListener {
-    
+
     private SeekBar mDifficultySeekBar;
     private TextView mDifficultySeekBarHint;
 
