@@ -59,7 +59,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        mQuestionBank = new ArrayList<Question>();
+        mQuestionBank = new ArrayList<>();
 
         mReviewQuestionsBank = UserInformation.getReviewQuestionBank();
         mCurrentQuestionIndex = UserInformation.getCurrentQuestionIndex();
@@ -137,10 +137,10 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     public void onClick(View view) { //clean up this method
         Button selectedChoice = (Button) view;
 
-        char choiceLetter = ((String) selectedChoice.getText()).charAt(0); // Letter comes first in answer choice
-        char answer = mCurrentQuestion.getCorrect().toUpperCase().charAt(0);
+        Choice choice = Choice.valueOf(selectedChoice.getText().toString().substring(0, 1).toUpperCase()); // Letter comes first in answer choice
+        Choice answer = mCurrentQuestion.getCorrect();
 
-        boolean isCorrect = (answer == choiceLetter);
+        boolean isCorrect = (answer == choice);
 
         Button correctChoice = getChoiceButton(answer, mChoiceW, mChoiceX, mChoiceY, mChoiceZ);
         correctChoice.setTextColor(Color.GREEN); //correct answer effect always shown
@@ -153,9 +153,9 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         else {
             result = "Incorrect";
 
-            mReviewQuestionsBank.add(new QuestionUserAnswerPair(mCurrentQuestion, choiceLetter));
+            mReviewQuestionsBank.add(new QuestionUserAnswerPair(mCurrentQuestion, choice));
 
-            Button incorrectChoice = getChoiceButton(choiceLetter, mChoiceW, mChoiceX, mChoiceY, mChoiceZ);
+            Button incorrectChoice = getChoiceButton(choice, mChoiceW, mChoiceX, mChoiceY, mChoiceZ);
             incorrectChoice.setTextColor(Color.RED); //incorrect answer effect
         }
 
@@ -170,14 +170,14 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             mNextButton.setVisibility(View.VISIBLE);
     }
 
-    public static Button getChoiceButton(char letter, Button mChoiceW, Button mChoiceX, Button mChoiceY, Button mChoiceZ)
+    public static Button getChoiceButton(Choice choice, Button mChoiceW, Button mChoiceX, Button mChoiceY, Button mChoiceZ)
     {
-        switch(letter) {
-            case 'W': return mChoiceW;
-            case 'X': return mChoiceX;
-            case 'Y': return mChoiceY;
-            case 'Z': return mChoiceZ;
-            default:  return null; //throw an error instead
+        switch(choice) {
+            case W: return mChoiceW;
+            case X: return mChoiceX;
+            case Y: return mChoiceY;
+            case Z: return mChoiceZ;
+            default:  throw new IllegalArgumentException("Invalid letter choice: " + choice.toString());
         }
     }
 

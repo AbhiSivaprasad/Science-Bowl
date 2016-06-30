@@ -88,8 +88,8 @@ public class ReviewActivity extends AppCompatActivity {
         mChoiceY.setText("Y) " + mCurrQuestion.getY());
         mChoiceZ.setText("Z) " + mCurrQuestion.getZ());
 
-        char answer = mCurrQuestion.getCorrect().toUpperCase().charAt(0);
-        char userAnswer = mCurrQuestionAnswer.getAnswer();
+        Choice answer = mCurrQuestion.getCorrect();
+        Choice userAnswer = mCurrQuestionAnswer.getAnswer();
 
         Button correctChoice = MainActivity.getChoiceButton(answer, mChoiceW, mChoiceX, mChoiceY, mChoiceZ);
         Button incorrectChoice = MainActivity.getChoiceButton(userAnswer, mChoiceW, mChoiceX, mChoiceY, mChoiceZ);
