@@ -48,18 +48,21 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="@string/earth_science_button"
+                android:background="@color/unselectedButton"
                 android:id="@+id/earth_science_button" />
 
             <Button
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="@string/biology_button"
+                android:background="@color/unselectedButton"
                 android:id="@+id/biology_button" />
 
             <Button
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="@string/physics_button"
+                android:background="@color/unselectedButton"
                 android:id="@+id/physics_button" />
         </LinearLayout>
 
@@ -72,18 +75,21 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="@string/chemistry_button"
+                android:background="@color/unselectedButton"
                 android:id="@+id/chemistry_button" />
 
             <Button
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="@string/energy_button"
+                android:background="@color/unselectedButton"
                 android:id="@+id/energy_button" />
 
             <Button
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="@string/math_button"
+                android:background="@color/unselectedButton"
                 android:id="@+id/math_button" />
         </LinearLayout>
     </LinearLayout>
