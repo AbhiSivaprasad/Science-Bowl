@@ -18,7 +18,7 @@ public class ReviewActivity extends AppCompatActivity {
     private Button mChoiceZ;
     private Button[] mChoiceButtonList;
 
-    private List<QuestionAnswer> mReviewQuestionBank;
+    private List<QuestionUserAnswerPair> mReviewQuestionBank;
 
     private Button mNextButton;
     private Button mPrevButton;
@@ -79,7 +79,7 @@ public class ReviewActivity extends AppCompatActivity {
         for(Button choiceButton : mChoiceButtonList)
             choiceButton.setTextColor(Color.BLACK);
 
-        QuestionAnswer mCurrQuestionAnswer = mReviewQuestionBank.get(mCurrentQuestionIndex);
+        QuestionUserAnswerPair mCurrQuestionAnswer = mReviewQuestionBank.get(mCurrentQuestionIndex);
 
         Question mCurrQuestion = mCurrQuestionAnswer.getQuestion();
         mQuestionButton.setText(mCurrQuestion.getQuestion());

@@ -40,7 +40,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
     //scoring vars preserve over screen rotation
     private int mQuestionsCorrect;
-    private List<QuestionAnswer> mReviewQuestionsBank;
+    private List<QuestionUserAnswerPair> mReviewQuestionsBank;
 
     private Settings userSetting;
 
@@ -153,7 +153,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         else {
             result = "Incorrect";
 
-            mReviewQuestionsBank.add(new QuestionAnswer(mCurrentQuestion, choiceLetter));
+            mReviewQuestionsBank.add(new QuestionUserAnswerPair(mCurrentQuestion, choiceLetter));
 
             Button incorrectChoice = getChoiceButton(choiceLetter, mChoiceW, mChoiceX, mChoiceY, mChoiceZ);
             incorrectChoice.setTextColor(Color.RED); //incorrect answer effect

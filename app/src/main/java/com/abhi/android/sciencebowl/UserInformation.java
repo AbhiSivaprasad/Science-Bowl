@@ -6,7 +6,7 @@ import java.util.List;
 public final class UserInformation {
     private static String username;
     private static Settings userSettings;
-    private static List<QuestionAnswer> reviewQuestionBank;
+    private static List<QuestionUserAnswerPair> reviewQuestionBank;
     private static int currentQuestionIndex;
     private static int questionsCorrect; //tracked statistics
 
@@ -24,13 +24,13 @@ public final class UserInformation {
         UserInformation.userSettings = userSettings;
     }
 
-    public static List<QuestionAnswer> getReviewQuestionBank() {
+    public static List<QuestionUserAnswerPair> getReviewQuestionBank() {
         if(reviewQuestionBank == null)
-            return new ArrayList<QuestionAnswer>();
+            return new ArrayList<QuestionUserAnswerPair>();
 
         return reviewQuestionBank;
     }
-    public static void setReviewQuestionBank(List<QuestionAnswer> reviewQuestionBank) {
+    public static void setReviewQuestionBank(List<QuestionUserAnswerPair> reviewQuestionBank) {
         UserInformation.reviewQuestionBank = reviewQuestionBank;
     }
 

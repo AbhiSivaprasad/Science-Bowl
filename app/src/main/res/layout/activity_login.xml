@@ -6,7 +6,6 @@
               android:weightSum="1"
               android:gravity="center_vertical|center_horizontal">
 
-
     <LinearLayout
         android:orientation="horizontal"
         android:layout_width="match_parent"
