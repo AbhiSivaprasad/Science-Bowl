@@ -1,10 +1,10 @@
 package com.abhi.android.sciencebowl;
 
-public class QuestionAnswer {
+public class QuestionUserAnswerPair {
     private Question question;
     private char answer;
 
-    public QuestionAnswer(Question question, char answer) {
+    public QuestionUserAnswerPair(Question question, char answer) {
         this.question = question;
         this.answer = answer;
     }
@@ -16,4 +16,6 @@ public class QuestionAnswer {
     public char getAnswer() {
         return answer;
     }
+
+
 }
