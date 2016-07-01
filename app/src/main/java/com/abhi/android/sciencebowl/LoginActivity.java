@@ -14,6 +14,7 @@ import com.facebook.AccessToken;
 import com.facebook.CallbackManager;
 import com.facebook.FacebookCallback;
 import com.facebook.FacebookException;
+import com.facebook.FacebookSdk;
 import com.facebook.login.LoginResult;
 import com.facebook.login.widget.LoginButton;
 import com.google.android.gms.auth.api.Auth;
@@ -21,6 +22,7 @@ import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions;
 import com.google.android.gms.auth.api.signin.GoogleSignInResult;
 import com.google.android.gms.common.ConnectionResult;
+import com.google.android.gms.common.SignInButton;
 import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
@@ -37,7 +39,7 @@ public class LoginActivity extends AppCompatActivity implements GoogleApiClient.
     private static final String TAG = "LOGIN";
     private EditText mUsernameButton;
     private Button mLoginConfirmationButton;
-    private Button bGSignIn;
+    private SignInButton bGSignIn;
     /**
      * ATTENTION: This was auto-generated to implement the App Indexing API.
      * See https://g.co/AppIndexing/AndroidStudio for more information.
@@ -51,6 +53,7 @@ public class LoginActivity extends AppCompatActivity implements GoogleApiClient.
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        FacebookSdk.sdkInitialize(getApplicationContext());
         setContentView(R.layout.activity_login);
         mCallbackManager = CallbackManager.Factory.create();
         LoginButton loginButton = (LoginButton) findViewById(R.id.button_facebook_login);
@@ -85,7 +88,7 @@ public class LoginActivity extends AppCompatActivity implements GoogleApiClient.
                 startActivity(intent);
             }
         });
-        bGSignIn = (Button) findViewById(R.id.bGSignIn);
+        bGSignIn = (SignInButton) findViewById(R.id.bGSignIn);
         bGSignIn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
