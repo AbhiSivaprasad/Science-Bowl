@@ -22,7 +22,7 @@ import java.util.HashMap;
 import java.util.List;
 
 public class MainActivity extends AppCompatActivity implements View.OnClickListener {
-    private static final String FIREBASE_QUIZLIST_URL =
+    protected static final String FIREBASE_QUIZLIST_URL =
             "https://science-bowl.firebaseio.com/quizlist";
 
     private static TextView mQuestionButton;
@@ -51,7 +51,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         UserInformation.setCurrentQuestionIndex(mCurrentQuestionIndex + 1); //set to next question to be displayed
         UserInformation.setQuestionsCorrect(mQuestionsCorrect); //set statistics
 
-        writeToFirebaseLeaderboard(UserInformation.getUsername(), mQuestionsCorrect);
+        writeToFirebaseLeaderboard(UserInformation.getUid(), mQuestionsCorrect);
     }
 
     @Override

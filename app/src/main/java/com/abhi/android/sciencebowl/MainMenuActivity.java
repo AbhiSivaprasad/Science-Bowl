@@ -23,18 +23,18 @@ public class MainMenuActivity extends AppCompatActivity {
 
     private int mQuestionsCorrect;
 
-    private String mUsername;
+    private String mUid;
 
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main_menu);
 
-        mUsername = UserInformation.getUsername();
+        mUid = UserInformation.getUid();
 
         //Get user settings from Firebase. Ideally should be done during login
         Firebase.setAndroidContext(this);
 
-        Firebase mFirebaseRef = new Firebase("https://science-bowl.firebaseio.com/user-settings/" + mUsername);
+        Firebase mFirebaseRef = new Firebase("https://science-bowl.firebaseio.com/user-settings/" + mUid);
         mFirebaseRef.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {

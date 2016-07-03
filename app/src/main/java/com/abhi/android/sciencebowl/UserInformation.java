@@ -5,10 +5,19 @@ import java.util.List;
 
 public final class UserInformation {
     private static String username;
+    private static String uid;
     private static Settings userSettings;
     private static List<QuestionAnswer> reviewQuestionBank;
     private static int currentQuestionIndex;
     private static int questionsCorrect; //tracked statistics
+
+    public static String getUid() {
+        return uid;
+    }
+
+    public static void setUid(String uid) {
+        UserInformation.uid = uid;
+    }
 
     public static String getUsername() {
         return username;

@@ -96,7 +96,7 @@ public class SettingsActivity extends AppCompatActivity implements View.OnClickL
 
         Firebase.setAndroidContext(this);
         Firebase mFirebaseRef =
-                new Firebase("https://science-bowl.firebaseio.com/user-settings/" + UserInformation.getUsername());
+                new Firebase("https://science-bowl.firebaseio.com/user-settings/" + UserInformation.getUid());
         mFirebaseRef.setValue(newUserSettings);
     }
 
