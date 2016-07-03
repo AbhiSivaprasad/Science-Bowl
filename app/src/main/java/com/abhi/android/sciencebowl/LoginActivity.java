@@ -206,12 +206,17 @@ public class LoginActivity extends AppCompatActivity implements GoogleApiClient.
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
                 Settings set;
-                if(!dataSnapshot.hasChildren()){
+                if(dataSnapshot.hasChildren()){
                     set = new Settings(dataSnapshot.child("subject").getValue().toString(),Integer.parseInt(dataSnapshot.child("difficulty").getValue().toString()));
                 }else{
                     set = new Settings(DEF_SUBJECT,DEF_DIFFICULTY);
                 }
+                System.out.println("Settings: "+ set);
                 UserInformation.setUserSettings(set);
+                Firebase.setAndroidContext(LoginActivity.this);
+                Firebase mFirebaseRef =
+                        new Firebase("https://science-bowl.firebaseio.com/user-settings/" + UserInformation.getUid());
+                mFirebaseRef.setValue(set);
             }
 
             @Override
