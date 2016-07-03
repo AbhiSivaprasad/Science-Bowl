@@ -27,6 +27,7 @@ public class MainMenuActivity extends AppCompatActivity {
     private Button mLeaderboardButton;
     private Button mSettingsButton;
     private Button mReviewButton;
+    private Button mSignOutButton;
 
     private int mQuestionsCorrect;
 
@@ -91,6 +92,17 @@ public class MainMenuActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 Intent intent = new Intent(MainMenuActivity.this, ReviewActivity.class);
+                startActivity(intent);
+            }
+        });
+
+        mSignOutButton = (Button) findViewById(R.id.signOut_button);
+        mSignOutButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                FirebaseAuth.getInstance().signOut();
+                Intent intent = new Intent(MainMenuActivity.this, LoginActivity.class);
+                intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
                 startActivity(intent);
             }
         });

@@ -7,35 +7,26 @@
     android:layout_height="match_parent"
     android:weightSum="1"
     android:gravity="center_vertical|center_horizontal">
-
-
-    <LinearLayout
-        android:orientation="horizontal"
+    <FrameLayout
+        android:id="@+id/spinHolder"
+        android:animateLayoutChanges="true"
+        android:visibility="gone"
+        android:alpha="0.4"
+        android:background="#000000"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content">
+        android:layout_height="match_parent">
 
-        <TextView
+        <ProgressBar
+            style="?android:attr/progressBarStyleLarge"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Username:"
-            android:layout_gravity="bottom|center_horizontal"/>
+            android:indeterminate="true"
+            android:layout_gravity="center" />
+    </FrameLayout>
 
-        <EditText
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:id="@+id/username"
-            android:layout_gravity="center_horizontal"/>
-    </LinearLayout>
-
-    <Button
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="@string/login_button"
-        android:id="@+id/login_confirmation"
-        />
     <com.google.android.gms.common.SignInButton
         android:id="@+id/bGSignIn"
-        android:layout_width="wrap_content"
+        android:layout_width="162dp"
         android:layout_height="wrap_content"
         android:layout_centerInParent="true"
         android:visibility="visible" />

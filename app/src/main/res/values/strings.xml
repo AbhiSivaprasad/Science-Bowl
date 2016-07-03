@@ -12,6 +12,7 @@
 
     <string name="login_button">LOGIN</string>
     <string name="signup_button">SIGN UP</string>
+    <string name="signOut_button">SIGN OUT</string>
 
     <string name="difficulty_seekbar_hint">Pick a Difficulty</string>
 

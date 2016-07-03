@@ -43,4 +43,10 @@
         android:id="@+id/settings_button"
         android:layout_gravity="center_horizontal"/>
 
+    <Button
+        android:layout_width="140dp"
+        android:layout_height="wrap_content"
+        android:text="@string/signOut_button"
+        android:id="@+id/signOut_button"
+        android:layout_gravity="center_horizontal"/>
 </LinearLayout>

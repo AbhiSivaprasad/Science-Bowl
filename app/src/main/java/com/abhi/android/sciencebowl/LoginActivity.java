@@ -6,8 +6,10 @@ import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.View;
+import android.view.animation.AlphaAnimation;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.FrameLayout;
 import android.widget.Toast;
 
 import com.facebook.AccessToken;
@@ -54,12 +56,15 @@ public class LoginActivity extends AppCompatActivity implements GoogleApiClient.
     private FirebaseAuth.AuthStateListener mAuthListener;
     private CallbackManager mCallbackManager;
     private LoginButton loginButton;
+    private FrameLayout spinHolder;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         FacebookSdk.sdkInitialize(getApplicationContext());
         setContentView(R.layout.activity_login);
+        spinHolder = (FrameLayout) findViewById(R.id.spinHolder);
+
         mCallbackManager = CallbackManager.Factory.create();
 
         loginButton = (LoginButton) findViewById(R.id.button_facebook_login);
@@ -83,6 +88,8 @@ public class LoginActivity extends AppCompatActivity implements GoogleApiClient.
                 // ...
             }
         });
+
+
 
         /*mLoginConfirmationButton = (Button) findViewById(R.id.login_confirmation);
         mLoginConfirmationButton.setOnClickListener(new View.OnClickListener() {
@@ -114,10 +121,8 @@ public class LoginActivity extends AppCompatActivity implements GoogleApiClient.
                 FirebaseUser user = firebaseAuth.getCurrentUser();
                 if (user != null) {
                     // User is signed in
+                    logIn(user);
                     Log.d(TAG, "onAuthStateChanged:signed_in:" + user.getUid());
-                } else {
-                    // User is signed out
-                    Log.d(TAG, "onAuthStateChanged:signed_out");
                 }
                 // ...
             }
@@ -126,12 +131,16 @@ public class LoginActivity extends AppCompatActivity implements GoogleApiClient.
                 .enableAutoManage(this, this)
                 .addApi(Auth.GOOGLE_SIGN_IN_API, gso)
                 .build();
-        mUsernameButton = (EditText) findViewById(R.id.username);
+        //mUsernameButton = (EditText) findViewById(R.id.username);
 
 
     }
 
     private void signIn() {
+        AlphaAnimation inAnimation = new AlphaAnimation(0f, 1f);
+        inAnimation.setDuration(200);
+        spinHolder.setAnimation(inAnimation);
+        spinHolder.setVisibility(View.VISIBLE);
         Intent signInIntent = Auth.GoogleSignInApi.getSignInIntent(mGoogleApiClient);
         startActivityForResult(signInIntent, RC_SIGN_IN);
     }
@@ -147,6 +156,12 @@ public class LoginActivity extends AppCompatActivity implements GoogleApiClient.
             } else {
                 //sad google sign in failed
             }
+            AlphaAnimation outAnimation = new AlphaAnimation(1f, 0f);
+            outAnimation.setDuration(200);
+            spinHolder.setAnimation(outAnimation);
+            spinHolder.setVisibility(View.GONE);
+        }else{
+            mCallbackManager.onActivityResult(requestCode, resultCode, data);
         }
     }
     private void handleFacebookAccessToken(AccessToken token) {
@@ -225,6 +240,7 @@ public class LoginActivity extends AppCompatActivity implements GoogleApiClient.
             }
         });
         Intent intent = new Intent(this,MainMenuActivity.class);
+        intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
         startActivity(intent);
     }
 
