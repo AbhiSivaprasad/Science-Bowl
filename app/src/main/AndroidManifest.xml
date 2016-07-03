@@ -12,11 +12,12 @@
         android:theme="@style/AppTheme">
         <meta-data
             android:name="com.facebook.sdk.ApplicationId"
-            android:value="@string/facebook_app_id"/>
-        <activity android:name=".StartupActivity" android:noHistory="false">
-        </activity>
-        <activity android:name=".MainActivity">
-        </activity>
+            android:value="@string/facebook_app_id" />
+
+        <activity
+            android:name=".StartupActivity"
+            android:noHistory="false"></activity>
+        <activity android:name=".MainActivity"></activity>
         <activity android:name=".LoginActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -24,14 +25,22 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name=".MainMenuActivity"></activity>
-        <activity android:name=".LeaderboardActivity"></activity>
-        <activity android:name=".SettingsActivity"></activity>
-        <activity android:name=".ReviewActivity"></activity><!-- ATTENTION: This was auto-generated to add Google Play services to your project for
-     App Indexing.  See https://g.co/AppIndexing/AndroidStudio for more information. -->
+        <activity android:name=".MainMenuActivity" />
+        <activity android:name=".LeaderboardActivity" />
+        <activity android:name=".SettingsActivity" />
+        <activity android:name=".ReviewActivity" />
+        <!--
+ ATTENTION: This was auto-generated to add Google Play services to your project for
+     App Indexing.  See https://g.co/AppIndexing/AndroidStudio for more information.
+        -->
         <meta-data
             android:name="com.google.android.gms.version"
             android:value="@integer/google_play_services_version" />
+
+        <activity
+            android:name=".SignUpActivity"
+            android:label="@string/title_activity_sign_up"
+            ></activity>
     </application>
 
 </manifest>

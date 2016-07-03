@@ -41,14 +41,17 @@ import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.auth.GoogleAuthProvider;
 
-public class LoginActivity extends AppCompatActivity implements GoogleApiClient.OnConnectionFailedListener{
+public class LoginActivity extends AppCompatActivity
+        implements GoogleApiClient.OnConnectionFailedListener, OnCompleteListener<AuthResult>{
 
     private static final int RC_SIGN_IN =9001 ;
     private static final String TAG = "LOGIN";
     private static final String DEF_SUBJECT = "111111";
     private static final int DEF_DIFFICULTY = 3;
-    private EditText mUsernameButton;
-    private Button mLoginConfirmationButton;
+    private EditText etEmail;
+    private EditText etPass;
+    private Button bLogin;
+    private Button bSignUp;
     private SignInButton bGSignIn;
 
     private GoogleApiClient mGoogleApiClient;
@@ -63,6 +66,15 @@ public class LoginActivity extends AppCompatActivity implements GoogleApiClient.
         super.onCreate(savedInstanceState);
         FacebookSdk.sdkInitialize(getApplicationContext());
         setContentView(R.layout.activity_login);
+        bSignUp = (Button) findViewById(R.id.bSignUp);
+        bSignUp.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent i = new Intent(LoginActivity.this,SignUpActivity.class);
+                startActivity(i);
+            }
+        });
+
         spinHolder = (FrameLayout) findViewById(R.id.spinHolder);
 
         mCallbackManager = CallbackManager.Factory.create();
@@ -131,9 +143,16 @@ public class LoginActivity extends AppCompatActivity implements GoogleApiClient.
                 .enableAutoManage(this, this)
                 .addApi(Auth.GOOGLE_SIGN_IN_API, gso)
                 .build();
-        //mUsernameButton = (EditText) findViewById(R.id.username);
-
-
+        etEmail = (EditText) findViewById(R.id.etEmail);
+        etPass = (EditText) findViewById(R.id.etPass);
+        bLogin = (Button) findViewById(R.id.bSignIn);
+        bLogin.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                mAuth.signInWithEmailAndPassword(etEmail.getText().toString(),etPass.getText().toString())
+                        .addOnCompleteListener(LoginActivity.this,LoginActivity.this);
+            }
+        });
     }
 
     private void signIn() {
@@ -153,8 +172,6 @@ public class LoginActivity extends AppCompatActivity implements GoogleApiClient.
             if (result.isSuccess()) {
                 GoogleSignInAccount account = result.getSignInAccount();
                 firebaseAuthWithGoogle(account);
-            } else {
-                //sad google sign in failed
             }
             AlphaAnimation outAnimation = new AlphaAnimation(1f, 0f);
             outAnimation.setDuration(200);
@@ -169,24 +186,7 @@ public class LoginActivity extends AppCompatActivity implements GoogleApiClient.
 
         AuthCredential credential = FacebookAuthProvider.getCredential(token.getToken());
         mAuth.signInWithCredential(credential)
-                .addOnCompleteListener(this, new OnCompleteListener<AuthResult>() {
-                    @Override
-                    public void onComplete(@NonNull Task<AuthResult> task) {
-                        Log.d(TAG, "signInWithCredential:onComplete:" + task.isSuccessful());
-
-                        // If sign in fails, display a message to the user. If sign in succeeds
-                        // the auth state listener will be notified and logic to handle the
-                        // signed in user can be handled in the listener.
-                        if (!task.isSuccessful()) {
-                            Log.w(TAG, "signInWithCredential", task.getException());
-                            Toast.makeText(LoginActivity.this, "Authentication failed.",
-                                    Toast.LENGTH_SHORT).show();
-                        }else{
-                            logIn(mAuth.getCurrentUser());
-                        }
-                        // ...
-                    }
-                });
+                .addOnCompleteListener(this, this);
     }
     private void firebaseAuthWithGoogle(GoogleSignInAccount acct) {
         Log.d(TAG, "firebaseAuthWithGoogle:" + acct.getId());
@@ -194,20 +194,7 @@ public class LoginActivity extends AppCompatActivity implements GoogleApiClient.
 
         AuthCredential credential = GoogleAuthProvider.getCredential(acct.getIdToken(), null);
         mAuth.signInWithCredential(credential)
-                .addOnCompleteListener(this, new OnCompleteListener<AuthResult>() {
-                    @Override
-                    public void onComplete(@NonNull Task<AuthResult> task) {
-                        Log.d(TAG, "signInWithCredential:onComplete:" + task.isSuccessful());
-                        if (!task.isSuccessful()) {
-                            Log.w(TAG, "signInWithCredential", task.getException());
-                            Toast.makeText(LoginActivity.this, "Authentication failed.",
-                                    Toast.LENGTH_SHORT).show();
-                        }else{
-                           logIn(mAuth.getCurrentUser());
-                        }
-
-                    }
-                });
+                .addOnCompleteListener(this, this);
     }
 
     private void logIn(FirebaseUser currentUser) {
@@ -262,5 +249,17 @@ public class LoginActivity extends AppCompatActivity implements GoogleApiClient.
     public void onConnectionFailed(@NonNull ConnectionResult connectionResult) {
         Log.d(TAG, "onConnectionFailed:" + connectionResult);
         Toast.makeText(this, "Google Play Services error.", Toast.LENGTH_SHORT).show();
+    }
+
+    @Override
+    public void onComplete(@NonNull Task<AuthResult> task) {
+        Log.d(TAG, "signInWithCredential:onComplete:" + task.isSuccessful());
+        if (!task.isSuccessful()) {
+            Log.w(TAG, "signInWithCredential", task.getException());
+            Toast.makeText(LoginActivity.this, "Authentication failed: Please sign up for an account if you need to.",
+                    Toast.LENGTH_SHORT).show();
+        }else{
+            logIn(mAuth.getCurrentUser());
+        }
     }
 }
