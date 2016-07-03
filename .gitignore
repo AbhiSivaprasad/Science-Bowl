@@ -37,10 +37,12 @@ captures/
 
 # Intellij
 *.iml
+
+.gradle
+/local.properties
+/.idea/workspace.xml
+/.idea/libraries
 .idea/
-
-# Keystore files
-*.jks
-
-### Android Patch ###
-gen-external-apklibs
+.DS_Store
+/build
+/captures
