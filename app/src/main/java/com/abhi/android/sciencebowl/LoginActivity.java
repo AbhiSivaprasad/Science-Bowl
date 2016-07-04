@@ -41,6 +41,7 @@ import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.auth.GoogleAuthProvider;
 
+import java.util.List;
 public class LoginActivity extends AppCompatActivity
         implements GoogleApiClient.OnConnectionFailedListener, OnCompleteListener<AuthResult>{
 
@@ -203,22 +204,24 @@ public class LoginActivity extends AppCompatActivity
         Firebase.setAndroidContext(this);
         //Takes some time to get data. Executes subsequent code before data is retrieved causing a lag between inflation of
         //XML and the appearance of question/answers. Need to fix this.
-        Firebase mFirebaseRef = new Firebase(MainActivity.FIREBASE_QUIZLIST_URL+"/user-settings/"+currentUser.getUid());
+        Firebase mFirebaseRef = new Firebase(getString(R.string.BASE_URI) + getString(R.string.DIR_SETTINGS)+"/"+currentUser.getUid());
         mFirebaseRef.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
                 Settings set;
                 if(dataSnapshot.hasChildren()){
-                    set = new Settings(dataSnapshot.child("subject").getValue().toString(),Integer.parseInt(dataSnapshot.child("difficulty").getValue().toString()));
-                }else{
-                    set = new Settings(DEF_SUBJECT,DEF_DIFFICULTY);
+                    set = new Settings(dataSnapshot.child("subjects").getValue(List.class),Integer.parseInt(dataSnapshot.child("difficulty").getValue().toString()));
+                }else {
+                    set = Settings.getDefault();
+
+                    System.out.println("Settings: " + set);
+
+                    Firebase.setAndroidContext(LoginActivity.this);
+                    Firebase mFirebaseRef =
+                            new Firebase(getString(R.string.BASE_URI) + getString(R.string.DIR_SETTINGS) + "/" + UserInformation.getUid());
+                    mFirebaseRef.setValue(set);
                 }
-                System.out.println("Settings: "+ set);
                 UserInformation.setUserSettings(set);
-                Firebase.setAndroidContext(LoginActivity.this);
-                Firebase mFirebaseRef =
-                        new Firebase("https://science-bowl.firebaseio.com/user-settings/" + UserInformation.getUid());
-                mFirebaseRef.setValue(set);
             }
 
             @Override

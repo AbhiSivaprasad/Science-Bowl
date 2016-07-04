@@ -2,7 +2,7 @@ package com.abhi.android.sciencebowl;
 
 public class Question {
     private String question;
-    private String correct;
+    private Choice correct;
     private String w;
     private String x;
     private String y;
@@ -11,7 +11,7 @@ public class Question {
     public Question() {}
 
     public String getQuestion() {return question;}
-    public String getCorrect() {return correct;}
+    public Choice getCorrect() {return correct;}
     public String getW() {return w;}
     public String getX() {return x;}
     public String getY() {return y;}

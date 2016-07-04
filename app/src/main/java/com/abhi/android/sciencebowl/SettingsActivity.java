@@ -1,6 +1,7 @@
 package com.abhi.android.sciencebowl;
 
 import android.graphics.Color;
+import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.View;
@@ -13,23 +14,15 @@ import com.firebase.client.Firebase;
 import com.firebase.client.FirebaseError;
 import com.firebase.client.ValueEventListener;
 
+import java.util.ArrayList;
+import java.util.List;
+
 public class SettingsActivity extends AppCompatActivity implements View.OnClickListener {
 
     private SeekBar mDifficultySeekBar;
     private TextView mDifficultySeekBarHint;
-
-    private Settings newUserSettings;
-
-    private Button mEarthButton;
-    private Button mBiologyButton;
-    private Button mPhysicsButton;
-    private Button mAstroButton;
-    private Button mMathButton;
-    private Button mChemistryButton;
-    private Button mEnergyButton;
     private Button[] mSubjectButtonList;
-
-    private boolean[] mIsSubjectButtonSelected;
+    private List<Subject> mSubjectsSelected;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -38,16 +31,14 @@ public class SettingsActivity extends AppCompatActivity implements View.OnClickL
         initializeVariables();
 
         //get current settings
-        Settings currUserSettings = UserInformation.getUserSettings();
-        int currDifficulty = currUserSettings.getDifficulty(); //integer from 0 to 5
-        String currSubjects = currUserSettings.getSubject();
-
-        newUserSettings =
-                new Settings(currUserSettings.getSubject(), currUserSettings.getDifficulty());
+        Settings currentUserSettings = UserInformation.getUserSettings();
+        int currentDifficulty = currentUserSettings.getDifficulty(); //integer from 0 to 5
+        mSubjectsSelected = (currentUserSettings.getSubjects() == null)
+                ? new ArrayList<Subject>() : currentUserSettings.getSubjects();
 
         //set seekbar to current setting
-        mDifficultySeekBar.setProgress(currDifficulty);
-        mDifficultySeekBarHint.setText("Difficulty: " + currDifficulty);
+        mDifficultySeekBar.setProgress(currentDifficulty);
+        mDifficultySeekBarHint.setText("Difficulty: " + currentDifficulty);
 
         mDifficultySeekBar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
             @Override
@@ -56,20 +47,19 @@ public class SettingsActivity extends AppCompatActivity implements View.OnClickL
             }
 
             @Override
-            public void onStartTrackingTouch(SeekBar seekBar) {}
+            public void onStartTrackingTouch(SeekBar seekBar) {
+            }
 
             @Override
-            public void onStopTrackingTouch(SeekBar seekBar) {}
+            public void onStopTrackingTouch(SeekBar seekBar) {
+            }
         });
 
         //set subject buttons to current settings
-        for(int i = 0; i < currSubjects.length(); i++)
+        for(Subject subject: mSubjectsSelected)
         {
-            char digit = currSubjects.charAt(i);
-            if(digit == '1') {
-                setSelectedState(mSubjectButtonList[i], true);
-                mIsSubjectButtonSelected[i] = true;
-            }
+            Button subjectButton = (Button) findViewById(subjectEnumToId(subject));
+            setSelectedState(subjectButton, true);
         }
 
         //set listeners on subject buttons
@@ -82,15 +72,8 @@ public class SettingsActivity extends AppCompatActivity implements View.OnClickL
     {
         super.onDestroy();
 
-        String newSubject = "";
-        for(boolean isButtonSelected : mIsSubjectButtonSelected)
-        {
-            if(isButtonSelected)
-                newSubject += "1";
-            else
-                newSubject += "0";
-        }
-        newUserSettings.setSubject(newSubject);
+        Settings newUserSettings = new Settings();
+        newUserSettings.setSubjects(mSubjectsSelected);
         newUserSettings.setDifficulty(mDifficultySeekBar.getProgress());
 
         UserInformation.setUserSettings(newUserSettings);
@@ -104,49 +87,81 @@ public class SettingsActivity extends AppCompatActivity implements View.OnClickL
     @Override
     public void onClick(View v) {
         Button clickedButton = (Button) v;
+        Subject subject = subjectIdToEnum(clickedButton.getId());
+        setSelectedState(v, toggleSelectedButton(subject));
+    }
 
-        int clickedButtonIndex = getSubjectButtonIndex(clickedButton.getText().toString());
-        mIsSubjectButtonSelected[clickedButtonIndex]
-                = !mIsSubjectButtonSelected[clickedButtonIndex];
-
-        setSelectedState(v, mIsSubjectButtonSelected[clickedButtonIndex]);
+    private boolean toggleSelectedButton(Subject subject) {
+        if (mSubjectsSelected.contains(subject)) {
+            mSubjectsSelected.remove(subject);
+            return false;
+        }
+        else {
+            mSubjectsSelected.add(subject);
+            return true;
+        }
     }
 
     private void setSelectedState(View v, boolean isSelected) {
         int setColor;
 
-        if(isSelected) {setColor = Color.GRAY;}
-        else {setColor = Color.LTGRAY;}
+        if(isSelected) {setColor = ContextCompat.getColor(this, R.color.selectedButton);}
+        else {setColor = ContextCompat.getColor(this, R.color.unselectedButton);}
 
         v.setBackgroundColor(setColor);
     }
 
-    private int getSubjectButtonIndex(String buttonName)
-    {
-        if(buttonName.equals(getString(R.string.earth_science_button)))  return 0;
-        else if(buttonName.equals(getString(R.string.biology_button)))   return 1;
-        else if(buttonName.equals(getString(R.string.physics_button)))   return 2;
-        else if(buttonName.equals(getString(R.string.chemistry_button))) return 3;
-        else if(buttonName.equals(getString(R.string.energy_button)))    return 4;
-        else if(buttonName.equals(getString(R.string.math_button)))      return 5;
-        else throw new IllegalArgumentException();
+    private int subjectEnumToId(Subject subject) {
+        switch (subject) {
+            case EARTH:
+                return R.id.earth_science_button;
+            case BIOLOGY:
+                return R.id.biology_button;
+            case PHYSICS:
+                return R.id.physics_button;
+            case CHEMISTRY:
+                return R.id.chemistry_button;
+            case ENERGY:
+                return R.id.energy_button;
+            case MATH:
+                return R.id.math_button;
+            default:  // unreachable because enum
+                throw new IllegalArgumentException("Invalid subject: " + subject.toString());
+        }
+    }
+
+    private Subject subjectIdToEnum(int subjectId) {
+        switch (subjectId) {
+            case R.id.earth_science_button:
+                return Subject.EARTH;
+            case R.id.biology_button:
+                return Subject.BIOLOGY;
+            case R.id.physics_button:
+                return Subject.PHYSICS;
+            case R.id.chemistry_button:
+                return Subject.CHEMISTRY;
+            case R.id.energy_button:
+                return Subject.ENERGY;
+            case R.id.math_button:
+                return Subject.MATH;
+            default:
+                throw new IllegalArgumentException("Invalid subject id: " + Integer.toString(subjectId));
+        }
     }
 
     private void initializeVariables() {
         mDifficultySeekBar = (SeekBar) findViewById(R.id.difficulty_seekbar);
         mDifficultySeekBarHint = (TextView) findViewById(R.id.difficulty_seekbar_hint);
 
-        mEarthButton = (Button) findViewById(R.id.earth_science_button);
-        mBiologyButton = (Button) findViewById(R.id.biology_button);
-        mPhysicsButton = (Button) findViewById(R.id.physics_button);
-        mChemistryButton = (Button) findViewById(R.id.chemistry_button);
-        mEnergyButton = (Button) findViewById(R.id.energy_button);
-        mMathButton = (Button) findViewById(R.id.math_button);
+        Button mEarthButton = (Button) findViewById(R.id.earth_science_button);
+        Button mBiologyButton = (Button) findViewById(R.id.biology_button);
+        Button mPhysicsButton = (Button) findViewById(R.id.physics_button);
+        Button mChemistryButton = (Button) findViewById(R.id.chemistry_button);
+        Button mEnergyButton = (Button) findViewById(R.id.energy_button);
+        Button mMathButton = (Button) findViewById(R.id.math_button);
+        Button mAstroButton = (Button) findViewById(R.id.astro_button);
 
         mSubjectButtonList = new Button[]
-                {mEarthButton, mBiologyButton, mPhysicsButton, mChemistryButton, mEnergyButton, mMathButton};
-
-        mIsSubjectButtonSelected =
-                new boolean[getResources().getInteger(R.integer.number_of_subjects)];
+                {mEarthButton, mBiologyButton, mPhysicsButton, mChemistryButton, mEnergyButton, mMathButton,mAstroButton};
     }
 }

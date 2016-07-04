@@ -43,7 +43,7 @@ public class MainMenuActivity extends AppCompatActivity {
         //Get user settings from Firebase. Ideally should be done during login
         Firebase.setAndroidContext(this);
 
-        Firebase mFirebaseRef = new Firebase("https://science-bowl.firebaseio.com/user-settings/" + mUid);
+        Firebase mFirebaseRef = new Firebase(getString(R.string.BASE_URI)+getString(R.string.DIR_SETTINGS) + "/" + mUid);
         mFirebaseRef.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
