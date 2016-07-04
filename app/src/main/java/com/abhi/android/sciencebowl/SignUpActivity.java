@@ -105,7 +105,7 @@ public class SignUpActivity extends AppCompatActivity {
 
         Pattern pattern = Pattern.compile(regex);
         Matcher verifyer = pattern.matcher("email");
-        if(!verifyer.matches()){
+        if(verifyer.matches()){
             return -2;
         }
         if(!(p1.equals(p2)))

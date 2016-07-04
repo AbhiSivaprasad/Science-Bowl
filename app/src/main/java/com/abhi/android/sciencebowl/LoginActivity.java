@@ -17,6 +17,7 @@ import com.facebook.CallbackManager;
 import com.facebook.FacebookCallback;
 import com.facebook.FacebookException;
 import com.facebook.FacebookSdk;
+import com.facebook.login.LoginManager;
 import com.facebook.login.LoginResult;
 import com.facebook.login.widget.LoginButton;
 
@@ -82,6 +83,7 @@ public class LoginActivity extends AppCompatActivity
 
         loginButton = (LoginButton) findViewById(R.id.button_facebook_login);
         loginButton.setReadPermissions("email", "public_profile");
+        LoginManager.getInstance().logOut();
         loginButton.registerCallback(mCallbackManager, new FacebookCallback<LoginResult>() {
             @Override
             public void onSuccess(LoginResult loginResult) {
@@ -150,6 +152,13 @@ public class LoginActivity extends AppCompatActivity
         bLogin.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                String email = etEmail.getText().toString();
+                String pass = etPass.getText().toString();
+                if(email.isEmpty()||pass.isEmpty()){
+                    Toast t = Toast.makeText(LoginActivity.this,"Please enter both an email and password.", Toast.LENGTH_LONG);
+                    t.show();
+                    return;
+                }
                 mAuth.signInWithEmailAndPassword(etEmail.getText().toString(),etPass.getText().toString())
                         .addOnCompleteListener(LoginActivity.this,LoginActivity.this);
             }
@@ -174,10 +183,7 @@ public class LoginActivity extends AppCompatActivity
                 GoogleSignInAccount account = result.getSignInAccount();
                 firebaseAuthWithGoogle(account);
             }
-            AlphaAnimation outAnimation = new AlphaAnimation(1f, 0f);
-            outAnimation.setDuration(200);
-            spinHolder.setAnimation(outAnimation);
-            spinHolder.setVisibility(View.GONE);
+
         }else{
             mCallbackManager.onActivityResult(requestCode, resultCode, data);
         }
@@ -229,6 +235,10 @@ public class LoginActivity extends AppCompatActivity
                 System.out.println("The read failed: " + firebaseError.getMessage());
             }
         });
+        AlphaAnimation outAnimation = new AlphaAnimation(1f, 0f);
+        outAnimation.setDuration(200);
+        spinHolder.setAnimation(outAnimation);
+        spinHolder.setVisibility(View.GONE);
         Intent intent = new Intent(this,MainMenuActivity.class);
         intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
         startActivity(intent);

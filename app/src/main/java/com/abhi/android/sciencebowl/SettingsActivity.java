@@ -125,6 +125,8 @@ public class SettingsActivity extends AppCompatActivity implements View.OnClickL
                 return R.id.energy_button;
             case MATH:
                 return R.id.math_button;
+            case ASTRO:
+                return R.id.astro_button;
             default:  // unreachable because enum
                 throw new IllegalArgumentException("Invalid subject: " + subject.toString());
         }
@@ -144,6 +146,8 @@ public class SettingsActivity extends AppCompatActivity implements View.OnClickL
                 return Subject.ENERGY;
             case R.id.math_button:
                 return Subject.MATH;
+            case R.id.astro_button:
+                return Subject.ASTRO;
             default:
                 throw new IllegalArgumentException("Invalid subject id: " + Integer.toString(subjectId));
         }
