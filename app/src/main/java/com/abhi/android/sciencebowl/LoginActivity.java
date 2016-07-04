@@ -159,6 +159,10 @@ public class LoginActivity extends AppCompatActivity
                     t.show();
                     return;
                 }
+                AlphaAnimation inAnimation = new AlphaAnimation(0f, 1f);
+                inAnimation.setDuration(200);
+                spinHolder.setAnimation(inAnimation);
+                spinHolder.setVisibility(View.VISIBLE);
                 mAuth.signInWithEmailAndPassword(etEmail.getText().toString(),etPass.getText().toString())
                         .addOnCompleteListener(LoginActivity.this,LoginActivity.this);
             }
@@ -269,8 +273,19 @@ public class LoginActivity extends AppCompatActivity
         Log.d(TAG, "signInWithCredential:onComplete:" + task.isSuccessful());
         if (!task.isSuccessful()) {
             Log.w(TAG, "signInWithCredential", task.getException());
-            Toast.makeText(LoginActivity.this, "Authentication failed: Please sign up for an account if you need to.",
-                    Toast.LENGTH_SHORT).show();
+
+            AlphaAnimation outAnimation = new AlphaAnimation(1f, 0f);
+            outAnimation.setDuration(200);
+            spinHolder.setAnimation(outAnimation);
+            spinHolder.setVisibility(View.GONE);
+            if (task.getException().getClass().getName().contains("Network")) {
+                Toast.makeText(LoginActivity.this, "Couldn't connect to the network.",
+                        Toast.LENGTH_SHORT).show();
+            } else{
+                Toast.makeText(LoginActivity.this, "Authentication failed: Please sign up for an account if you need to.",
+                        Toast.LENGTH_SHORT).show();
+        }
+            Log.v("LOGIN", task.getException().toString());
         }else{
             logIn(mAuth.getCurrentUser());
         }
