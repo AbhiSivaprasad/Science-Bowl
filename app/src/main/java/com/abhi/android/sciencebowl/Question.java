@@ -7,6 +7,16 @@ public class Question {
     private String X;
     private String Y;
     private String Z;
+
+    Question() {}
+    Question(String question, String W, String X, String Y, String Z, Choice correct) {
+        this.question = question;
+        this.W = W;
+        this.X = X;
+        this.Y = Y;
+        this.Z = Z;
+        this.correct = correct;
+    }
     
     public String getQuestion() {return question;}
     public Choice getCorrect() {return correct;}

@@ -32,6 +32,7 @@ public class RandomQuestion {
             Collections.shuffle(subjectList);
 
         next(subjectList.get(index));
+        index = (index + 1) % subjectList.size();
     }
 
     public void next(Subject subject) {
@@ -39,9 +40,10 @@ public class RandomQuestion {
         firebaseRef.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot subjectDataSnapshot) {
+                Random rand = new Random();
+
                 int subsubjectCount = (int)subjectDataSnapshot.getChildrenCount();
                 if (subsubjectCount == 0) return;
-                Random rand = new Random();
 
                 // get random subsubject. hacky because no way to access firebase node by index
                 DataSnapshot subsubjectDataSnapshot = null;
@@ -59,7 +61,7 @@ public class RandomQuestion {
                     DataSnapshot difficultyDataSnapshot =
                             subsubjectDataSnapshot.child(Integer.toString(settings.getDifficulty()));
                     // get random question. hacky because no way to access firebase node by index
-                    int questionCount = (int)subsubjectDataSnapshot.getChildrenCount();
+                    int questionCount = (int)difficultyDataSnapshot.getChildrenCount();
                     if (questionCount == 0) return;
 
                     Question question;
@@ -67,9 +69,16 @@ public class RandomQuestion {
                     randomIndex = rand.nextInt(questionCount);
                     for(DataSnapshot questionDataSnapshot : difficultyDataSnapshot.getChildren()) {
                         if (questionIndex == randomIndex) {
-                            System.out.println(questionDataSnapshot.child("W"));
-                            question = questionDataSnapshot.getValue(Question.class);
-                            System.out.println(question.getQuestion());
+//                            question = questionDataSnapshot.getValue(Question.class);
+
+                            String questionStr = questionDataSnapshot.child("question").getValue().toString();
+                            String W = questionDataSnapshot.child("W").getValue().toString();
+                            String X = questionDataSnapshot.child("X").getValue().toString();
+                            String Y = questionDataSnapshot.child("Y").getValue().toString();
+                            String Z = questionDataSnapshot.child("Z").getValue().toString();
+                            Choice correct = Choice.valueOf(questionDataSnapshot.child("correct").getValue().toString());
+                            question = new Question(questionStr, W, X, Y, Z, correct);
+
                             caller.setQuestion(question);
                             break;
                         }
