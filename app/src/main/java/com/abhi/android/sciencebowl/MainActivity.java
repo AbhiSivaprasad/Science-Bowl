@@ -15,13 +15,17 @@ import com.firebase.client.DataSnapshot;
 import com.firebase.client.Firebase;
 import com.firebase.client.FirebaseError;
 import com.firebase.client.ValueEventListener;
+import com.google.android.gms.common.ConnectionResult;
+import com.google.android.gms.common.api.GoogleApiClient;
+import com.google.android.gms.games.Games;
 
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 
-public class MainActivity extends AppCompatActivity implements View.OnClickListener {
+public class MainActivity extends AppCompatActivity implements View.OnClickListener, GoogleApiClient.ConnectionCallbacks,
+        GoogleApiClient.OnConnectionFailedListener, RandomQuestion.QuestionInterface {
     private static final String FIREBASE_QUIZLIST_URL =
             "https://science-bowl.firebaseio.com/quizlist";
 
@@ -41,6 +45,9 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     //scoring vars preserve over screen rotation
     private int mQuestionsCorrect;
     private List<QuestionUserAnswerPair> mReviewQuestionsBank;
+    private RandomQuestion rq;
+
+    private GoogleApiClient mGoogleApiClient;
 
     private Settings userSetting;
 
@@ -50,6 +57,11 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         UserInformation.setReviewQuestionBank(mReviewQuestionsBank); //should this be here
         UserInformation.setCurrentQuestionIndex(mCurrentQuestionIndex + 1); //set to next question to be displayed
         UserInformation.setQuestionsCorrect(mQuestionsCorrect); //set statistics
+
+        // fetch leaderboard ID from res/strings.xml and submit to Google Play Games Leaderboard
+        String leaderboardIdQuestionsAnswered = getResources().getString(R.string.leaderboard_id_questions_answered);
+        if (mGoogleApiClient.isConnected())
+            Games.Leaderboards.submitScore(mGoogleApiClient, leaderboardIdQuestionsAnswered, mQuestionsCorrect);
 
         writeToFirebaseLeaderboard(UserInformation.getUsername(), mQuestionsCorrect);
     }
@@ -65,6 +77,10 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         mCurrentQuestionIndex = UserInformation.getCurrentQuestionIndex();
         mQuestionsCorrect = UserInformation.getQuestionsCorrect();
         userSetting = UserInformation.getUserSettings();
+        rq = new RandomQuestion(this, userSetting);
+        mGoogleApiClient = new GoogleApiClient.Builder(this)
+                .addConnectionCallbacks(this).addOnConnectionFailedListener(this)
+                .addApi(Games.API).addScope(Games.SCOPE_GAMES).build();
 
         mQuestionButton = (TextView) findViewById(R.id.question);
         mChoiceW = (Button) findViewById(R.id.choiceW);
@@ -75,26 +91,28 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
         mNextButton = (Button) findViewById(R.id.next_button);
 
-        Firebase.setAndroidContext(this);
-        //Takes some time to get data. Executes subsequent code before data is retrieved causing a lag between inflation of
-        //XML and the appearance of question/answers. Need to fix this.
-        Firebase mFirebaseRef = new Firebase(FIREBASE_QUIZLIST_URL);
-        mFirebaseRef.addValueEventListener(new ValueEventListener() {
-            @Override
-            public void onDataChange(DataSnapshot dataSnapshot) {
-                for(DataSnapshot snapshot : dataSnapshot.getChildren())
-                {
-                    Question q = snapshot.getValue(Question.class);
-                    mQuestionBank.add(q);
-                }
-                goToNextQuestion(); //load first question
-            }
-
-            @Override
-            public void onCancelled(FirebaseError firebaseError) {
-                System.out.println("The read failed: " + firebaseError.getMessage());
-            }
-        });
+//        Firebase.setAndroidContext(this);
+//        //Takes some time to get data. Executes subsequent code before data is retrieved causing a lag between inflation of
+//        //XML and the appearance of question/answers. Need to fix this.
+//        Firebase mFirebaseRef = new Firebase(FIREBASE_QUIZLIST_URL);
+//        mFirebaseRef.addValueEventListener(new ValueEventListener() {
+//            @Override
+//            public void onDataChange(DataSnapshot dataSnapshot) {
+//                for(DataSnapshot snapshot : dataSnapshot.getChildren())
+//                {
+//                    Question q = snapshot.getValue(Question.class);
+//                    mQuestionBank.add(q);
+//                }
+//                goToNextQuestion(); //load first question
+//            }
+//
+//            @Override
+//            public void onCancelled(FirebaseError firebaseError) {
+//                System.out.println("The read failed: " + firebaseError.getMessage());
+//            }
+//        });
+        // load first question
+        rq.next();
 
         for(Button choiceButton : mChoiceButtonList) {
             choiceButton.setBackgroundColor(Color.TRANSPARENT);
@@ -106,23 +124,34 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         mNextButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                mCurrentQuestionIndex = (mCurrentQuestionIndex + 1) % mQuestionBank.size(); //questions fed in circular loop. Need more sophisticated order.
-
-                goToNextQuestion();
+//                mCurrentQuestionIndex = (mCurrentQuestionIndex + 1) % mQuestionBank.size(); //questions fed in circular loop. Need more sophisticated order.
+//                goToNextQuestion();
+                mNextButton.setVisibility(View.GONE);
+                rq.next();
             }
         });
     }
 
+    @Override
+    public void onConnected(Bundle connectionHint) {}
+
+    @Override
+    public void onConnectionSuspended(int cause) {}
+
+    @Override
+    public void onConnectionFailed(ConnectionResult result) {}
+
     //update UI and mCurrQuestion
     private static void goToNextQuestion() {
         mNextButton.setVisibility(View.GONE);
-        updateQuestionWidgets();
+//        updateQuestionWidgets();
 
         setChoiceButtonsEnabled(true);
     }
 
-    public static void updateQuestionWidgets() {
-        mCurrentQuestion = mQuestionBank.get(mCurrentQuestionIndex);
+    public static void updateQuestionWidgets(Question question) {
+//        mCurrentQuestion = mQuestionBank.get(mCurrentQuestionIndex);
+        mCurrentQuestion = question;
         mQuestionButton.setText(mCurrentQuestion.getQuestion());
         mChoiceW.setText("W) " + mCurrentQuestion.getW());
         mChoiceX.setText("X) " + mCurrentQuestion.getX());
@@ -166,8 +195,15 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
         //stop at last question
         //need different end condition. Index will not be incremented constantly by 1.
-        if(mCurrentQuestionIndex != mQuestionBank.size() - 1)
-            mNextButton.setVisibility(View.VISIBLE);
+//        if(mCurrentQuestionIndex != mQuestionBank.size() - 1)
+//            mNextButton.setVisibility(View.VISIBLE);
+        mNextButton.setVisibility(View.VISIBLE);
+    }
+
+    @Override
+    public void setQuestion(Question question) {
+        updateQuestionWidgets(question);
+        setChoiceButtonsEnabled(true);
     }
 
     public static Button getChoiceButton(Choice choice, Button mChoiceW, Button mChoiceX, Button mChoiceY, Button mChoiceZ)

@@ -1,5 +1,7 @@
 <resources>
     <string name="app_name">Science Bowl</string>
+    <string name="app_id">870364490661</string>
+
     <string name="next_button">NEXT</string>
     <string name="prev_button">PREV</string>
 
@@ -8,6 +10,7 @@
     <string name="leaderboard_button">LEADERBOARDS</string>
     <string name="settings_button">SETTINGS</string>
     <string name="review_button">REVIEW</string>
+    <string name="sign_out_button">SIGN OUT</string>
 
     <string name="login_button">LOGIN</string>
     <string name="signup_button">SIGN UP</string>
@@ -20,4 +23,6 @@
     <string name="chemistry_button">Chemistry</string>
     <string name="energy_button">Energy</string>
     <string name="math_button">Math</string>
+
+    <string name="leaderboard_id_questions_answered">CgkIpdeQrqoZEAIQAA</string>
 </resources>
