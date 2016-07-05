@@ -33,20 +33,20 @@
         android:layout_height="wrap_content"
         android:text="@string/leaderboard_button"
         android:id="@+id/leaderboard_button"
-        android:layout_gravity="center_horizontal"
-        />
+        android:layout_gravity="center_horizontal" />
 
     <Button
         android:layout_width="140dp"
         android:layout_height="wrap_content"
         android:text="@string/settings_button"
         android:id="@+id/settings_button"
-        android:layout_gravity="center_horizontal"/>
+        android:layout_gravity="center_horizontal" />
 
     <com.google.android.gms.common.SignInButton
         android:id="@+id/sign_in_button"
         android:layout_width="wrap_content"
-        android:layout_height="wrap_content" />
+        android:layout_height="wrap_content"
+        android:layout_gravity="center_horizontal" />
 
     <Button
         android:id="@+id/sign_out_button"
