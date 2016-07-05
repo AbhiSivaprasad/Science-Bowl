@@ -32,8 +32,9 @@ public class SettingsActivity extends AppCompatActivity implements View.OnClickL
 
         //get current settings
         Settings currentUserSettings = UserInformation.getUserSettings();
-        int currentDifficulty = currentUserSettings.getDifficulty(); //integer from 0 to 5
-        mSubjectsSelected = (currentUserSettings.getSubjects() == null)
+        int currentDifficulty = (currentUserSettings == null)
+                ? 0 : currentUserSettings.getDifficulty(); //integer from 0 to 5
+        mSubjectsSelected = (currentUserSettings == null || currentUserSettings.getSubjects() == null)
                 ? new ArrayList<Subject>() : currentUserSettings.getSubjects();
 
         //set seekbar to current setting

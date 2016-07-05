@@ -1,28 +1,23 @@
 package com.abhi.android.sciencebowl;
 
-import android.content.Context;
-import android.content.Intent;
 import android.graphics.Color;
-import android.graphics.PorterDuff;
-import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.support.v7.app.AppCompatActivity;
 import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.firebase.client.DataSnapshot;
 import com.firebase.client.Firebase;
-import com.firebase.client.FirebaseError;
-import com.firebase.client.ValueEventListener;
+import com.google.android.gms.common.ConnectionResult;
+import com.google.android.gms.common.api.GoogleApiClient;
+import com.google.android.gms.games.Games;
 
 import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.HashMap;
 import java.util.List;
 
-public class MainActivity extends AppCompatActivity implements View.OnClickListener {
-
+public class MainActivity extends AppCompatActivity implements View.OnClickListener, GoogleApiClient.ConnectionCallbacks,
+        GoogleApiClient.OnConnectionFailedListener, RandomQuestion.QuestionInterface {
 
     private static TextView mQuestionButton;
     private static Button mChoiceW;
@@ -33,13 +28,15 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
     private static Button mNextButton;
 
-    private static List<Question> mQuestionBank;
     private static Question mCurrentQuestion;
     private static int mCurrentQuestionIndex;
 
     //scoring vars preserve over screen rotation
     private int mQuestionsCorrect;
     private List<QuestionUserAnswerPair> mReviewQuestionsBank;
+    private RandomQuestion rq;
+
+    private GoogleApiClient mGoogleApiClient;
 
     private Settings userSetting;
 
@@ -50,6 +47,11 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         UserInformation.setCurrentQuestionIndex(mCurrentQuestionIndex + 1); //set to next question to be displayed
         UserInformation.setQuestionsCorrect(mQuestionsCorrect); //set statistics
 
+        // fetch leaderboard ID from res/strings.xml and submit to Google Play Games Leaderboard
+        String leaderboardIdQuestionsAnswered = getResources().getString(R.string.leaderboard_id_questions_answered);
+        if (mGoogleApiClient.isConnected())
+            Games.Leaderboards.submitScore(mGoogleApiClient, leaderboardIdQuestionsAnswered, mQuestionsCorrect);
+
         writeToFirebaseLeaderboard(UserInformation.getUid(), mQuestionsCorrect);
     }
 
@@ -58,12 +60,14 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        mQuestionBank = new ArrayList<>();
-
         mReviewQuestionsBank = UserInformation.getReviewQuestionBank();
         mCurrentQuestionIndex = UserInformation.getCurrentQuestionIndex();
         mQuestionsCorrect = UserInformation.getQuestionsCorrect();
         userSetting = UserInformation.getUserSettings();
+        rq = new RandomQuestion(this, userSetting);
+        mGoogleApiClient = new GoogleApiClient.Builder(this)
+                .addConnectionCallbacks(this).addOnConnectionFailedListener(this)
+                .addApi(Games.API).addScope(Games.SCOPE_GAMES).build();
 
         mQuestionButton = (TextView) findViewById(R.id.question);
         mChoiceW = (Button) findViewById(R.id.choiceW);
@@ -74,26 +78,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
         mNextButton = (Button) findViewById(R.id.next_button);
 
-        Firebase.setAndroidContext(this);
-        //Takes some time to get data. Executes subsequent code before data is retrieved causing a lag between inflation of
-        //XML and the appearance of question/answers. Need to fix this.
-        Firebase mFirebaseRef = new Firebase(getString(R.string.BASE_URI)+getString(R.string.DIR_QUIZ));
-        mFirebaseRef.addValueEventListener(new ValueEventListener() {
-            @Override
-            public void onDataChange(DataSnapshot dataSnapshot) {
-                for(DataSnapshot snapshot : dataSnapshot.getChildren())
-                {
-                    Question q = snapshot.getValue(Question.class);
-                    mQuestionBank.add(q);
-                }
-                goToNextQuestion(); //load first question
-            }
-
-            @Override
-            public void onCancelled(FirebaseError firebaseError) {
-                System.out.println("The read failed: " + firebaseError.getMessage());
-            }
-        });
+        rq.next();
 
         for(Button choiceButton : mChoiceButtonList) {
             choiceButton.setBackgroundColor(Color.TRANSPARENT);
@@ -105,23 +90,23 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         mNextButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                mCurrentQuestionIndex = (mCurrentQuestionIndex + 1) % mQuestionBank.size(); //questions fed in circular loop. Need more sophisticated order.
-
-                goToNextQuestion();
+                mNextButton.setVisibility(View.GONE);
+                rq.next();
             }
         });
     }
 
-    //update UI and mCurrQuestion
-    private static void goToNextQuestion() {
-        mNextButton.setVisibility(View.GONE);
-        updateQuestionWidgets();
+    @Override
+    public void onConnected(Bundle connectionHint) {}
 
-        setChoiceButtonsEnabled(true);
-    }
+    @Override
+    public void onConnectionSuspended(int cause) {}
 
-    public static void updateQuestionWidgets() {
-        mCurrentQuestion = mQuestionBank.get(mCurrentQuestionIndex);
+    @Override
+    public void onConnectionFailed(ConnectionResult result) {}
+
+    public static void updateQuestionWidgets(Question question) {
+        mCurrentQuestion = question;
         mQuestionButton.setText(mCurrentQuestion.getQuestion());
         mChoiceW.setText("W) " + mCurrentQuestion.getW());
         mChoiceX.setText("X) " + mCurrentQuestion.getX());
@@ -163,10 +148,13 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
         setChoiceButtonsEnabled(false);
 
-        //stop at last question
-        //need different end condition. Index will not be incremented constantly by 1.
-        if(mCurrentQuestionIndex != mQuestionBank.size() - 1)
-            mNextButton.setVisibility(View.VISIBLE);
+        mNextButton.setVisibility(View.VISIBLE);
+    }
+
+    @Override
+    public void setQuestion(Question question) {
+        updateQuestionWidgets(question);
+        setChoiceButtonsEnabled(true);
     }
 
     public static Button getChoiceButton(Choice choice, Button mChoiceW, Button mChoiceX, Button mChoiceY, Button mChoiceZ)

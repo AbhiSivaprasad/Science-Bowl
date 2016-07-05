@@ -1,7 +1,5 @@
 package com.abhi.android.sciencebowl;
 
-import android.app.Activity;
-import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
@@ -16,8 +14,15 @@ import com.firebase.client.FirebaseError;
 import com.firebase.client.ValueEventListener;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
+import com.google.android.gms.common.ConnectionResult;
+import com.google.android.gms.common.api.GoogleApiClient;
+import com.google.android.gms.games.Games;
+import com.google.example.games.basegameutils.GameHelper;
 
-public class MainMenuActivity extends AppCompatActivity {
+
+public class MainMenuActivity extends AppCompatActivity implements GoogleApiClient.ConnectionCallbacks,
+        GoogleApiClient.OnConnectionFailedListener {
+    private static final int RC_LB_QUESTIONS_ANSWERED = 10001;
 
     private static final int REQUEST_CODE_MAIN = 0;
     private static final String TAG = "MAIN_MENU";
@@ -34,11 +39,19 @@ public class MainMenuActivity extends AppCompatActivity {
     private String mUid;
     private FirebaseAuth.AuthStateListener mAuthListener;
 
+    private GoogleApiClient mGoogleApiClient;
+
+    private GameHelper mGameHelper;
+
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main_menu);
 
         mUid = UserInformation.getUid();
+
+        mGoogleApiClient = new GoogleApiClient.Builder(this)
+                .addConnectionCallbacks(this).addOnConnectionFailedListener(this)
+                .addApi(Games.API).addScope(Games.SCOPE_GAMES).build();
 
         //Get user settings from Firebase. Ideally should be done during login
         Firebase.setAndroidContext(this);
@@ -72,7 +85,7 @@ public class MainMenuActivity extends AppCompatActivity {
         mLeaderboardButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                
+                mGoogleApiClient.connect();
             }
         });
 
@@ -107,6 +120,32 @@ public class MainMenuActivity extends AppCompatActivity {
             }
         });
     }
+
+    @Override
+    public void onStart() {
+        super.onStart();
+        mGoogleApiClient.connect();
+    }
+
+    @Override
+    public void onStop() {
+        super.onStop();
+        mGoogleApiClient.disconnect();
+    }
+
+    @Override
+    public void onConnected(Bundle connectionHint) {
+        String leaderboardIdQuestionsAnswered = getResources().getString(R.string.leaderboard_id_questions_answered);
+        startActivityForResult(Games.Leaderboards.getLeaderboardIntent(mGoogleApiClient,
+                leaderboardIdQuestionsAnswered), RC_LB_QUESTIONS_ANSWERED);
+    }
+
+    @Override
+    public void onConnectionSuspended(int cause) {}
+
+    @Override
+    public void onConnectionFailed(ConnectionResult result) {}
+
     /*
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data)
