@@ -121,6 +121,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     }
 
     public static void updateQuestionWidgets() {
+        //Keeps crashing with ArrayIndexOutofBoundsException (Invalid index n, size is n)
         mCurrentQuestion = mQuestionBank.get(mCurrentQuestionIndex);
         mQuestionButton.setText(mCurrentQuestion.getQuestion());
         mChoiceW.setText("W) " + mCurrentQuestion.getW());
