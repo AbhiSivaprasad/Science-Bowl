@@ -85,7 +85,10 @@ public class MainMenuActivity extends AppCompatActivity implements GoogleApiClie
         mLeaderboardButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                mGoogleApiClient.connect();
+//                mGoogleApiClient.connect();
+                String leaderboardIdQuestionsAnswered = getResources().getString(R.string.leaderboard_id_questions_answered);
+                startActivityForResult(Games.Leaderboards.getLeaderboardIntent(mGoogleApiClient,
+                        leaderboardIdQuestionsAnswered), RC_LB_QUESTIONS_ANSWERED);
             }
         });
 
