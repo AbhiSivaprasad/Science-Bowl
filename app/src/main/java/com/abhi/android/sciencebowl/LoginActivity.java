@@ -10,6 +10,7 @@ import android.view.animation.AlphaAnimation;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.FrameLayout;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.facebook.AccessToken;
@@ -55,7 +56,7 @@ public class LoginActivity extends AppCompatActivity
     private EditText etEmail;
     private EditText etPass;
     private Button bLogin;
-    private Button bSignUp;
+    private TextView bSignUp;
     private SignInButton bGSignIn;
     private Button bOpenEmail;
 
@@ -72,7 +73,7 @@ public class LoginActivity extends AppCompatActivity
         super.onCreate(savedInstanceState);
         FacebookSdk.sdkInitialize(getApplicationContext());
         setContentView(R.layout.activity_login);
-        bSignUp = (Button) findViewById(R.id.bSignUp);
+        bSignUp = (TextView) findViewById(R.id.bSignUp);
         bSignUp.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -310,7 +311,7 @@ public class LoginActivity extends AppCompatActivity
                         Toast.LENGTH_SHORT).show();
             } else{
                 if(task.getException().getClass().getName().contains("Collision")){
-                    Toast.makeText(LoginActivity.this, "There's an existing user associated with this email. Try signing in with that email with one of the other methods",
+                    Toast.makeText(LoginActivity.this, "There's an existing user associated with this email. Try signing in with that email using one of the other methods",
                             Toast.LENGTH_SHORT).show();
                 }else {
                     Toast.makeText(LoginActivity.this, "Authentication failed: Please sign up for an account if you need to.",

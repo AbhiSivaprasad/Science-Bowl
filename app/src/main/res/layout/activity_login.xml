@@ -94,13 +94,16 @@
             android:layout_gravity="center" />
     </FrameLayout>
 
-    <Button
+    <TextView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="Need an account? Sign up here."
+        android:text="@string/sign_up_text"
         android:id="@+id/bSignUp"
+        android:gravity="center"
+        android:textSize="15dp"
         android:layout_alignParentBottom="true"
         android:layout_alignParentLeft="true"
-        android:layout_alignParentStart="true" />
+        android:layout_alignParentStart="true"
+        android:textColor="@color/abc_primary_text_disable_only_material_light" />
 </RelativeLayout>
 
