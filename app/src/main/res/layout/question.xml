@@ -2,30 +2,49 @@
 <merge xmlns:android="http://schemas.android.com/apk/res/android"
     android:orientation="vertical" android:layout_width="match_parent"
     android:layout_height="match_parent">
-
+<RelativeLayout
+    android:orientation="vertical" android:layout_width="match_parent"
+    android:layout_height="match_parent">
     <TextView
         android:id="@+id/question"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content" />
-
+        android:text="QUESTION"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="left"
+        android:layout_alignParentTop="true"/>
+<LinearLayout
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical"
+    android:layout_alignParentBottom="true"
+    android:layout_marginBottom="30dp">
     <Button
         android:id="@+id/choiceW"
-        android:layout_width="wrap_content"
+        android:text="QUESTION"
+        android:gravity="left"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content" />
 
     <Button
         android:id="@+id/choiceX"
-        android:layout_width="wrap_content"
+        android:text="QUESTION"
+        android:gravity="left"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content" />
 
     <Button
         android:id="@+id/choiceY"
-        android:layout_width="wrap_content"
+        android:text="QUESTION"
+        android:gravity="left"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content" />
 
     <Button
         android:id="@+id/choiceZ"
-        android:layout_width="wrap_content"
+        android:text="QUESTION"
+        android:gravity="left"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content" />
-
+    </LinearLayout>
+</RelativeLayout>
 </merge>
