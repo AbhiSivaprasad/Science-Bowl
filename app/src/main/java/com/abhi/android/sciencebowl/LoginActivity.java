@@ -318,6 +318,8 @@ public class LoginActivity extends AppCompatActivity
                             Toast.LENGTH_SHORT).show();
                 }
         }
+            LoginManager.getInstance().logOut();
+
             Log.v("LOGIN", task.getException().toString());
         }else{
             logIn(mAuth.getCurrentUser());
