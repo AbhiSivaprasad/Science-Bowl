@@ -38,52 +38,71 @@
         android:layout_marginTop="80dp"
         android:gravity="center_horizontal">
 
+
         <LinearLayout
             android:orientation="horizontal"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_gravity="center_horizontal">
+            android:layout_gravity="center_horizontal"
+            android:weightSum="1">
 
             <Button
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="@string/earth_science_button"
+                android:text="@string/astro_button"
                 android:background="@color/unselectedButton"
-                android:id="@+id/earth_science_button" />
+                android:id="@+id/astro_button"
+                android:layout_margin="10dp"
+                android:layout_weight="0.5"/>
 
             <Button
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="@string/biology_button"
                 android:background="@color/unselectedButton"
-                android:id="@+id/biology_button" />
-
+                android:id="@+id/biology_button"
+                android:layout_margin="10dp"
+                android:layout_weight="0.5"/>
+</LinearLayout>
+        <LinearLayout
+            android:orientation="horizontal"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_horizontal"
+            android:weightSum="1">
             <Button
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="@string/physics_button"
                 android:background="@color/unselectedButton"
-                android:id="@+id/physics_button" />
-        </LinearLayout>
+                android:id="@+id/physics_button"
+                android:layout_margin="10dp"
+                android:layout_weight="0.5"/>
 
-        <LinearLayout
-            android:orientation="horizontal"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content">
 
             <Button
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="@string/chemistry_button"
                 android:background="@color/unselectedButton"
-                android:id="@+id/chemistry_button" />
-
+                android:id="@+id/chemistry_button"
+                android:layout_margin="10dp"
+                android:layout_weight="0.5"/>
+            </LinearLayout>
+        <LinearLayout
+            android:orientation="horizontal"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_horizontal"
+            android:weightSum="1">
             <Button
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="@string/energy_button"
                 android:background="@color/unselectedButton"
-                android:id="@+id/energy_button" />
+                android:id="@+id/energy_button"
+                android:layout_margin="10dp"
+                android:layout_weight="0.5"/>
 
             <Button
                 android:layout_width="wrap_content"
@@ -92,15 +111,18 @@
                 android:background="@color/unselectedButton"
                 android:id="@+id/math_button"
                 android:enabled="true"
-                android:contextClickable="false" />
+                android:contextClickable="false"
+                android:layout_margin="10dp"
+                android:layout_weight="0.5"/>
+            </LinearLayout>
             <Button
-                android:layout_width="wrap_content"
+                android:layout_width="138dp"
                 android:layout_height="wrap_content"
-                android:text="@string/astro_button"
+                android:text="@string/earth_science_button"
                 android:background="@color/unselectedButton"
-                android:id="@+id/astro_button" />
+                android:id="@+id/earth_science_button" />
         </LinearLayout>
-    </LinearLayout>
+
 
     <TextView
         android:layout_width="wrap_content"

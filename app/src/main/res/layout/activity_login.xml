@@ -1,11 +1,82 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:orientation="vertical"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:weightSum="1"
-    android:gravity="center_vertical|center_horizontal">
+    android:padding="5dp"
+    android:gravity="center_horizontal">
+
+
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:id="@+id/buttonHolder"
+        android:layout_centerVertical="true"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentStart="true">
+        <com.google.android.gms.common.SignInButton
+            android:id="@+id/bGSignIn"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_centerInParent="true"
+            android:visibility="visible"
+            android:layout_gravity="center_horizontal" />
+
+        <com.facebook.login.widget.LoginButton
+            android:id="@+id/button_facebook_login"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_marginLeft="3dp"
+            android:layout_marginRight="3dp"
+            android:paddingTop="15dp"
+            android:paddingBottom="15dp"
+            android:layout_centerInParent="true"
+            android:layout_gravity="center_horizontal" />
+        <Button
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Log in with email"
+            android:id="@+id/bOpenEmail"
+            android:layout_alignParentBottom="true"
+            android:layout_alignParentLeft="true"
+            android:layout_alignParentStart="true" />
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:padding="5dp"
+            android:visibility="gone"
+            android:id="@+id/signInHolder">
+            <EditText
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:inputType="textEmailAddress"
+                android:hint="Email"
+                android:ems="10"
+                android:id="@+id/etEmail"
+                android:layout_gravity="center_horizontal" />
+
+            <EditText
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:inputType="textPassword"
+                android:ems="10"
+                android:hint="Password"
+                android:id="@+id/etPass"
+                android:layout_gravity="center_horizontal" />
+
+
+            <Button
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Sign In"
+                android:id="@+id/bSignIn"
+                android:layout_gravity="center_horizontal" />
+        </LinearLayout>
+    </LinearLayout>
     <FrameLayout
         android:id="@+id/spinHolder"
         android:animateLayoutChanges="true"
@@ -23,48 +94,16 @@
             android:layout_gravity="center" />
     </FrameLayout>
 
-    <EditText
+    <TextView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:inputType="textEmailAddress"
-        android:hint="Email"
-        android:ems="10"
-        android:id="@+id/etEmail"
-        android:layout_gravity="center_horizontal" />
-
-    <EditText
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:inputType="textPassword"
-        android:ems="10"
-        android:hint="Password"
-        android:id="@+id/etPass"
-        android:layout_gravity="center_horizontal" />
-
-
-    <Button
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="Sign In"
-        android:id="@+id/bSignIn"
-        android:layout_gravity="center_horizontal" />
-
-    <com.google.android.gms.common.SignInButton
-        android:id="@+id/bGSignIn"
-        android:layout_width="162dp"
-        android:layout_height="wrap_content"
-        android:layout_centerInParent="true"
-        android:visibility="visible" />
-    <com.facebook.login.widget.LoginButton
-        android:id="@+id/button_facebook_login"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_centerInParent="true" />
-    <Button
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="Sign Up"
+        android:text="@string/sign_up_text"
         android:id="@+id/bSignUp"
-        android:layout_gravity="center_horizontal" />
-</LinearLayout>
+        android:gravity="center"
+        android:textSize="15dp"
+        android:layout_alignParentBottom="true"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentStart="true"
+        android:textColor="@color/abc_primary_text_disable_only_material_light" />
+</RelativeLayout>
 

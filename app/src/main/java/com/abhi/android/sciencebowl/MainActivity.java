@@ -20,11 +20,11 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         GoogleApiClient.OnConnectionFailedListener, RandomQuestion.QuestionInterface {
 
     private static TextView mQuestionButton;
-    private static Button mChoiceW;
-    private static Button mChoiceX;
-    private static Button mChoiceY;
-    private static Button mChoiceZ;
-    private static Button[] mChoiceButtonList;
+    private static TextView mChoiceW;
+    private static TextView mChoiceX;
+    private static TextView mChoiceY;
+    private static TextView mChoiceZ;
+    private static TextView[] mChoiceButtonList;
 
     private static Button mNextButton;
 
@@ -70,23 +70,23 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 .addApi(Games.API).addScope(Games.SCOPE_GAMES).build();
 
         mQuestionButton = (TextView) findViewById(R.id.question);
-        mChoiceW = (Button) findViewById(R.id.choiceW);
-        mChoiceX = (Button) findViewById(R.id.choiceX);
-        mChoiceY = (Button) findViewById(R.id.choiceY);
-        mChoiceZ = (Button) findViewById(R.id.choiceZ);
-        mChoiceButtonList = new Button[] {mChoiceW, mChoiceX, mChoiceY, mChoiceZ};
+        mChoiceW = (TextView) findViewById(R.id.choiceW);
+        mChoiceX = (TextView) findViewById(R.id.choiceX);
+        mChoiceY = (TextView) findViewById(R.id.choiceY);
+        mChoiceZ = (TextView) findViewById(R.id.choiceZ);
+        mChoiceButtonList = new TextView[] {mChoiceW, mChoiceX, mChoiceY, mChoiceZ};
 
         mNextButton = (Button) findViewById(R.id.next_button);
 
         rq.next();
 
-        for(Button choiceButton : mChoiceButtonList) {
+        for(TextView choiceButton : mChoiceButtonList) {
             choiceButton.setBackgroundColor(Color.TRANSPARENT);
             choiceButton.setOnClickListener(this);
         }
 
         //attach listener to NextButton and make it initially invisible
-        mNextButton.setVisibility(View.GONE);
+        mNextButton.setVisibility(View.INVISIBLE);
         mNextButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -113,20 +113,20 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         mChoiceY.setText("Y) " + mCurrentQuestion.getY());
         mChoiceZ.setText("Z) " + mCurrentQuestion.getZ());
 
-        for(Button choiceButton : mChoiceButtonList)
+        for(TextView choiceButton : mChoiceButtonList)
             choiceButton.setTextColor(Color.BLACK);
     }
 
     @Override
     public void onClick(View view) { //clean up this method
-        Button selectedChoice = (Button) view;
+        TextView selectedChoice = (TextView) view;
 
         Choice choice = Choice.valueOf(selectedChoice.getText().toString().substring(0, 1).toUpperCase()); // Letter comes first in answer choice
         Choice answer = mCurrentQuestion.getCorrect();
 
         boolean isCorrect = (answer == choice);
 
-        Button correctChoice = getChoiceButton(answer, mChoiceW, mChoiceX, mChoiceY, mChoiceZ);
+        TextView correctChoice = getChoiceButton(answer, mChoiceW, mChoiceX, mChoiceY, mChoiceZ);
         correctChoice.setTextColor(Color.GREEN); //correct answer effect always shown
 
         String result;
@@ -139,7 +139,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
             mReviewQuestionsBank.add(new QuestionUserAnswerPair(mCurrentQuestion, choice));
 
-            Button incorrectChoice = getChoiceButton(choice, mChoiceW, mChoiceX, mChoiceY, mChoiceZ);
+            TextView incorrectChoice = getChoiceButton(choice, mChoiceW, mChoiceX, mChoiceY, mChoiceZ);
             incorrectChoice.setTextColor(Color.RED); //incorrect answer effect
         }
 
@@ -157,7 +157,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         setChoiceButtonsEnabled(true);
     }
 
-    public static Button getChoiceButton(Choice choice, Button mChoiceW, Button mChoiceX, Button mChoiceY, Button mChoiceZ)
+    public static TextView getChoiceButton(Choice choice, TextView mChoiceW, TextView mChoiceX, TextView mChoiceY, TextView mChoiceZ)
     {
         switch(choice) {
             case W: return mChoiceW;
@@ -170,7 +170,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
     private static void setChoiceButtonsEnabled(boolean isEnabled)
     {
-        for(Button choiceButton : mChoiceButtonList)
+        for(TextView choiceButton : mChoiceButtonList)
             choiceButton.setEnabled(isEnabled);
     }
 

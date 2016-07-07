@@ -12,11 +12,11 @@ import java.util.List;
 public class ReviewActivity extends AppCompatActivity {
 
     private TextView mQuestionButton;
-    private Button mChoiceW;
-    private Button mChoiceX;
-    private Button mChoiceY;
-    private Button mChoiceZ;
-    private Button[] mChoiceButtonList;
+    private TextView mChoiceW;
+    private TextView mChoiceX;
+    private TextView mChoiceY;
+    private TextView mChoiceZ;
+    private TextView[] mChoiceButtonList;
 
     private List<QuestionUserAnswerPair> mReviewQuestionBank;
 
@@ -31,7 +31,7 @@ public class ReviewActivity extends AppCompatActivity {
         setContentView(R.layout.activity_review);
         initializeVariables();
 
-        for(Button choiceButton : mChoiceButtonList) {
+        for(TextView choiceButton : mChoiceButtonList) {
             choiceButton.setBackgroundColor(Color.TRANSPARENT);
             choiceButton.setEnabled(false);
         }
@@ -76,7 +76,7 @@ public class ReviewActivity extends AppCompatActivity {
         if (mCurrentQuestionIndex < mReviewQuestionBank.size())
             mNextButton.setVisibility(View.VISIBLE);
 
-        for(Button choiceButton : mChoiceButtonList)
+        for(TextView choiceButton : mChoiceButtonList)
             choiceButton.setTextColor(Color.BLACK);
 
         QuestionUserAnswerPair mCurrQuestionAnswer = mReviewQuestionBank.get(mCurrentQuestionIndex);
@@ -91,8 +91,8 @@ public class ReviewActivity extends AppCompatActivity {
         Choice answer = mCurrQuestion.getCorrect();
         Choice userAnswer = mCurrQuestionAnswer.getAnswer();
 
-        Button correctChoice = MainActivity.getChoiceButton(answer, mChoiceW, mChoiceX, mChoiceY, mChoiceZ);
-        Button incorrectChoice = MainActivity.getChoiceButton(userAnswer, mChoiceW, mChoiceX, mChoiceY, mChoiceZ);
+        TextView correctChoice = MainActivity.getChoiceButton(answer, mChoiceW, mChoiceX, mChoiceY, mChoiceZ);
+        TextView incorrectChoice = MainActivity.getChoiceButton(userAnswer, mChoiceW, mChoiceX, mChoiceY, mChoiceZ);
 
         correctChoice.setTextColor(Color.GREEN);
         incorrectChoice.setTextColor(Color.RED);
@@ -103,11 +103,11 @@ public class ReviewActivity extends AppCompatActivity {
         mReviewQuestionBank = UserInformation.getReviewQuestionBank();
 
         mQuestionButton = (TextView) findViewById(R.id.question);
-        mChoiceW = (Button) findViewById(R.id.choiceW);
-        mChoiceX = (Button) findViewById(R.id.choiceX);
-        mChoiceY = (Button) findViewById(R.id.choiceY);
-        mChoiceZ = (Button) findViewById(R.id.choiceZ);
-        mChoiceButtonList = new Button[] {mChoiceW, mChoiceX, mChoiceY, mChoiceZ};
+        mChoiceW = (TextView) findViewById(R.id.choiceW);
+        mChoiceX = (TextView) findViewById(R.id.choiceX);
+        mChoiceY = (TextView) findViewById(R.id.choiceY);
+        mChoiceZ = (TextView) findViewById(R.id.choiceZ);
+        mChoiceButtonList = new TextView[] {mChoiceW, mChoiceX, mChoiceY, mChoiceZ};
 
         mNextButton = (Button) findViewById(R.id.next_button);
         mPrevButton = (Button) findViewById(R.id.prev_button);

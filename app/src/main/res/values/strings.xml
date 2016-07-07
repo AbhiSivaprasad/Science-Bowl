@@ -32,6 +32,6 @@
     <string name="BASE_URI">https://science-bowl.firebaseio.com</string>
     <string name="DIR_SETTINGS">/user-settings</string>
     <string name="DIR_QUIZ">/quizlist</string>
-
     <string name="leaderboard_id_questions_answered">CgkIpdeQrqoZEAIQAA</string>
+    <string name="sign_up_text"><u>Need an account? Sign up here.</u></string>
 </resources>

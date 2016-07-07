@@ -124,9 +124,11 @@ public class ApplicationTest extends ApplicationTestCase<Application> {
         }catch (NoMatchingViewException e){
 
             Espresso.pressBack();
-
+            onView(withId(R.id.bOpenEmail)).perform(click());
             onView(withId(R.id.etEmail)).perform(typeText(email));
+            closeSoftKeyboard();
             onView(withId(R.id.etPass)).perform(typeText(pass));
+            closeSoftKeyboard();
             onView(withId(R.id.bSignIn)).perform(click());
         }
         onView(withText("SETTINGS")).perform(click());
@@ -135,8 +137,11 @@ public class ApplicationTest extends ApplicationTestCase<Application> {
         onView(withId(R.id.difficulty_seekbar)).perform(setProgress(m));
         Espresso.pressBack();
         onView(withText("SIGN OUT")).perform(click());
+        onView(withId(R.id.bOpenEmail)).perform(click());
         onView(withId(R.id.etEmail)).perform(typeText(email));
+        closeSoftKeyboard();
         onView(withId(R.id.etPass)).perform(typeText(pass));
+        closeSoftKeyboard();
         onView(withId(R.id.bSignIn)).perform(click());
 
         onView(withText("SETTINGS")).perform(click());
