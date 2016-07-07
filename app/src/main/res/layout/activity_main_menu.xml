@@ -17,6 +17,14 @@
     <Button
         android:layout_width="140dp"
         android:layout_height="wrap_content"
+        android:text="@string/play_online_button"
+        android:id="@+id/play_online_button"
+        android:layout_gravity="center_horizontal"
+        />
+
+    <Button
+        android:layout_width="140dp"
+        android:layout_height="wrap_content"
         android:text="@string/review_button"
         android:id="@+id/review_button"
         android:layout_gravity="center_horizontal" />
