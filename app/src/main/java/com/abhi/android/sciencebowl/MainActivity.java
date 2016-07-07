@@ -1,5 +1,6 @@
 package com.abhi.android.sciencebowl;
 
+import android.content.Context;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
@@ -166,6 +167,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             default:  throw new IllegalArgumentException("Invalid letter choice: " + choice.toString());
         }
     }
+
 
     private static void setChoiceButtonsEnabled(boolean isEnabled)
     {
