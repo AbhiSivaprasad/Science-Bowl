@@ -109,20 +109,6 @@ public class LoginActivity extends AppCompatActivity
             }
         });
 
-
-
-        /*mLoginConfirmationButton = (Button) findViewById(R.id.login_confirmation);
-        mLoginConfirmationButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                String username = mUsernameButton.getText().toString();
-                UserInformation.setUsername(username);
-
-                Intent intent = new Intent(LoginActivity.this, MainMenuActivity.class);
-                startActivity(intent);
-            }
-        });*/
-
         bGSignIn = (SignInButton) findViewById(R.id.bGSignIn);
         bGSignIn.setOnClickListener(new View.OnClickListener() {
             @Override
