@@ -96,14 +96,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         });
     }
 
-    @Override
-    public void onConnected(Bundle connectionHint) {}
 
-    @Override
-    public void onConnectionSuspended(int cause) {}
-
-    @Override
-    public void onConnectionFailed(ConnectionResult result) {}
 
     public static void updateQuestionWidgets(Question question) {
         mCurrentQuestion = question;
@@ -117,38 +110,44 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             choiceButton.setTextColor(Color.BLACK);
     }
 
-    @Override
-    public void onClick(View view) { //clean up this method
-        TextView selectedChoice = (TextView) view;
+    private void updateOnAnswerWidgets(boolean isAnswerCorrect, Choice userChoice, Choice answer) {
+        String result = isAnswerCorrect ? "Correct" : "Incorrect";
 
-        Choice choice = Choice.valueOf(selectedChoice.getText().toString().substring(0, 1).toUpperCase()); // Letter comes first in answer choice
-        Choice answer = mCurrentQuestion.getCorrect();
+        choiceButtonSetColor(answer, Color.GREEN);
+        if(!isAnswerCorrect)
+            choiceButtonSetColor(userChoice, Color.RED);
 
-        boolean isCorrect = (answer == choice);
-
-        TextView correctChoice = getChoiceButton(answer, mChoiceW, mChoiceX, mChoiceY, mChoiceZ);
-        correctChoice.setTextColor(Color.GREEN); //correct answer effect always shown
-
-        String result;
-        if(isCorrect) {
-            result = "Correct";
-            mQuestionsCorrect++;
-        }
-        else {
-            result = "Incorrect";
-
-            mReviewQuestionsBank.add(new QuestionUserAnswerPair(mCurrentQuestion, choice));
-
-            TextView incorrectChoice = getChoiceButton(choice, mChoiceW, mChoiceX, mChoiceY, mChoiceZ);
-            incorrectChoice.setTextColor(Color.RED); //incorrect answer effect
-        }
-
-        Toast t = Toast.makeText(this , result, Toast.LENGTH_SHORT);
-        t.show(); //turn this to actual display on screen
+        Toast t = Toast.makeText(this, result, Toast.LENGTH_SHORT);
+        t.show(); //TODO turn this to actual display on screen
 
         setChoiceButtonsEnabled(false);
-
         mNextButton.setVisibility(View.VISIBLE);
+    }
+
+    @Override
+    public void onClick(View view) {
+        TextView selectedChoice = (TextView) view;
+
+        Choice userChoice = Choice.valueOf(selectedChoice.getText().toString().substring(0, 1).toUpperCase()); // Letter comes first in answer choice
+        Choice answer = mCurrentQuestion.getCorrect();
+
+        boolean isAnswerCorrect = (answer == userChoice);
+
+        onAnswerResult(isAnswerCorrect, userChoice);
+        updateOnAnswerWidgets(isAnswerCorrect, userChoice, answer);
+    }
+
+    private void onAnswerResult(boolean isAnswerCorrect, Choice userChoice) {
+        if(isAnswerCorrect) {
+            mQuestionsCorrect++;
+        } else {
+            mReviewQuestionsBank.add(new QuestionUserAnswerPair(mCurrentQuestion, userChoice));
+        }
+    }
+
+    private void choiceButtonSetColor (Choice choice, int color) {
+        TextView choiceButton = getChoiceButton(choice, mChoiceW, mChoiceX, mChoiceY, mChoiceZ);
+        choiceButton.setTextColor(color);
     }
 
     @Override
@@ -179,4 +178,13 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         Firebase mFirebaseRef = new Firebase("https://science-bowl.firebaseio.com/leaderboard");
         mFirebaseRef.child(userName).setValue(toWrite);
     }
+
+    @Override
+    public void onConnected(Bundle connectionHint) {}
+
+    @Override
+    public void onConnectionSuspended(int cause) {}
+
+    @Override
+    public void onConnectionFailed(ConnectionResult result) {}
 }
