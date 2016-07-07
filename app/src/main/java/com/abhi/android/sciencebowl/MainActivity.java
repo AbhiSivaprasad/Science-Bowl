@@ -1,5 +1,6 @@
 package com.abhi.android.sciencebowl;
 
+import android.content.Intent;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
@@ -16,8 +17,7 @@ import com.google.android.gms.games.Games;
 import java.util.ArrayList;
 import java.util.List;
 
-public class MainActivity extends AppCompatActivity implements View.OnClickListener, GoogleApiClient.ConnectionCallbacks,
-        GoogleApiClient.OnConnectionFailedListener, RandomQuestion.QuestionInterface {
+public class MainActivity extends AppCompatActivity implements View.OnClickListener, RandomQuestion.QuestionInterface {
 
     private static TextView mQuestionButton;
     private static Button mChoiceW;
@@ -36,8 +36,6 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     private List<QuestionUserAnswerPair> mReviewQuestionsBank;
     private RandomQuestion rq;
 
-    private GoogleApiClient mGoogleApiClient;
-
     private Settings userSetting;
 
     @Override
@@ -47,12 +45,16 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         UserInformation.setCurrentQuestionIndex(mCurrentQuestionIndex + 1); //set to next question to be displayed
         UserInformation.setQuestionsCorrect(mQuestionsCorrect); //set statistics
 
-        // fetch leaderboard ID from res/strings.xml and submit to Google Play Games Leaderboard
-        String leaderboardIdQuestionsAnswered = getResources().getString(R.string.leaderboard_id_questions_answered);
-        if (mGoogleApiClient.isConnected())
-            Games.Leaderboards.submitScore(mGoogleApiClient, leaderboardIdQuestionsAnswered, mQuestionsCorrect);
-
         writeToFirebaseLeaderboard(UserInformation.getUid(), mQuestionsCorrect);
+    }
+
+    @Override
+    public void onBackPressed() {
+        Intent intent = new Intent();
+        intent.putExtra(MainMenuActivity.EXTRA_SCORE, mQuestionsCorrect);
+        setResult(RESULT_OK, intent);
+
+        super.onBackPressed();
     }
 
     @Override
@@ -65,9 +67,6 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         mQuestionsCorrect = UserInformation.getQuestionsCorrect();
         userSetting = UserInformation.getUserSettings();
         rq = new RandomQuestion(this, userSetting);
-        mGoogleApiClient = new GoogleApiClient.Builder(this)
-                .addConnectionCallbacks(this).addOnConnectionFailedListener(this)
-                .addApi(Games.API).addScope(Games.SCOPE_GAMES).build();
 
         mQuestionButton = (TextView) findViewById(R.id.question);
         mChoiceW = (Button) findViewById(R.id.choiceW);
@@ -95,15 +94,6 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             }
         });
     }
-
-    @Override
-    public void onConnected(Bundle connectionHint) {}
-
-    @Override
-    public void onConnectionSuspended(int cause) {}
-
-    @Override
-    public void onConnectionFailed(ConnectionResult result) {}
 
     public static void updateQuestionWidgets(Question question) {
         mCurrentQuestion = question;
