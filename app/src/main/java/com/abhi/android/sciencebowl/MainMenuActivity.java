@@ -237,5 +237,6 @@ public class MainMenuActivity extends AppCompatActivity implements GoogleApiClie
                 System.out.println("resolve connection");
             mGoogleApiClient.connect();
         }
+        else System.out.println("RESULT BAD: " + Integer.toString(requestCode));
     }
 }
