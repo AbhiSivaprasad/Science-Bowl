@@ -1,6 +1,7 @@
 package com.abhi.android.sciencebowl;
 
 import android.content.Intent;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
@@ -47,7 +48,7 @@ import com.google.firebase.auth.GoogleAuthProvider;
 
 import java.util.List;
 public class LoginActivity extends AppCompatActivity
-        implements GoogleApiClient.OnConnectionFailedListener, OnCompleteListener<AuthResult>{
+        implements GoogleApiClient.OnConnectionFailedListener{
 
     private static final int RC_SIGN_IN =9001 ;
     private static final String TAG = "LOGIN";
@@ -68,6 +69,8 @@ public class LoginActivity extends AppCompatActivity
     private FrameLayout spinHolder;
     private AuthCredential credential;
     boolean go = true;
+    private FirebaseUser currentUser;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -127,11 +130,13 @@ public class LoginActivity extends AppCompatActivity
         mAuthListener = new FirebaseAuth.AuthStateListener() {
             @Override
             public void onAuthStateChanged(@NonNull FirebaseAuth firebaseAuth) {
-                FirebaseUser user = firebaseAuth.getCurrentUser();
-                if (user != null) {
+                currentUser = firebaseAuth.getCurrentUser();
+                if (currentUser != null) {
                     // User is signed in
-                    logIn(user);
-                    Log.d(TAG, "onAuthStateChanged:signed_in:" + user.getUid());
+                    LoginTask t = new LoginTask();
+                    t.execute(true,false);
+                    //logIn(currentUser);
+                    Log.d(TAG, "onAuthStateChanged:signed_in:" + currentUser.getUid());
                 }
                 // ...
             }
@@ -160,15 +165,8 @@ public class LoginActivity extends AppCompatActivity
                     t.show();
                     return;
                 }
-              openAnimation();
-                mAuth.signInWithEmailAndPassword(email,pass)
-                        .addOnCompleteListener(LoginActivity.this, new OnCompleteListener<AuthResult>() {
-                            @Override
-                            public void onComplete(@NonNull Task<AuthResult> task) {
-                                credential = EmailAuthProvider.getCredential(email,pass);
-                                LoginActivity.this.onComplete(task);
-                            }
-                        });
+                LoginTask login = new LoginTask();
+                login.execute(false,true);
             }
         });
     }
@@ -186,7 +184,10 @@ public class LoginActivity extends AppCompatActivity
             GoogleSignInResult result = Auth.GoogleSignInApi.getSignInResultFromIntent(data);
             if (result.isSuccess()) {
                 GoogleSignInAccount account = result.getSignInAccount();
-                firebaseAuthWithGoogle(account);
+                credential = GoogleAuthProvider.getCredential(account.getIdToken(), null);
+                //firebaseAuthWithGoogle();
+                LoginTask login = new LoginTask();
+                login.execute(false,false);
             }else{
                 Toast.makeText(LoginActivity.this, result.getStatus().getStatusCode()+ ": " + result.getStatus().getStatusMessage(),Toast.LENGTH_SHORT).show();
                 closeAnimation();
@@ -200,58 +201,8 @@ public class LoginActivity extends AppCompatActivity
         Log.d(TAG, "handleFacebookAccessToken:" + token);
 
         credential = FacebookAuthProvider.getCredential(token.getToken());
-        mAuth.signInWithCredential(credential)
-                .addOnCompleteListener(this, this);
-    }
-    private void firebaseAuthWithGoogle(GoogleSignInAccount acct) {
-        Log.d(TAG, "firebaseAuthWithGoogle:" + acct.getId());
-
-
-        credential = GoogleAuthProvider.getCredential(acct.getIdToken(), null);
-        mAuth.signInWithCredential(credential)
-                .addOnCompleteListener(this, this);
-    }
-
-    private void logIn(FirebaseUser currentUser) {
-        UserInformation.setUid(currentUser.getUid());
-        //set settings
-        Firebase.setAndroidContext(this);
-
-        //Takes some time to get data. Executes subsequent code before data is retrieved causing a lag between inflation of
-        //XML and the appearance of question/answers. Need to fix this.
-        Firebase mFirebaseRef = new Firebase(getString(R.string.BASE_URI) + getString(R.string.DIR_SETTINGS)+"/"+currentUser.getUid());
-        mFirebaseRef.addValueEventListener(new ValueEventListener() {
-            @Override
-            public void onDataChange(DataSnapshot dataSnapshot) {
-                Settings set;
-                if(dataSnapshot.hasChildren()){
-                    set = new Settings(dataSnapshot.child("subjects").getValue(List.class),Integer.parseInt(dataSnapshot.child("difficulty").getValue().toString()));
-                }else {
-                    set = Settings.getDefault();
-
-                    System.out.println("Settings: " + set);
-
-                    Firebase.setAndroidContext(LoginActivity.this);
-                    Firebase mFirebaseRef =
-                            new Firebase(getString(R.string.BASE_URI) + getString(R.string.DIR_SETTINGS) + "/" + UserInformation.getUid());
-                    mFirebaseRef.setValue(set);
-                }
-                UserInformation.setUserSettings(set);
-            }
-
-            @Override
-            public void onCancelled(FirebaseError firebaseError) {
-                Toast.makeText(LoginActivity.this, "Couldn't connect to server, try again later.", Toast.LENGTH_LONG).show();
-                go = false;
-                System.out.println("The read failed: " + firebaseError.getMessage());
-            }
-        });
-        closeAnimation();
-        if(!go)
-            return;
-        Intent intent = new Intent(this,MainMenuActivity.class);
-        intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
-        startActivity(intent);
+        LoginTask login = new LoginTask();
+        login.execute(false,false);
     }
 
     @Override
@@ -274,32 +225,6 @@ public class LoginActivity extends AppCompatActivity
         Toast.makeText(this, "Google Play Services error.", Toast.LENGTH_SHORT).show();
     }
 
-    @Override
-    public void onComplete(@NonNull Task<AuthResult> task) {
-        Log.d(TAG, "signInWithCredential:onComplete:" + task.isSuccessful());
-        if (!task.isSuccessful()) {
-            Log.w(TAG, "signInWithCredential", task.getException());
-
-            closeAnimation();
-            if (task.getException().getClass().getName().contains("Network")) {
-                Toast.makeText(LoginActivity.this, "Couldn't connect to the network.",
-                        Toast.LENGTH_SHORT).show();
-            } else{
-                if(task.getException().getClass().getName().contains("Collision")){
-                    Toast.makeText(LoginActivity.this, "There's an existing user associated with this email. Try signing in with that email using one of the other methods",
-                            Toast.LENGTH_SHORT).show();
-                }else {
-                    Toast.makeText(LoginActivity.this, "Authentication failed: Please sign up for an account if you need to.",
-                            Toast.LENGTH_SHORT).show();
-                }
-        }
-            LoginManager.getInstance().logOut();
-
-            Log.v("LOGIN", task.getException().toString());
-        }else{
-            logIn(mAuth.getCurrentUser());
-        }
-    }
 
     private void openAnimation(){
         AlphaAnimation inAnimation = new AlphaAnimation(0f, 1f);
@@ -313,5 +238,113 @@ public class LoginActivity extends AppCompatActivity
         outAnimation.setDuration(200);
         spinHolder.setAnimation(outAnimation);
         spinHolder.setVisibility(View.GONE);
+    }
+    class LoginTask extends AsyncTask<Boolean,Void,Void> implements OnCompleteListener<AuthResult>{
+
+        String email;
+        String pass;
+
+        @Override
+        protected void onPreExecute() {
+            super.onPreExecute();
+            openAnimation();
+            email = etEmail.getText().toString();
+            pass = etPass.getText().toString();
+        }
+
+        @Override
+        protected Void doInBackground(Boolean... bools) {
+            if(bools[0]){
+                logIn(currentUser);
+            }else {
+                if (bools[1]) {
+                    mAuth.signInWithEmailAndPassword(email, pass)
+                            .addOnCompleteListener(LoginActivity.this, new OnCompleteListener<AuthResult>() {
+                                @Override
+                                public void onComplete(@NonNull Task<AuthResult> task) {
+                                    credential = EmailAuthProvider.getCredential(email, pass);
+                                    LoginTask.this.onComplete(task);
+                                }
+                            });
+                } else {
+                    mAuth.signInWithCredential(credential).addOnCompleteListener(LoginActivity.this, this);
+                }
+            }
+            return null;
+        }
+
+        @Override
+        protected void onPostExecute(Void aVoid) {
+            super.onPostExecute(aVoid);
+            closeAnimation();
+            if(!go)
+                return;
+            Intent intent = new Intent(LoginActivity.this,MainMenuActivity.class);
+            intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+            startActivity(intent);
+        }
+
+        @Override
+        public void onComplete(@NonNull Task<AuthResult> task) {
+            Log.d(TAG, "signInWithCredential:onComplete:" + task.isSuccessful());
+            if (!task.isSuccessful()) {
+                Log.w(TAG, "signInWithCredential", task.getException());
+
+                closeAnimation();
+                if (task.getException().getClass().getName().contains("Network")) {
+                    Toast.makeText(LoginActivity.this, "Couldn't connect to the network.",
+                            Toast.LENGTH_SHORT).show();
+                } else{
+                    if(task.getException().getClass().getName().contains("Collision")){
+                        Toast.makeText(LoginActivity.this, "There's an existing user associated with this email. Try signing in with that email using one of the other methods",
+                                Toast.LENGTH_SHORT).show();
+                    }else {
+                        Toast.makeText(LoginActivity.this, "Authentication failed: Please sign up for an account if you need to.",
+                                Toast.LENGTH_SHORT).show();
+                    }
+                }
+                LoginManager.getInstance().logOut();
+
+                Log.v("LOGIN", task.getException().toString());
+            }else{
+                logIn(mAuth.getCurrentUser());
+            }
+        }
+        private void logIn(FirebaseUser currentUser) {
+            UserInformation.setUid(currentUser.getUid());
+            //set settings
+            Firebase.setAndroidContext(LoginActivity.this);
+
+            //Takes some time to get data. Executes subsequent code before data is retrieved causing a lag between inflation of
+            //XML and the appearance of question/answers. Need to fix this.
+            Firebase mFirebaseRef = new Firebase(getString(R.string.BASE_URI) + getString(R.string.DIR_SETTINGS)+"/"+currentUser.getUid());
+            mFirebaseRef.addValueEventListener(new ValueEventListener() {
+                @Override
+                public void onDataChange(DataSnapshot dataSnapshot) {
+                    Settings set;
+                    if(dataSnapshot.hasChildren()){
+                        set = new Settings(dataSnapshot.child("subjects").getValue(List.class),Integer.parseInt(dataSnapshot.child("difficulty").getValue().toString()));
+                    }else {
+                        set = Settings.getDefault();
+
+                        System.out.println("Settings: " + set);
+
+                        Firebase.setAndroidContext(LoginActivity.this);
+                        Firebase mFirebaseRef =
+                                new Firebase(getString(R.string.BASE_URI) + getString(R.string.DIR_SETTINGS) + "/" + UserInformation.getUid());
+                        mFirebaseRef.setValue(set);
+                    }
+                    UserInformation.setUserSettings(set);
+                }
+
+                @Override
+                public void onCancelled(FirebaseError firebaseError) {
+                    Toast.makeText(LoginActivity.this, "Couldn't connect to server, try again later.", Toast.LENGTH_LONG).show();
+                    go = false;
+                    System.out.println("The read failed: " + firebaseError.getMessage());
+                }
+            });
+        }
+
     }
 }
