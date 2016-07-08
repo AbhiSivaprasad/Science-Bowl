@@ -39,5 +39,4 @@
 
     <!-- toasts -->
     <string name="toast_leaderboard_questions_answered_submitted">Score submitted to leaderboard! (%1$d)</string>
-    <string name="toast_leaderboard_questions_answered_error">Score could not be submitted to leaderboard! (%1$d)</string>
 </resources>
