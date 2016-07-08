@@ -229,16 +229,13 @@ public class MainMenuActivity extends AppCompatActivity implements GoogleApiClie
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data)
     {
-        if(resultCode != Activity.RESULT_OK)
-            return;
-
-        if(requestCode == RC_MAIN)
-        {
-            System.out.println(Integer.toString(data.getIntExtra(EXTRA_SCORE, -1)) + " MAINMENU");
-            setLeaderboard(getString(R.string.leaderboard_id_questions_answered), data.getIntExtra(EXTRA_SCORE, -1));
-        }
-        else if(requestCode == RC_RESOLVE_CONNECTION)
-            System.out.println("resolve connection");
+        if (resultCode == RESULT_OK) {
+            if (requestCode == RC_MAIN) {
+                System.out.println(Integer.toString(data.getIntExtra(EXTRA_SCORE, -1)) + " MAINMENU");
+                setLeaderboard(getString(R.string.leaderboard_id_questions_answered), data.getIntExtra(EXTRA_SCORE, -1));
+            } else if (requestCode == RC_RESOLVE_CONNECTION)
+                System.out.println("resolve connection");
             mGoogleApiClient.connect();
+        }
     }
 }
