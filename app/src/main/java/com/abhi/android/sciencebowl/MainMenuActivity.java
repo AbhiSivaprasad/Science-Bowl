@@ -179,20 +179,27 @@ public class MainMenuActivity extends AppCompatActivity implements GoogleApiClie
 
     @Override
     public void onConnected(Bundle connectionHint) {
+        System.out.println("YAY CONNECTED");
         mSignInLeaderboardButton.setVisibility(View.GONE);
         mSignOutLeaderboardButton.setVisibility(View.VISIBLE);
     }
 
     @Override
     public void onConnectionFailed(@NonNull ConnectionResult connectionResult) {
+        System.out.println("CONNECTION FAILED");
+        System.out.println(connectionResult.hasResolution());
         if(connectionResult.hasResolution())
             try {
                 connectionResult.startResolutionForResult(this, RC_RESOLVE_CONNECTION);
-            }catch(IntentSender.SendIntentException e) {}
+            }catch(IntentSender.SendIntentException e) {
+                System.out.println("error caught");
+            }
     }
 
     @Override
-    public void onConnectionSuspended(int i) {}
+    public void onConnectionSuspended(int i) {
+        System.out.println("suspended");
+    }
 
     private void startLeaderboard(String leaderboardId) {
 //        startActivityForResult(Games.Leaderboards.getLeaderboardIntent(mGameHelper.getApiClient(),
@@ -206,8 +213,12 @@ public class MainMenuActivity extends AppCompatActivity implements GoogleApiClie
 
     private void setLeaderboard(String leaderboardId, int value) {
         String toastText;
-        if (mGameHelper.isSignedIn()) {
-            Games.Leaderboards.submitScore(mGameHelper.getApiClient(), leaderboardId, value);
+//        if (mGameHelper.isSignedIn()) {
+//            Games.Leaderboards.submitScore(mGameHelper.getApiClient(), leaderboardId, value);
+//            toastText = getString(R.string.toast_leaderboard_questions_answered_submitted, value);
+//        }
+        if (mGoogleApiClient.isConnected()) {
+            Games.Leaderboards.submitScore(mGoogleApiClient, leaderboardId, value);
             toastText = getString(R.string.toast_leaderboard_questions_answered_submitted, value);
         }
         else
