@@ -1,6 +1,7 @@
 package com.abhi.android.sciencebowl;
 
 import android.graphics.Color;
+import android.os.AsyncTask;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -78,11 +79,9 @@ public class SettingsActivity extends AppCompatActivity implements View.OnClickL
         newUserSettings.setDifficulty(mDifficultySeekBar.getProgress());
 
         UserInformation.setUserSettings(newUserSettings);
+        Updater up = new Updater();
+        up.execute(newUserSettings);
 
-        Firebase.setAndroidContext(this);
-        Firebase mFirebaseRef =
-                new Firebase("https://science-bowl.firebaseio.com/user-settings/" + UserInformation.getUid());
-        mFirebaseRef.setValue(newUserSettings);
     }
 
     @Override
@@ -168,5 +167,21 @@ public class SettingsActivity extends AppCompatActivity implements View.OnClickL
 
         mSubjectButtonList = new Button[]
                 {mEarthButton, mBiologyButton, mPhysicsButton, mChemistryButton, mEnergyButton, mMathButton,mAstroButton};
+    }
+
+    private class Updater extends AsyncTask<Settings,Void,Void>{
+        @Override
+        protected void onPreExecute() {
+            super.onPreExecute();
+        }
+
+        @Override
+        protected Void doInBackground(Settings... sets) {
+            Firebase.setAndroidContext(SettingsActivity.this);
+            Firebase mFirebaseRef =
+                    new Firebase("https://science-bowl.firebaseio.com/user-settings/" + UserInformation.getUid());
+            mFirebaseRef.setValue(sets[0]);
+            return null;
+        }
     }
 }
