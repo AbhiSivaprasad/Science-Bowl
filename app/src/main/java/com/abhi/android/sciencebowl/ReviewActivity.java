@@ -9,14 +9,7 @@ import android.widget.TextView;
 
 import java.util.List;
 
-public class ReviewActivity extends AppCompatActivity {
-
-    private TextView mQuestionButton;
-    private TextView mChoiceW;
-    private TextView mChoiceX;
-    private TextView mChoiceY;
-    private TextView mChoiceZ;
-    private TextView[] mChoiceButtonList;
+public class ReviewActivity extends QuestionActivity {
 
     private List<QuestionUserAnswerPair> mReviewQuestionBank;
 
@@ -31,10 +24,11 @@ public class ReviewActivity extends AppCompatActivity {
         setContentView(R.layout.activity_review);
         initializeVariables();
 
-        for(TextView choiceButton : mChoiceButtonList) {
-            choiceButton.setBackgroundColor(Color.TRANSPARENT);
-            choiceButton.setEnabled(false);
-        }
+        //Buttons cannot be pressed during review
+        setChoiceButtonsEnabled(false);
+
+        //Initialize text color of choice buttons
+        setAllChoiceButtonsTextColor(Color.BLACK);
 
         mNextButton.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -67,38 +61,26 @@ public class ReviewActivity extends AppCompatActivity {
         }
     }
 
-    //similar method in mainactivity. try to merge.
     private void goToNextQuestion() {
-
         if (mCurrentQuestionIndex != 0 && mPrevButton.getVisibility() == View.GONE)
             mPrevButton.setVisibility(View.VISIBLE);
 
         if (mCurrentQuestionIndex < mReviewQuestionBank.size())
             mNextButton.setVisibility(View.VISIBLE);
 
-        for(TextView choiceButton : mChoiceButtonList)
-            choiceButton.setTextColor(Color.BLACK);
-
         QuestionUserAnswerPair mCurrQuestionAnswer = mReviewQuestionBank.get(mCurrentQuestionIndex);
-
         Question mCurrQuestion = mCurrQuestionAnswer.getQuestion();
-        mQuestionButton.setText(mCurrQuestion.getQuestion());
-        mChoiceW.setText("W) " + mCurrQuestion.getW());
-        mChoiceX.setText("X) " + mCurrQuestion.getX());
-        mChoiceY.setText("Y) " + mCurrQuestion.getY());
-        mChoiceZ.setText("Z) " + mCurrQuestion.getZ());
+        updateQuestionWidgets(mCurrQuestion);
 
         Choice answer = mCurrQuestion.getCorrect();
+        setChoiceButtonColor(answer, Color.GREEN);
+
         Choice userAnswer = mCurrQuestionAnswer.getAnswer();
-
-        TextView correctChoice = MainActivity.getChoiceButton(answer, mChoiceW, mChoiceX, mChoiceY, mChoiceZ);
-        TextView incorrectChoice = MainActivity.getChoiceButton(userAnswer, mChoiceW, mChoiceX, mChoiceY, mChoiceZ);
-
-        correctChoice.setTextColor(Color.GREEN);
-        incorrectChoice.setTextColor(Color.RED);
+        setChoiceButtonColor(userAnswer, Color.RED);
     }
 
-    private void initializeVariables()
+    @Override
+    protected void initializeVariables()
     {
         mReviewQuestionBank = UserInformation.getReviewQuestionBank();
 

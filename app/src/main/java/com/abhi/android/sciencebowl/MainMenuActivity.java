@@ -29,6 +29,7 @@ public class MainMenuActivity extends AppCompatActivity implements GoogleApiClie
 
     private Button mPlayButton;
     private Button mStatisticsButton;
+    private Button mPlayOnlineButton;
     private Button mLeaderboardButton;
     private Button mSettingsButton;
     private Button mReviewButton;
@@ -116,6 +117,15 @@ public class MainMenuActivity extends AppCompatActivity implements GoogleApiClie
                 FirebaseAuth.getInstance().signOut();
                 Intent intent = new Intent(MainMenuActivity.this, LoginActivity.class);
                 intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+                startActivity(intent);
+            }
+        });
+
+        mPlayOnlineButton = (Button) findViewById(R.id.play_online_button);
+        mPlayOnlineButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent intent = new Intent(MainMenuActivity.this, PlayOnlineSetupActivity.class);
                 startActivity(intent);
             }
         });

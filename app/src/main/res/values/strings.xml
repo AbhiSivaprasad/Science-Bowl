@@ -5,7 +5,8 @@
     <string name="next_button">NEXT</string>
     <string name="prev_button">PREV</string>
 
-    <string name="play_button">PLAY</string>
+    <string name="play_button">PLAY OFFLINE</string>
+    <string name="play_online_button">PLAY ONLINE</string>
     <string name="statistics_button">VIEW STATISTICS</string>
     <string name="leaderboard_button">LEADERBOARDS</string>
     <string name="settings_button">SETTINGS</string>

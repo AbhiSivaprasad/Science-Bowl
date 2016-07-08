@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    package="com.abhi.android.sciencebowl" >
+    package="com.abhi.android.sciencebowl">
 
     <uses-permission android:name="android.permission.INTERNET" />
 
@@ -23,20 +23,37 @@
 
         <activity
             android:name=".StartupActivity"
-            android:noHistory="false"/>
-
-        <activity android:name=".MainActivity"/>
-        <activity android:name=".LoginActivity">
+            android:noHistory="false" />
+        <activity
+            android:name=".MainActivity"
+            android:configChanges="keyboardHidden|orientation|screenSize"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name=".LoginActivity"
+            android:configChanges="keyboardHidden|orientation|screenSize"
+            android:screenOrientation="portrait">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name=".MainMenuActivity" />
-        <activity android:name=".LeaderboardActivity" />
-        <activity android:name=".SettingsActivity" />
-        <activity android:name=".ReviewActivity" />
+        <activity
+            android:name=".MainMenuActivity"
+            android:configChanges="keyboardHidden|orientation|screenSize"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name=".LeaderboardActivity"
+            android:configChanges="keyboardHidden|orientation|screenSize"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name=".SettingsActivity"
+            android:configChanges="keyboardHidden|orientation|screenSize"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name=".ReviewActivity"
+            android:configChanges="keyboardHidden|orientation|screenSize"
+            android:screenOrientation="portrait" />
         <!--
  ATTENTION: This was auto-generated to add Google Play services to your project for
      App Indexing.  See https://g.co/AppIndexing/AndroidStudio for more information.
@@ -44,7 +61,11 @@
 
         <activity
             android:name=".SignUpActivity"
-            android:label="@string/title_activity_sign_up"/>
+            android:configChanges="keyboardHidden|orientation|screenSize"
+            android:label="@string/title_activity_sign_up"
+            android:screenOrientation="portrait" />
+        <activity android:name=".PlayOnlineActivity" />
+        <activity android:name=".PlayOnlineSetupActivity"></activity>
     </application>
 
 </manifest>
