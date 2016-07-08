@@ -4,6 +4,7 @@ import android.graphics.Color;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
+import android.widget.Button;
 import android.widget.TextView;
 
 /**
@@ -11,11 +12,11 @@ import android.widget.TextView;
  */
 public abstract class QuestionActivity extends AppCompatActivity {
     protected TextView mQuestionButton;
-    protected TextView mChoiceW;
-    protected TextView mChoiceX;
-    protected TextView mChoiceY;
-    protected TextView mChoiceZ;
-    protected TextView[] mChoiceButtonList;
+    protected Button mChoiceW;
+    protected Button mChoiceX;
+    protected Button mChoiceY;
+    protected Button mChoiceZ;
+    protected Button[] mChoiceButtonList;
 
     protected abstract void initializeVariables();
 

@@ -85,11 +85,11 @@ public class ReviewActivity extends QuestionActivity {
         mReviewQuestionBank = UserInformation.getReviewQuestionBank();
 
         mQuestionButton = (TextView) findViewById(R.id.question);
-        mChoiceW = (TextView) findViewById(R.id.choiceW);
-        mChoiceX = (TextView) findViewById(R.id.choiceX);
-        mChoiceY = (TextView) findViewById(R.id.choiceY);
-        mChoiceZ = (TextView) findViewById(R.id.choiceZ);
-        mChoiceButtonList = new TextView[] {mChoiceW, mChoiceX, mChoiceY, mChoiceZ};
+        mChoiceW = (Button) findViewById(R.id.choiceW);
+        mChoiceX = (Button) findViewById(R.id.choiceX);
+        mChoiceY = (Button) findViewById(R.id.choiceY);
+        mChoiceZ = (Button) findViewById(R.id.choiceZ);
+        mChoiceButtonList = new Button[] {mChoiceW, mChoiceX, mChoiceY, mChoiceZ};
 
         mNextButton = (Button) findViewById(R.id.next_button);
         mPrevButton = (Button) findViewById(R.id.prev_button);
