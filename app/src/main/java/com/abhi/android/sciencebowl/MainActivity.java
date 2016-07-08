@@ -20,11 +20,11 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         GoogleApiClient.OnConnectionFailedListener, RandomQuestion.QuestionInterface {
 
     private static TextView mQuestionButton;
-    private static TextView mChoiceW;
-    private static TextView mChoiceX;
-    private static TextView mChoiceY;
-    private static TextView mChoiceZ;
-    private static TextView[] mChoiceButtonList;
+    private static Button mChoiceW;
+    private static Button mChoiceX;
+    private static Button mChoiceY;
+    private static Button mChoiceZ;
+    private static Button[] mChoiceButtonList;
 
     private static Button mNextButton;
 
@@ -70,18 +70,18 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 .addApi(Games.API).addScope(Games.SCOPE_GAMES).build();
 
         mQuestionButton = (TextView) findViewById(R.id.question);
-        mChoiceW = (TextView) findViewById(R.id.choiceW);
-        mChoiceX = (TextView) findViewById(R.id.choiceX);
-        mChoiceY = (TextView) findViewById(R.id.choiceY);
-        mChoiceZ = (TextView) findViewById(R.id.choiceZ);
-        mChoiceButtonList = new TextView[] {mChoiceW, mChoiceX, mChoiceY, mChoiceZ};
+        mChoiceW = (Button) findViewById(R.id.choiceW);
+        mChoiceX = (Button) findViewById(R.id.choiceX);
+        mChoiceY = (Button) findViewById(R.id.choiceY);
+        mChoiceZ = (Button) findViewById(R.id.choiceZ);
+        mChoiceButtonList = new Button[] {mChoiceW, mChoiceX, mChoiceY, mChoiceZ};
 
         mNextButton = (Button) findViewById(R.id.next_button);
 
         rq.next();
 
         for(TextView choiceButton : mChoiceButtonList) {
-            choiceButton.setBackgroundColor(Color.TRANSPARENT);
+        //    choiceButton.setBackgroundColor(Color.TRANSPARENT);
             choiceButton.setOnClickListener(this);
         }
 
@@ -90,7 +90,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         mNextButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                mNextButton.setVisibility(View.GONE);
+                mNextButton.setVisibility(View.INVISIBLE);
                 rq.next();
             }
         });

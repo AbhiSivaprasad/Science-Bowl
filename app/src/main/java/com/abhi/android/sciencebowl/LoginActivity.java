@@ -93,18 +93,21 @@ public class LoginActivity extends AppCompatActivity
             @Override
             public void onSuccess(LoginResult loginResult) {
                 Log.d(TAG, "facebook:onSuccess:" + loginResult);
+                openAnimation();
                 handleFacebookAccessToken(loginResult.getAccessToken());
             }
 
             @Override
             public void onCancel() {
                 Log.d(TAG, "facebook:onCancel");
+                Toast.makeText(LoginActivity.this,"Sign-in failed.",Toast.LENGTH_SHORT).show();
                 // ...
             }
 
             @Override
             public void onError(FacebookException error) {
                 Log.d(TAG, "facebook:onError", error);
+                Toast.makeText(LoginActivity.this,"Sign-in error.",Toast.LENGTH_SHORT).show();
                 // ...
             }
         });
@@ -170,10 +173,7 @@ public class LoginActivity extends AppCompatActivity
                     t.show();
                     return;
                 }
-                AlphaAnimation inAnimation = new AlphaAnimation(0f, 1f);
-                inAnimation.setDuration(200);
-                spinHolder.setAnimation(inAnimation);
-                spinHolder.setVisibility(View.VISIBLE);
+              openAnimation();
                 mAuth.signInWithEmailAndPassword(email,pass)
                         .addOnCompleteListener(LoginActivity.this, new OnCompleteListener<AuthResult>() {
                             @Override
@@ -187,10 +187,7 @@ public class LoginActivity extends AppCompatActivity
     }
 
     private void signIn() {
-        AlphaAnimation inAnimation = new AlphaAnimation(0f, 1f);
-        inAnimation.setDuration(200);
-        spinHolder.setAnimation(inAnimation);
-        spinHolder.setVisibility(View.VISIBLE);
+        openAnimation();
         Intent signInIntent = Auth.GoogleSignInApi.getSignInIntent(mGoogleApiClient);
         startActivityForResult(signInIntent, RC_SIGN_IN);
     }
@@ -205,10 +202,7 @@ public class LoginActivity extends AppCompatActivity
                 firebaseAuthWithGoogle(account);
             }else{
                 Toast.makeText(LoginActivity.this, result.getStatus().getStatusCode()+ ": " + result.getStatus().getStatusMessage(),Toast.LENGTH_SHORT).show();
-                AlphaAnimation outAnimation = new AlphaAnimation(1f, 0f);
-                outAnimation.setDuration(200);
-                spinHolder.setAnimation(outAnimation);
-                spinHolder.setVisibility(View.GONE);
+                closeAnimation();
             }
 
         }else{
@@ -265,10 +259,7 @@ public class LoginActivity extends AppCompatActivity
                 System.out.println("The read failed: " + firebaseError.getMessage());
             }
         });
-        AlphaAnimation outAnimation = new AlphaAnimation(1f, 0f);
-        outAnimation.setDuration(200);
-        spinHolder.setAnimation(outAnimation);
-        spinHolder.setVisibility(View.GONE);
+        closeAnimation();
         if(!go)
             return;
         Intent intent = new Intent(this,MainMenuActivity.class);
@@ -302,10 +293,7 @@ public class LoginActivity extends AppCompatActivity
         if (!task.isSuccessful()) {
             Log.w(TAG, "signInWithCredential", task.getException());
 
-            AlphaAnimation outAnimation = new AlphaAnimation(1f, 0f);
-            outAnimation.setDuration(200);
-            spinHolder.setAnimation(outAnimation);
-            spinHolder.setVisibility(View.GONE);
+            closeAnimation();
             if (task.getException().getClass().getName().contains("Network")) {
                 Toast.makeText(LoginActivity.this, "Couldn't connect to the network.",
                         Toast.LENGTH_SHORT).show();
@@ -324,5 +312,19 @@ public class LoginActivity extends AppCompatActivity
         }else{
             logIn(mAuth.getCurrentUser());
         }
+    }
+
+    private void openAnimation(){
+        AlphaAnimation inAnimation = new AlphaAnimation(0f, 1f);
+        inAnimation.setDuration(200);
+        spinHolder.setAnimation(inAnimation);
+        spinHolder.setVisibility(View.VISIBLE);
+    }
+
+    private void closeAnimation(){
+        AlphaAnimation outAnimation = new AlphaAnimation(1f, 0f);
+        outAnimation.setDuration(200);
+        spinHolder.setAnimation(outAnimation);
+        spinHolder.setVisibility(View.GONE);
     }
 }

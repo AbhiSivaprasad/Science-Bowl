@@ -6,12 +6,13 @@ import android.text.StaticLayout;
 import android.text.TextPaint;
 import android.util.AttributeSet;
 import android.util.TypedValue;
+import android.widget.Button;
 import android.widget.TextView;
 
 /**
  * Created by Tanuj on 7/6/2016.
  */
-public class AutoResizeTextView extends TextView {
+public class AutoResizeButton extends Button {
 
     // Minimum text size for this text view
     public static final float MIN_TEXT_SIZE = 20;
@@ -49,17 +50,19 @@ public class AutoResizeTextView extends TextView {
     private boolean mAddEllipsis = true;
 
     // Default constructor override
-    public AutoResizeTextView(Context context) {
-        this(context, null);
+    public AutoResizeButton(Context context) {
+        super(context);
+        mTextSize = getTextSize();
     }
 
     // Default constructor when inflating from XML file
-    public AutoResizeTextView(Context context, AttributeSet attrs) {
-        this(context, attrs, 0);
+    public AutoResizeButton(Context context, AttributeSet attrs) {
+        super(context, attrs);
+        mTextSize = getTextSize();
     }
 
     // Default constructor override
-    public AutoResizeTextView(Context context, AttributeSet attrs, int defStyle) {
+    public AutoResizeButton(Context context, AttributeSet attrs, int defStyle) {
         super(context, attrs, defStyle);
         mTextSize = getTextSize();
     }
@@ -191,8 +194,13 @@ public class AutoResizeTextView extends TextView {
             int widthLimit = (right - left) - getCompoundPaddingLeft() - getCompoundPaddingRight();
             int heightLimit = (bottom - top) - getCompoundPaddingBottom() - getCompoundPaddingTop();
             resizeText(widthLimit, heightLimit);
+            if(AutoResizeButtonGroup.height>heightLimit){
+                AutoResizeButtonGroup.height = heightLimit;
+                AutoResizeButtonGroup.width = widthLimit;
+            }
         }
         super.onLayout(changed, left, top, right, bottom);
+        ((AutoResizeButtonGroup) this.getParent()).update();
     }
 
     /**

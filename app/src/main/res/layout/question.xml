@@ -15,48 +15,51 @@
         android:layout_height="match_parent"
         android:gravity="left"
         android:layout_alignParentTop="true"/>
-<LinearLayout
+<com.abhi.android.sciencebowl.AutoResizeButtonGroup
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
     android:layout_weight="0.5"
     android:weightSum="1"
     android:layout_alignParentBottom="true">
-    <com.abhi.android.sciencebowl.AutoResizeTextView
+    <com.abhi.android.sciencebowl.AutoResizeButton
         android:id="@+id/choiceW"
-        android:text=""
+        android:layout_margin = "2dp"
         android:textSize="20dp"
         android:gravity="left"
         android:layout_weight="0.25"
         android:layout_width="match_parent"
         android:layout_height="match_parent" />
 
-    <com.abhi.android.sciencebowl.AutoResizeTextView
+    <com.abhi.android.sciencebowl.AutoResizeButton
         android:id="@+id/choiceX"
         android:text=""
         android:textSize="20dp"
+        android:layout_margin= "2dp"
         android:gravity="left"
         android:layout_weight="0.25"
         android:layout_width="match_parent"
         android:layout_height="match_parent" />
 
-    <com.abhi.android.sciencebowl.AutoResizeTextView
+    <com.abhi.android.sciencebowl.AutoResizeButton
         android:id="@+id/choiceY"
         android:text=""
         android:textSize="20dp"
         android:gravity="left"
+        android:layout_margin= "2dp"
         android:layout_weight="0.25"
         android:layout_width="match_parent"
         android:layout_height="match_parent" />
 
-    <com.abhi.android.sciencebowl.AutoResizeTextView
+    <com.abhi.android.sciencebowl.AutoResizeButton
         android:id="@+id/choiceZ"
         android:text=""
         android:textSize="20dp"
         android:gravity="left"
+        android:layout_margin= "2dp"
         android:layout_weight="0.25"
         android:layout_width="match_parent"
         android:layout_height="match_parent" />
-    </LinearLayout>
+    </com.abhi.android.sciencebowl.AutoResizeButtonGroup>
 </LinearLayout>
 </merge>
