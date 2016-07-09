@@ -11,6 +11,8 @@
     <string name="leaderboard_button">LEADERBOARDS</string>
     <string name="settings_button">SETTINGS</string>
     <string name="review_button">REVIEW</string>
+    <string name="sign_in_leaderboard_button">LEADERBOARD SIGN-IN</string>
+    <string name="sign_out_leaderboard_button">LEADERBOARD SIGN-OUT</string>
     <string name="sign_out_button">SIGN OUT</string>
 
     <string name="facebook_app_id">1710953529154317</string>
@@ -35,4 +37,8 @@
     <string name="DIR_QUIZ">/quizlist</string>
     <string name="leaderboard_id_questions_answered">CgkIpdeQrqoZEAIQAA</string>
     <string name="sign_up_text"><u>Need an account? Sign up here.</u></string>
+
+    <!-- toasts -->
+    <string name="toast_leaderboard_questions_answered_submitted">Score submitted to leaderboard! (%1$d)</string>
+>>>>>>> Suvansh
 </resources>
