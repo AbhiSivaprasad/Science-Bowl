@@ -1,5 +1,6 @@
 package com.abhi.android.sciencebowl;
 
+import android.content.Intent;
 import android.graphics.Color;
 import android.os.AsyncTask;
 import android.support.v4.content.ContextCompat;
@@ -24,6 +25,7 @@ public class SettingsActivity extends AppCompatActivity implements View.OnClickL
     private TextView mDifficultySeekBarHint;
     private Button[] mSubjectButtonList;
     private List<Subject> mSubjectsSelected;
+    private Button bLink;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -164,6 +166,15 @@ public class SettingsActivity extends AppCompatActivity implements View.OnClickL
         Button mEnergyButton = (Button) findViewById(R.id.energy_button);
         Button mMathButton = (Button) findViewById(R.id.math_button);
         Button mAstroButton = (Button) findViewById(R.id.astro_button);
+
+        Button bLink = (Button) findViewById(R.id.bLink);
+        bLink.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent i = new Intent(SettingsActivity.this,LinkActivity.class);
+                startActivity(i);
+            }
+        });
 
         mSubjectButtonList = new Button[]
                 {mEarthButton, mBiologyButton, mPhysicsButton, mChemistryButton, mEnergyButton, mMathButton,mAstroButton};

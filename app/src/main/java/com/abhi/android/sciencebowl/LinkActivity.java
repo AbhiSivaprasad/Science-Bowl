@@ -47,7 +47,7 @@ import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.auth.GoogleAuthProvider;
 
 import java.util.List;
-public class LoginActivity extends AppCompatActivity
+public class LinkActivity extends AppCompatActivity
         implements GoogleApiClient.OnConnectionFailedListener{
 
     private static final int RC_SIGN_IN =9001 ;
@@ -57,7 +57,6 @@ public class LoginActivity extends AppCompatActivity
     private EditText etEmail;
     private EditText etPass;
     private Button bLogin;
-    private TextView bSignUp;
     private SignInButton bGSignIn;
     private Button bOpenEmail;
 
@@ -69,21 +68,14 @@ public class LoginActivity extends AppCompatActivity
     private FrameLayout spinHolder;
     private AuthCredential credential;
     boolean go = true;
+    boolean first = true;
     private FirebaseUser currentUser;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         FacebookSdk.sdkInitialize(getApplicationContext());
-        setContentView(R.layout.activity_login);
-        bSignUp = (TextView) findViewById(R.id.bSignUp);
-        bSignUp.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Intent i = new Intent(LoginActivity.this,SignUpActivity.class);
-                startActivity(i);
-            }
-        });
+        setContentView(R.layout.activity_link);
 
         spinHolder = (FrameLayout) findViewById(R.id.spinHolder);
 
@@ -103,14 +95,14 @@ public class LoginActivity extends AppCompatActivity
             @Override
             public void onCancel() {
                 Log.d(TAG, "facebook:onCancel");
-                Toast.makeText(LoginActivity.this,"Sign-in failed.",Toast.LENGTH_SHORT).show();
+                Toast.makeText(LinkActivity.this,"Sign-in failed.",Toast.LENGTH_SHORT).show();
                 // ...
             }
 
             @Override
             public void onError(FacebookException error) {
                 Log.d(TAG, "facebook:onError", error);
-                Toast.makeText(LoginActivity.this,"Sign-in error.",Toast.LENGTH_SHORT).show();
+                Toast.makeText(LinkActivity.this,"Sign-in error.",Toast.LENGTH_SHORT).show();
                 // ...
             }
         });
@@ -130,11 +122,15 @@ public class LoginActivity extends AppCompatActivity
         mAuthListener = new FirebaseAuth.AuthStateListener() {
             @Override
             public void onAuthStateChanged(@NonNull FirebaseAuth firebaseAuth) {
+                if(first){
+                    first = false;
+                    return;
+                }
                 currentUser = firebaseAuth.getCurrentUser();
                 if (currentUser != null) {
                     // User is signed in
-                    LoginTask t = new LoginTask();
-                    t.execute(true,false);
+                    LinkTask t = new LinkTask();
+                    t.execute();
                     //logIn(currentUser);
                     Log.d(TAG, "onAuthStateChanged:signed_in:" + currentUser.getUid());
                 }
@@ -161,12 +157,13 @@ public class LoginActivity extends AppCompatActivity
                 final String email = etEmail.getText().toString();
                 final String pass = etPass.getText().toString();
                 if(email.isEmpty()||pass.isEmpty()){
-                    Toast t = Toast.makeText(LoginActivity.this,"Please enter both an email and password.", Toast.LENGTH_LONG);
+                    Toast t = Toast.makeText(LinkActivity.this,"Please enter both an email and password.", Toast.LENGTH_LONG);
                     t.show();
                     return;
                 }
-                LoginTask login = new LoginTask();
-                login.execute(false,true);
+                credential = EmailAuthProvider.getCredential(email,pass);
+                LinkTask login = new LinkTask();
+                login.execute();
             }
         });
     }
@@ -186,10 +183,10 @@ public class LoginActivity extends AppCompatActivity
                 GoogleSignInAccount account = result.getSignInAccount();
                 credential = GoogleAuthProvider.getCredential(account.getIdToken(), null);
                 //firebaseAuthWithGoogle();
-                LoginTask login = new LoginTask();
-                login.execute(false,false);
+                LinkTask login = new LinkTask();
+                login.execute();
             }else{
-                Toast.makeText(LoginActivity.this, result.getStatus().getStatusCode()+ ": " + result.getStatus().getStatusMessage(),Toast.LENGTH_SHORT).show();
+                Toast.makeText(LinkActivity.this, result.getStatus().getStatusCode()+ ": " + result.getStatus().getStatusMessage(),Toast.LENGTH_SHORT).show();
                 closeAnimation();
             }
 
@@ -201,8 +198,8 @@ public class LoginActivity extends AppCompatActivity
         Log.d(TAG, "handleFacebookAccessToken:" + token);
 
         credential = FacebookAuthProvider.getCredential(token.getToken());
-        LoginTask login = new LoginTask();
-        login.execute(false,false);
+        LinkTask login = new LinkTask();
+        login.execute();
     }
 
     @Override
@@ -239,37 +236,30 @@ public class LoginActivity extends AppCompatActivity
         spinHolder.setAnimation(outAnimation);
         spinHolder.setVisibility(View.GONE);
     }
-    class LoginTask extends AsyncTask<Boolean,Void,Void> implements OnCompleteListener<AuthResult>{
-
-        String email;
-        String pass;
+    class LinkTask extends AsyncTask<Void,Void,Void>{
 
         @Override
         protected void onPreExecute() {
             super.onPreExecute();
             openAnimation();
-            email = etEmail.getText().toString();
-            pass = etPass.getText().toString();
         }
 
         @Override
-        protected Void doInBackground(Boolean... bools) {
-            if(bools[0]){
-                logIn(currentUser);
-            }else {
-                if (bools[1]) {
-                    mAuth.signInWithEmailAndPassword(email, pass)
-                            .addOnCompleteListener(LoginActivity.this, new OnCompleteListener<AuthResult>() {
-                                @Override
-                                public void onComplete(@NonNull Task<AuthResult> task) {
-                                    credential = EmailAuthProvider.getCredential(email, pass);
-                                    LoginTask.this.onComplete(task);
-                                }
-                            });
-                } else {
-                    mAuth.signInWithCredential(credential).addOnCompleteListener(LoginActivity.this, this);
+        protected Void doInBackground(Void... bools) {
+            mAuth.getCurrentUser().linkWithCredential(credential).addOnCompleteListener(LinkActivity.this, new OnCompleteListener<AuthResult>() {
+                @Override
+                public void onComplete(@NonNull Task<AuthResult> task) {
+                    if(!task.isSuccessful()){
+                        Toast.makeText(LinkActivity.this, "Link failed.",
+                                Toast.LENGTH_SHORT).show();
+                        LoginManager.getInstance().logOut();
+                        return;
+                    }
+                    Toast.makeText(LinkActivity.this, "Link successful!",
+                            Toast.LENGTH_SHORT).show();
+                    finish();
                 }
-            }
+            });
             return null;
         }
 
@@ -279,73 +269,6 @@ public class LoginActivity extends AppCompatActivity
             closeAnimation();
             if(!go)
                 return;
-
         }
-
-        @Override
-        public void onComplete(@NonNull Task<AuthResult> task) {
-            Log.d(TAG, "signInWithCredential:onComplete:" + task.isSuccessful());
-            if (!task.isSuccessful()) {
-                Log.w(TAG, "signInWithCredential", task.getException());
-                go = false;
-                if (task.getException().getClass().getName().contains("Network")) {
-                    Toast.makeText(LoginActivity.this, "Couldn't connect to the network.",
-                            Toast.LENGTH_SHORT).show();
-                } else{
-                    if(task.getException().getClass().getName().contains("Collision")){
-                        Toast.makeText(LoginActivity.this, "There's an existing user associated with this email. Try signing in with the method that this email is registered with, You can link other sign-in methods in settings",
-                                Toast.LENGTH_SHORT).show();
-                    }else {
-                        Log.v("LOGIN",  "Authentication failed: Please sign up for an account if you need to.");
-                        Toast.makeText(LoginActivity.this, "Authentication failed: Please sign up for an account if you need to.",
-                                Toast.LENGTH_SHORT).show();
-                    }
-                }
-                LoginManager.getInstance().logOut();
-
-                Log.v("LOGIN", task.getException().toString());
-            }else{
-                logIn(mAuth.getCurrentUser());
-            }
-        }
-        private void logIn(FirebaseUser currentUser) {
-            UserInformation.setUid(currentUser.getUid());
-            //set settings
-            Firebase.setAndroidContext(LoginActivity.this);
-
-            //Takes some time to get data. Executes subsequent code before data is retrieved causing a lag between inflation of
-            //XML and the appearance of question/answers. Need to fix this.
-            Firebase mFirebaseRef = new Firebase(getString(R.string.BASE_URI) + getString(R.string.DIR_SETTINGS)+"/"+currentUser.getUid());
-            mFirebaseRef.addValueEventListener(new ValueEventListener() {
-                @Override
-                public void onDataChange(DataSnapshot dataSnapshot) {
-                    Settings set;
-                    if(dataSnapshot.hasChildren()){
-                        set = new Settings(dataSnapshot.child("subjects").getValue(List.class),Integer.parseInt(dataSnapshot.child("difficulty").getValue().toString()));
-                    }else {
-                        set = Settings.getDefault();
-
-                        System.out.println("Settings: " + set);
-
-                        Firebase.setAndroidContext(LoginActivity.this);
-                        Firebase mFirebaseRef =
-                                new Firebase(getString(R.string.BASE_URI) + getString(R.string.DIR_SETTINGS) + "/" + UserInformation.getUid());
-                        mFirebaseRef.setValue(set);
-                    }
-                    UserInformation.setUserSettings(set);
-                }
-
-                @Override
-                public void onCancelled(FirebaseError firebaseError) {
-                    Toast.makeText(LoginActivity.this, "Couldn't connect to server, try again later.", Toast.LENGTH_LONG).show();
-                    go = false;
-                    System.out.println("The read failed: " + firebaseError.getMessage());
-                }
-            });
-            Intent intent = new Intent(LoginActivity.this,MainMenuActivity.class);
-            intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
-            startActivity(intent);
-        }
-
     }
 }
