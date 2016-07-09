@@ -30,8 +30,6 @@ public class MainMenuActivity extends AppCompatActivity implements GameHelper.Ga
     private Button mLeaderboardButton;
     private Button mSettingsButton;
     private Button mReviewButton;
-    private Button mSignInLeaderboardButton;
-    private Button mSignOutLeaderboardButton;
     private Button mSignOutButton;
 
     private String mUid;
@@ -79,7 +77,12 @@ public class MainMenuActivity extends AppCompatActivity implements GameHelper.Ga
         mLeaderboardButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                startLeaderboard(getString(R.string.leaderboard_id_questions_answered));
+                if(mGameHelper.isSignedIn())
+                    startLeaderboard(getString(R.string.leaderboard_id_questions_answered));
+                else if(mGameHelper.isConnecting())
+                    Toast.makeText(MainMenuActivity.this, "Connecting... Please try again shortly.", Toast.LENGTH_SHORT).show();
+                else
+                    mGameHelper.beginUserInitiatedSignIn();
             }
         });
 
@@ -109,28 +112,11 @@ public class MainMenuActivity extends AppCompatActivity implements GameHelper.Ga
             }
         });
 
-        mSignInLeaderboardButton = (Button) findViewById(R.id.sign_in_leaderboard_button);
-        mSignInLeaderboardButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                mGameHelper.beginUserInitiatedSignIn();
-            }
-        });
-
-        mSignOutLeaderboardButton = (Button) findViewById(R.id.sign_out_leaderboard_button);
-        mSignOutLeaderboardButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                mGameHelper.signOut();
-                mSignInLeaderboardButton.setVisibility(View.VISIBLE);
-                mSignOutLeaderboardButton.setVisibility(View.GONE);
-            }
-        });
-
         mSignOutButton = (Button) findViewById(R.id.signOut_button);
         mSignOutButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                mGameHelper.signOut();
                 FirebaseAuth.getInstance().signOut();
                 Intent intent = new Intent(MainMenuActivity.this, LoginActivity.class);
                 intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
@@ -153,19 +139,17 @@ public class MainMenuActivity extends AppCompatActivity implements GameHelper.Ga
 
     @Override
     public void onSignInSucceeded() {
-        mSignInLeaderboardButton.setVisibility(View.GONE);
-        mSignOutLeaderboardButton.setVisibility(View.VISIBLE);
-
         // if score was cached last time (due to lack of connection), try to submit score to leaderboard.
         // set value of isScoreCached to the opposite of the success result of submission.
         // if score was submitted successfully, mark score as no longer cached, and vice versa.
-        if(UserInformation.getIsScoreCached())
+        if(UserInformation.getIsScoreCached()) {
             UserInformation.setIsScoreCached(
                     !setLeaderboard(
                             getString(R.string.leaderboard_id_questions_answered),
                             UserInformation.getCachedScore()
                     )
             );
+        }
     }
 
     @Override
