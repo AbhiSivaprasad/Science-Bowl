@@ -138,7 +138,8 @@ public class MainMenuActivity extends AppCompatActivity implements GameHelper.Ga
     @Override
     public void onStart() {
         super.onStart();
-        mGameHelper.onStart(this);
+        if(!mGameHelper.isConnecting())
+            mGameHelper.onStart(this);
     }
 
     @Override
