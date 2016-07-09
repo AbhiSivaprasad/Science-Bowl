@@ -144,8 +144,14 @@ public class MainMenuActivity extends AppCompatActivity implements GameHelper.Ga
 
     @Override
     public void onStop() {
-        mGameHelper.onStop();
+        // mGameHelper.onStop();
         super.onStop();
+    }
+    
+    @Override
+    public void onDestroy() {
+        mGameHelper.onStop();
+        super.onDestroy();
     }
 
     @Override
