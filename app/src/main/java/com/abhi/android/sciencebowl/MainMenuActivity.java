@@ -1,12 +1,8 @@
 package com.abhi.android.sciencebowl;
 
-import android.app.Activity;
 import android.content.Intent;
-import android.content.IntentSender;
 import android.os.Bundle;
-import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
-import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.Toast;
@@ -15,21 +11,17 @@ import com.firebase.client.DataSnapshot;
 import com.firebase.client.Firebase;
 import com.firebase.client.FirebaseError;
 import com.firebase.client.ValueEventListener;
-import com.google.firebase.auth.FirebaseAuth;
-import com.google.firebase.auth.FirebaseUser;
-import com.google.android.gms.common.ConnectionResult;
-import com.google.android.gms.common.api.GoogleApiClient;
+
 import com.google.android.gms.games.Games;
 import com.google.example.games.basegameutils.GameHelper;
+import com.google.firebase.auth.FirebaseAuth;
 
 
-public class MainMenuActivity extends AppCompatActivity implements GoogleApiClient.ConnectionCallbacks,
-        GoogleApiClient.OnConnectionFailedListener {
+public class MainMenuActivity extends AppCompatActivity implements GameHelper.GameHelperListener {
     public static final String EXTRA_SCORE = "com.abhi.android.sciencebowl.EXTRA_SCORE";
 
     private static final int RC_MAIN = 10000;
     private static final int RC_LB_QUESTIONS_ANSWERED = 10001;
-    private static final int RC_RESOLVE_CONNECTION = 10002;
 
     private static final String TAG = "MAIN_MENU";
 
@@ -44,7 +36,7 @@ public class MainMenuActivity extends AppCompatActivity implements GoogleApiClie
 
     private String mUid;
     private FirebaseAuth.AuthStateListener mAuthListener;
-    private GoogleApiClient mGoogleApiClient;
+    private GameHelper mGameHelper;
 
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -52,9 +44,8 @@ public class MainMenuActivity extends AppCompatActivity implements GoogleApiClie
 
         mUid = UserInformation.getUid();
 
-        mGoogleApiClient = new GoogleApiClient.Builder(this)
-                .addConnectionCallbacks(this).addOnConnectionFailedListener(this)
-                .addApi(Games.API).addScope(Games.SCOPE_GAMES).build();
+        mGameHelper = new GameHelper(this, GameHelper.CLIENT_GAMES);
+        mGameHelper.setup(this);
 
         //Get user settings from Firebase. Ideally should be done during login
         Firebase.setAndroidContext(this);
@@ -122,7 +113,7 @@ public class MainMenuActivity extends AppCompatActivity implements GoogleApiClie
         mSignInLeaderboardButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                mGoogleApiClient.connect();
+                mGameHelper.beginUserInitiatedSignIn();
             }
         });
 
@@ -130,7 +121,7 @@ public class MainMenuActivity extends AppCompatActivity implements GoogleApiClie
         mSignOutLeaderboardButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Games.signOut(mGoogleApiClient);
+                mGameHelper.signOut();
                 mSignInLeaderboardButton.setVisibility(View.VISIBLE);
                 mSignOutLeaderboardButton.setVisibility(View.GONE);
             }
@@ -151,18 +142,17 @@ public class MainMenuActivity extends AppCompatActivity implements GoogleApiClie
     @Override
     public void onStart() {
         super.onStart();
-        mGoogleApiClient.connect();
+        mGameHelper.onStart(this);
     }
 
     @Override
     public void onStop() {
-        mGoogleApiClient.disconnect();
+        mGameHelper.onStop();
         super.onStop();
     }
 
     @Override
-    public void onConnected(Bundle connectionHint) {
-        System.out.println("YAY CONNECTED");
+    public void onSignInSucceeded() {
         mSignInLeaderboardButton.setVisibility(View.GONE);
         mSignOutLeaderboardButton.setVisibility(View.VISIBLE);
 
@@ -179,38 +169,26 @@ public class MainMenuActivity extends AppCompatActivity implements GoogleApiClie
     }
 
     @Override
-    public void onConnectionFailed(@NonNull ConnectionResult connectionResult) {
-        System.out.println("CONNECTION FAILED");
-        System.out.println(connectionResult.hasResolution());
-        if(connectionResult.hasResolution())
-            try {
-                connectionResult.startResolutionForResult(this, RC_RESOLVE_CONNECTION);
-            }catch(IntentSender.SendIntentException e) {
-                System.out.println("error caught");
-            }
-    }
-
-    @Override
-    public void onConnectionSuspended(int i) {
-        System.out.println("suspended");
+    public void onSignInFailed() {
+        mGameHelper.beginUserInitiatedSignIn();
     }
 
     private void startLeaderboard(String leaderboardId) {
-        if (mGoogleApiClient.isConnected())
-            startActivityForResult(Games.Leaderboards.getLeaderboardIntent(mGoogleApiClient,
+        if (mGameHelper.isSignedIn())
+            startActivityForResult(Games.Leaderboards.getLeaderboardIntent(mGameHelper.getApiClient(),
                 leaderboardId), RC_LB_QUESTIONS_ANSWERED);
-        else
-            System.out.println("NOT CONNECTED CAN'T START LEADERBOARD");
     }
 
     private boolean setLeaderboard(String leaderboardId, int value) {
-        if (mGoogleApiClient.isConnected()) {
-            Games.Leaderboards.submitScore(mGoogleApiClient, leaderboardId, value);
+        if (mGameHelper.isSignedIn()) {
+            Games.Leaderboards.submitScore(mGameHelper.getApiClient(), leaderboardId, value);
             Toast.makeText(this,
                     getString(R.string.toast_leaderboard_questions_answered_submitted, value),
                     Toast.LENGTH_SHORT).show();
             return true;
         }
+        UserInformation.setIsScoreCached(true);
+        UserInformation.setCachedScore(value);
         return false;
     }
 
@@ -219,14 +197,8 @@ public class MainMenuActivity extends AppCompatActivity implements GoogleApiClie
     {
         if (resultCode == RESULT_OK) {
             if (requestCode == RC_MAIN) {
-                int score = data.getIntExtra(EXTRA_SCORE, -1);
-                if (!setLeaderboard(getString(R.string.leaderboard_id_questions_answered), score)) {
-                    UserInformation.setIsScoreCached(true);
-                    UserInformation.setCachedScore(score);
-                }
-            } else if (requestCode == RC_RESOLVE_CONNECTION)
-                System.out.println("resolve connection");
-            mGoogleApiClient.connect();
+                setLeaderboard(getString(R.string.leaderboard_id_questions_answered), data.getIntExtra(EXTRA_SCORE, -1));
+            }
         }
         else System.out.println("RESULT BAD: " + Integer.toString(resultCode) + ": " + Integer.toString(requestCode));
     }
