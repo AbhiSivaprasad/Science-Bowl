@@ -12,6 +12,8 @@ import com.firebase.client.DataSnapshot;
 import com.firebase.client.Firebase;
 import com.firebase.client.FirebaseError;
 import com.firebase.client.ValueEventListener;
+import com.google.android.gms.auth.api.Auth;
+import com.google.android.gms.auth.api.signin.GoogleSignInOptions;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.android.gms.common.ConnectionResult;
@@ -43,16 +45,22 @@ public class MainMenuActivity extends AppCompatActivity implements GoogleApiClie
     private GoogleApiClient mGoogleApiClient;
 
     private GameHelper mGameHelper;
+    private GoogleApiClient mGoogleApiClient1;
 
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main_menu);
 
         mUid = UserInformation.getUid();
-
+        GoogleSignInOptions gso = new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
+                .requestEmail()
+                .build();
+        mGoogleApiClient1 = new GoogleApiClient.Builder(this)
+                .enableAutoManage(this /* FragmentActivity */, this /* OnConnectionFailedListener */)
+                .addApi(Auth.GOOGLE_SIGN_IN_API, gso)
+                .build();
         mGoogleApiClient = new GoogleApiClient.Builder(this)
-                .addConnectionCallbacks(this).addOnConnectionFailedListener(this)
-                .addApi(Games.API).addScope(Games.SCOPE_GAMES).build();
+                .addConnectionCallbacks(this).addOnConnectionFailedListener(this).addApi(Games.API).addScope(Games.SCOPE_GAMES).build();
 
         //Get user settings from Firebase. Ideally should be done during login
         Firebase.setAndroidContext(this);
@@ -114,6 +122,7 @@ public class MainMenuActivity extends AppCompatActivity implements GoogleApiClie
         mSignOutButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                Auth.GoogleSignInApi.signOut(mGoogleApiClient1);
                 FirebaseAuth.getInstance().signOut();
                 Intent intent = new Intent(MainMenuActivity.this, LoginActivity.class);
                 intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
@@ -135,12 +144,14 @@ public class MainMenuActivity extends AppCompatActivity implements GoogleApiClie
     public void onStart() {
         super.onStart();
         mGoogleApiClient.connect();
+        mGoogleApiClient1.connect();
     }
 
     @Override
     public void onStop() {
         super.onStop();
         mGoogleApiClient.disconnect();
+        mGoogleApiClient1.disconnect();
     }
 
     @Override
