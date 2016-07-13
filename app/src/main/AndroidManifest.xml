@@ -25,7 +25,7 @@
             android:name=".StartupActivity"
             android:noHistory="false" />
         <activity
-            android:name=".MainActivity"
+            android:name=".PlayActivity"
             android:configChanges="keyboardHidden|orientation|screenSize"
             android:screenOrientation="portrait" />
         <activity
@@ -65,7 +65,9 @@
             android:label="@string/title_activity_sign_up"
             android:screenOrientation="portrait" />
         <activity android:name=".PlayOnlineActivity" />
-        <activity android:name=".PlayOnlineSetupActivity"></activity>
+        <activity android:name=".PlayOnlineSetupActivity" />
+        <activity android:name=".ReviewFragment" />
+        <activity android:name=".PlayFragment"></activity>
     </application>
 
 </manifest>

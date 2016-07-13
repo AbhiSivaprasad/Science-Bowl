@@ -69,7 +69,7 @@ public class MainMenuActivity extends AppCompatActivity implements GameHelper.Ga
         mPlayButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Intent intent = new Intent(MainMenuActivity.this, MainActivity.class); //start MainActivity
+                Intent intent = new Intent(MainMenuActivity.this, PlayActivity.class); //start PlayActivity
                 startActivityForResult(intent, RC_MAIN);
             }
         });
