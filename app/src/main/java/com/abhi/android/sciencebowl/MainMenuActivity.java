@@ -91,7 +91,7 @@ public class MainMenuActivity extends AppCompatActivity implements GameHelper.Ga
         mStatisticsButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                setLeaderboard(getString(R.string.leaderboard_id_questions_answered), UserInformation.getQuestionsCorrect());
+                startActivity(new Intent(MainMenuActivity.this, StatisticsActivity.class));
             }
         });
 
