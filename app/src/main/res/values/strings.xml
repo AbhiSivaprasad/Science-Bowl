@@ -29,9 +29,8 @@
     <string name="chemistry_button">Chemistry</string>
     <string name="energy_button">Energy</string>
     <string name="math_button">Math</string>
+    <string name="astro_button">Astronomy</string>
 
-    <string name="title_activity_sign_up">SignUpActivity</string>
-    <string name="astro_button">ASTRONOMY</string>
     <string name="BASE_URI">https://science-bowl.firebaseio.com</string>
     <string name="DIR_SETTINGS">/user-settings</string>
     <string name="DIR_QUIZ">/quizlist</string>
@@ -40,5 +39,4 @@
 
     <!-- toasts -->
     <string name="toast_leaderboard_questions_answered_submitted">Score submitted to leaderboard! (%1$d)</string>
->>>>>>> Suvansh
 </resources>
