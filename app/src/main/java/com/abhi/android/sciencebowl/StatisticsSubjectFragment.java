@@ -8,7 +8,7 @@ import android.view.ViewGroup;
 import android.widget.TextView;
 
 public class StatisticsSubjectFragment extends Fragment {
-    private static final String ARG_SUBJECT = "com.abhi.android.sciencebowl.ARG_SUBJECT";
+    static final String ARG_SUBJECT = "ARG_SUBJECT";
 
     private Subject mSubject;
 
@@ -17,13 +17,14 @@ public class StatisticsSubjectFragment extends Fragment {
 
         Bundle args = new Bundle();
         args.putInt(ARG_SUBJECT, position);
-        fragment.setArguments(args);
+       fragment.setArguments(args);
         return fragment;
     }
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        Bundle m = getArguments();
         mSubject = getArguments() == null ?
                 Subject.SUBJECTS[0] : Subject.SUBJECTS[getArguments().getInt(ARG_SUBJECT)];
     }

@@ -10,6 +10,11 @@ public class StatisticsSubjectPagerAdapter extends FragmentPagerAdapter {
     }
 
     @Override
+    public CharSequence getPageTitle(int position) {
+        return Subject.SUBJECTS[position].toString();
+    }
+
+    @Override
     public Fragment getItem(int position) {
         return StatisticsSubjectFragment.newInstance(position);
     }
