@@ -5,8 +5,29 @@
     android:layout_height="match_parent">
 
     <TextView
-        android:id="@+id/subject_name"
+        android:id="@+id/statistics_title"
         android:layout_width="match_parent"
         android:layout_height="match_parent" />
+    <TableLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <TableRow>
+            <TextView
+                android:layout_column="1"
+                android:text="@string/statistics_name_percent_correct" />
+            <TextView
+                android:id="@+id/statistics_value_percent_correct"
+                android:layout_column="1" />
+        </TableRow>
+        <TableRow>
+            <TextView
+                android:layout_column="1"
+                android:text="@string/statistics_name_questions_correct" />
+            <TextView
+                android:id="@+id/statistics_value_questions_correct"
+                android:layout_column="1" />
+        </TableRow>
+    </TableLayout>
 
 </LinearLayout>

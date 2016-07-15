@@ -26,7 +26,7 @@ public class StatisticsActivity extends FragmentActivity {
         mPager.setAdapter(mAdapter);
         TabLayout tl = (TabLayout) findViewById(R.id.tLayout);
         tl.setTabMode(TabLayout.MODE_SCROLLABLE);
-        for(int i =0;i<7;i++){
+        for(int i =0;i<Subject.SIZE;i++){
             tl.addTab(tl.newTab().setText("LOL"));
         }
         tl.setupWithViewPager(mPager);

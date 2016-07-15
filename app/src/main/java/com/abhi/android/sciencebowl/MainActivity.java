@@ -107,8 +107,14 @@ public class MainActivity extends QuestionActivity implements View.OnClickListen
     private void onAnswerResult(boolean isAnswerCorrect, Choice userChoice) {
         if(isAnswerCorrect) {
             mQuestionsCorrect++;
+            Statistics stats = UserInformation.getStats();
+            stats.incrementQuestionsCorrect(mCurrentQuestion.getSubject());
+            UserInformation.setStats(stats);
         } else {
             mReviewQuestionsBank.add(new QuestionUserAnswerPair(mCurrentQuestion, userChoice));
+            Statistics stats = UserInformation.getStats();
+            stats.incrementQuestionsCorrect(mCurrentQuestion.getSubject());
+            UserInformation.setStats(stats);
         }
     }
 
