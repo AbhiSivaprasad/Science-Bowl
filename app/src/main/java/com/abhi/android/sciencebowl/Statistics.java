@@ -39,10 +39,10 @@ public final class Statistics {
         return subjectStatisticsMap.get(subject).getQuestionsWrong();
     }
 
-    public double getQuestionsPercentage(Subject subject) {
+    public int getQuestionsPercentage(Subject subject) {
         SubjectStatistics subjStat = subjectStatisticsMap.get(subject);
         if (subjStat.getQuestionsTotal() != 0)
-            return 100.0 * subjStat.getQuestionsCorrect() / subjStat.getQuestionsTotal();
+            return 100 * subjStat.getQuestionsCorrect() / subjStat.getQuestionsTotal();
         else return 0;
     }
 
