@@ -113,7 +113,7 @@ public class MainActivity extends QuestionActivity implements View.OnClickListen
         } else {
             mReviewQuestionsBank.add(new QuestionUserAnswerPair(mCurrentQuestion, userChoice));
             Statistics stats = UserInformation.getStats();
-            stats.incrementQuestionsCorrect(mCurrentQuestion.getSubject());
+            stats.incrementQuestionsWrong(mCurrentQuestion.getSubject());
             UserInformation.setStats(stats);
         }
     }
