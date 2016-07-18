@@ -15,18 +15,22 @@
         <TableRow>
             <TextView
                 android:layout_column="1"
-                android:text="@string/statistics_name_percent_correct" />
+                android:text="@string/statistics_name_percent_correct"
+                android:padding="5dp" />
             <TextView
                 android:id="@+id/statistics_value_percent_correct"
-                android:layout_column="1" />
+                android:layout_column="1"
+                android:padding="5dp" />
         </TableRow>
         <TableRow>
             <TextView
                 android:layout_column="1"
-                android:text="@string/statistics_name_questions_correct" />
+                android:text="@string/statistics_name_questions_correct"
+                android:padding="5dp" />
             <TextView
                 android:id="@+id/statistics_value_questions_correct"
-                android:layout_column="1" />
+                android:layout_column="1"
+                android:padding="5dp" />
         </TableRow>
     </TableLayout>
 

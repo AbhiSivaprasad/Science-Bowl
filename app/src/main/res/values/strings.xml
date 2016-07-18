@@ -39,9 +39,9 @@
 
     <!-- statistics activity -->
     <string name="statistics_title_text">%1$s Statistics</string>
-    <string name="statistics_name_percent_correct">Percentage Questions Correct</string>
+    <string name="statistics_name_percent_correct">Percent Questions Correct</string>
     <string name="statistics_name_questions_correct">Total Questions Correct</string>
-    <string name="statistics_value_percent_correct">%1$d Percent</string>
+    <string name="statistics_value_percent_correct">%1$d</string>
     <string name="statistics_value_questions_correct">%1$d</string>
 
     <!-- toasts -->
