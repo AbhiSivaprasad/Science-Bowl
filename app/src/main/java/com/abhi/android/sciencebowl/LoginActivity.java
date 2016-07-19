@@ -19,6 +19,7 @@ import com.facebook.CallbackManager;
 import com.facebook.FacebookCallback;
 import com.facebook.FacebookException;
 import com.facebook.FacebookSdk;
+import com.facebook.Profile;
 import com.facebook.login.LoginManager;
 import com.facebook.login.LoginResult;
 import com.facebook.login.widget.LoginButton;
@@ -45,6 +46,7 @@ import com.google.firebase.auth.FacebookAuthProvider;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.auth.GoogleAuthProvider;
+import com.google.firebase.auth.UserInfo;
 
 import java.util.List;
 public class LoginActivity extends AppCompatActivity
@@ -203,6 +205,8 @@ public class LoginActivity extends AppCompatActivity
         credential = FacebookAuthProvider.getCredential(token.getToken());
         LoginTask login = new LoginTask();
         login.execute(false,false);
+        UserInformation.setFbToken(token);
+        UserInformation.setFbUid(Profile.getCurrentProfile().getId());
     }
 
     @Override

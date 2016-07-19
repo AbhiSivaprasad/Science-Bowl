@@ -6,6 +6,7 @@ import com.firebase.client.FirebaseError;
 import com.firebase.client.ValueEventListener;
 
 import java.util.Collections;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Random;
 
@@ -93,6 +94,8 @@ public class RandomQuestion {
             }
         });
     }
+
+
 
     public interface QuestionInterface {
         void setQuestion(Question question);

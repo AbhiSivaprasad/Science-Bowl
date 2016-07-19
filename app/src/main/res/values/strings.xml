@@ -35,4 +35,6 @@
     <string name="DIR_QUIZ">/quizlist</string>
     <string name="leaderboard_id_questions_answered">CgkIpdeQrqoZEAIQAA</string>
     <string name="sign_up_text"><u>Need an account? Sign up here.</u></string>
+    <string name="user_states">/user_states</string>
+    <string name="active_games_url">/active_games</string>
 </resources>
