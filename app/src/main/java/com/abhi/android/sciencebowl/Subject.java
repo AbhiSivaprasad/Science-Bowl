@@ -10,6 +10,9 @@ public enum Subject {
     MATH("Math"),
     ASTRO("Astronomy");
 
+    public static final int SIZE = Subject.values().length;
+    public static final Subject[] SUBJECTS = Subject.values();
+
     private final String subject;
 
     Subject(String subject) {

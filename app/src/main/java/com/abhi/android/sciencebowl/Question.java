@@ -1,6 +1,7 @@
 package com.abhi.android.sciencebowl;
 
 public class Question {
+    private Subject subject;
     private String question;
     private Choice correct;
     private String W;
@@ -9,7 +10,8 @@ public class Question {
     private String Z;
 
     Question() {}
-    Question(String question, String W, String X, String Y, String Z, Choice correct) {
+    Question(Subject subject, String question, String W, String X, String Y, String Z, Choice correct) {
+        this.subject = subject;
         this.question = question;
         this.W = W;
         this.X = X;
@@ -20,6 +22,7 @@ public class Question {
     
     public String getQuestion() {return question;}
     public Choice getCorrect() {return correct;}
+    public Subject getSubject() {return subject;}
     public String getW() {return W;}
     public String getX() {return X;}
     public String getY() {return Y;}

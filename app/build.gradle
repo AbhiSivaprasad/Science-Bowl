@@ -24,6 +24,11 @@ android {
         exclude 'META-INF/LICENSE-FIREBASE.txt'
         exclude 'META-INF/NOTICE'
     }
+    signingConfigs {
+        debug {
+            storeFile file("debug.keystore")
+        }
+    }
 }
 
 dependencies {
@@ -39,6 +44,7 @@ dependencies {
     compile 'com.google.firebase:firebase-auth:9.2.0'
     compile 'com.google.android.gms:play-services-auth:9.2.0'
     compile 'com.facebook.android:facebook-android-sdk:4.+'
+    compile 'com.android.support:design:24.0.0'
     compile 'com.google.android.gms:play-services-games:9.2.0'
     compile project(':BaseGameUtils')
     compile 'com.android.support:appcompat-v7:24.0.0'

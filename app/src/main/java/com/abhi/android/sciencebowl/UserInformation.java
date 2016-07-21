@@ -1,7 +1,9 @@
 package com.abhi.android.sciencebowl;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 public final class UserInformation {
 
@@ -11,11 +13,11 @@ public final class UserInformation {
     private static int questionsCorrect; //tracked statistics
     private static boolean isScoreCached;
     private static int cachedScore;
+    private static Statistics stats;
 
     public static String getUid() {
         return uid;
     }
-
     public static void setUid(String uid) {
         UserInformation.uid = uid;
     }
@@ -50,5 +52,13 @@ public final class UserInformation {
     public static boolean getIsScoreCached() {return isScoreCached;}
     public static void setIsScoreCached(boolean isCached) {
         UserInformation.isScoreCached = isCached;
+    }
+
+    public static Statistics getStats() {
+        if (stats == null) return new Statistics(Subject.values());
+        else return stats;
+    }
+    public static void setStats(Statistics stats) {
+        UserInformation.stats = stats;
     }
 }

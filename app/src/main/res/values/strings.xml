@@ -29,16 +29,21 @@
     <string name="chemistry_button">Chemistry</string>
     <string name="energy_button">Energy</string>
     <string name="math_button">Math</string>
+    <string name="astro_button">Astronomy</string>
 
-    <string name="title_activity_sign_up">SignUpActivity</string>
-    <string name="astro_button">ASTRONOMY</string>
     <string name="BASE_URI">https://science-bowl.firebaseio.com</string>
     <string name="DIR_SETTINGS">/user-settings</string>
     <string name="DIR_QUIZ">/quizlist</string>
     <string name="leaderboard_id_questions_answered">CgkIpdeQrqoZEAIQAA</string>
     <string name="sign_up_text"><u>Need an account? Sign up here.</u></string>
 
+    <!-- statistics activity -->
+    <string name="statistics_title_text">%1$s Statistics</string>
+    <string name="statistics_name_percent_correct">Percent Questions Correct</string>
+    <string name="statistics_name_questions_correct">Total Questions Correct</string>
+    <string name="statistics_value_percent_correct">%1$d</string>
+    <string name="statistics_value_questions_correct">%1$d</string>
+
     <!-- toasts -->
     <string name="toast_leaderboard_questions_answered_submitted">Score submitted to leaderboard! (%1$d)</string>
->>>>>>> Suvansh
 </resources>
