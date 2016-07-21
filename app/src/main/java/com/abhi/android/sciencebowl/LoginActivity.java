@@ -1,6 +1,7 @@
 package com.abhi.android.sciencebowl;
 
 import android.content.Intent;
+import android.content.pm.PackageInstaller;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
@@ -93,7 +94,7 @@ public class LoginActivity extends AppCompatActivity
 
         loginButton = (LoginButton) findViewById(R.id.button_facebook_login);
         loginButton.setReadPermissions("email", "public_profile","user_friends");
-        LoginManager.getInstance().logOut();
+
         loginButton.registerCallback(mCallbackManager, new FacebookCallback<LoginResult>() {
             @Override
             public void onSuccess(LoginResult loginResult) {
@@ -137,8 +138,11 @@ public class LoginActivity extends AppCompatActivity
                     // User is signed in
                     LoginTask t = new LoginTask();
                     t.execute(true,false);
+
                     //logIn(currentUser);
                     Log.d(TAG, "onAuthStateChanged:signed_in:" + currentUser.getUid());
+                }else{
+                    LoginManager.getInstance().logOut();
                 }
                 // ...
             }
@@ -314,6 +318,12 @@ public class LoginActivity extends AppCompatActivity
         }
         private void logIn(FirebaseUser currentUser) {
             UserInformation.setUid(currentUser.getUid());
+            String c = currentUser.getProviderId();
+            String b  = FacebookAuthProvider.PROVIDER_ID;
+            if(Profile.getCurrentProfile() != null){
+                UserInformation.setFbUid(Profile.getCurrentProfile().getId());
+                UserInformation.setFbToken(AccessToken.getCurrentAccessToken());
+            }
             //set settings
             Firebase.setAndroidContext(LoginActivity.this);
 

@@ -9,9 +9,8 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:text="TextView"
-        android:gravity="left"
-        android:paddingLeft="5dp"
-        android:textSize="10pt"
+        android:layout_gravity="left"
+        android:gravity = "center"
         android:layout_weight="3"/>
 
     <Button
@@ -19,9 +18,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:text="Challenge"
-        android:gravity="right"
-        android:textSize="13pt"
-        android:paddingRight="5dp"
+        android:layout_gravity="right"
         android:layout_weight="7" />
 
 </LinearLayout>

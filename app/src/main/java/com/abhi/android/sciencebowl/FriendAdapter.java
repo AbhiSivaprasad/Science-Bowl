@@ -68,31 +68,5 @@ public class FriendAdapter extends BaseAdapter {
         return vi;
     }
 
-    class User{
-        private String uid;
-        private String name;
 
-        public User(String name, String id){
-            this.name = name;
-            uid = id;
-        }
-
-        public String getName() {
-            return name;
-        }
-
-        public void setName(String name) {
-            this.name = name;
-        }
-
-        public String getUid() {
-            return uid;
-        }
-
-        public void setUid(String uid) {
-            this.uid = uid;
-        }
-
-
-    }
 }
