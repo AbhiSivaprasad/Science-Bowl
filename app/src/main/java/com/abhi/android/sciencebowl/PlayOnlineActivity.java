@@ -49,6 +49,7 @@ public class PlayOnlineActivity extends QuestionActivity implements RandomQuesti
     private ValueEventListener listener;
     private TextView tvScoreS;
     private TextView tvScoreO;
+    private boolean mFirst = true;
 
     @Override
     protected void onCreate(Bundle savedInstanceState){
@@ -246,31 +247,35 @@ public class PlayOnlineActivity extends QuestionActivity implements RandomQuesti
 
     @Override
     public void setQuestion(Question question) {
+        if(mFirst){
+            mFirst = false;
+            firebaseRef = new Firebase(getString(R.string.firebase_database_url)+getString(R.string.active_games_url)+"/"+ gameKey +"/"+ opId);
+            listener = new ValueEventListener() {
+                @Override
+                public void onDataChange(DataSnapshot dataSnapshot) {
+                    if(dataSnapshot.child(ANSWER_REF).getValue() == null) {
+                        firebaseRef.setValue(new GameAttribute(0,""));
+                        return;
+                    }
+                    String c = dataSnapshot.child(ANSWER_REF).getValue().toString();
+                    mScoreOpp = Integer.parseInt(dataSnapshot.child(SCORE_REF).getValue().toString());
+                    if(!c.equals(""))
+                        updateOpponentAnswer(Choice.valueOf(c));
+                }
+
+                @Override
+                public void onCancelled(FirebaseError firebaseError) {
+
+                }
+            };
+            firebaseRef.addValueEventListener(listener);
+        }
         if(!mPlaying) {
             questionBank.add(question);
             if(questionBank.size()>=numQuest){
                 mPlaying = true;
                 mGames.child(gameKey +"/"+"questions").setValue(questionBank);
-                firebaseRef = new Firebase(getString(R.string.firebase_database_url)+getString(R.string.active_games_url)+"/"+ gameKey +"/"+ opId);
-                listener = new ValueEventListener() {
-                    @Override
-                    public void onDataChange(DataSnapshot dataSnapshot) {
-                        if(dataSnapshot.child(ANSWER_REF).getValue() == null) {
-                            firebaseRef.setValue(new GameAttribute(0,""));
-                            return;
-                        }
-                        String c = dataSnapshot.child(ANSWER_REF).getValue().toString();
-                        mScoreOpp = Integer.parseInt(dataSnapshot.child(SCORE_REF).getValue().toString());
-                        if(!c.equals(""))
-                            updateOpponentAnswer(Choice.valueOf(c));
-                    }
 
-                    @Override
-                    public void onCancelled(FirebaseError firebaseError) {
-
-                    }
-                };
-                firebaseRef.addValueEventListener(listener);
                 mCurrentQuestion = questionBank.get(index++);
                 updateQuestionWidgets(mCurrentQuestion);
                 setChoiceButtonsEnabled(true);
