@@ -18,6 +18,16 @@ public final class UserInformation {
     }
 
     private static String fbUid;
+
+    public static String getName() {
+        return name;
+    }
+
+    public static void setName(String name) {
+        UserInformation.name = name;
+    }
+
+    private static String name;
     private static Settings userSettings;
     private static List<QuestionUserAnswerPair> reviewQuestionBank;
     private static int questionsCorrect; //tracked statistics

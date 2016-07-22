@@ -142,7 +142,7 @@ public class LoginActivity extends AppCompatActivity
                     //logIn(currentUser);
                     Log.d(TAG, "onAuthStateChanged:signed_in:" + currentUser.getUid());
                 }else{
-                    LoginManager.getInstance().logOut();
+                   LoginManager.getInstance().logOut();
                 }
                 // ...
             }
@@ -211,6 +211,7 @@ public class LoginActivity extends AppCompatActivity
         login.execute(false,false);
         UserInformation.setFbToken(token);
         UserInformation.setFbUid(Profile.getCurrentProfile().getId());
+        UserInformation.setName(Profile.getCurrentProfile().getName());
     }
 
     @Override
@@ -309,7 +310,7 @@ public class LoginActivity extends AppCompatActivity
                                 Toast.LENGTH_SHORT).show();
                     }
                 }
-                LoginManager.getInstance().logOut();
+              //  LoginManager.getInstance().logOut();
 
                 Log.v("LOGIN", task.getException().toString());
             }else{
@@ -320,6 +321,7 @@ public class LoginActivity extends AppCompatActivity
             UserInformation.setUid(currentUser.getUid());
             String c = currentUser.getProviderId();
             String b  = FacebookAuthProvider.PROVIDER_ID;
+
             if(Profile.getCurrentProfile() != null){
                 UserInformation.setFbUid(Profile.getCurrentProfile().getId());
                 UserInformation.setFbToken(AccessToken.getCurrentAccessToken());

@@ -73,10 +73,10 @@ public class RandomQuestion {
 //                            question = questionDataSnapshot.getValue(Question.class);
 
                             String questionStr = questionDataSnapshot.child("question").getValue().toString();
-                            String W = questionDataSnapshot.child("W").getValue().toString();
-                            String X = questionDataSnapshot.child("X").getValue().toString();
-                            String Y = questionDataSnapshot.child("Y").getValue().toString();
-                            String Z = questionDataSnapshot.child("Z").getValue().toString();
+                            String W = questionDataSnapshot.child("w").getValue().toString();
+                            String X = questionDataSnapshot.child("x").getValue().toString();
+                            String Y = questionDataSnapshot.child("y").getValue().toString();
+                            String Z = questionDataSnapshot.child("z").getValue().toString();
                             Choice correct = Choice.valueOf(questionDataSnapshot.child("correct").getValue().toString());
                             question = new Question(questionStr, W, X, Y, Z, correct);
 

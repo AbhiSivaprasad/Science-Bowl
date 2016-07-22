@@ -58,14 +58,13 @@
             android:name=".LinkActivity"
             android:configChanges="keyboardHidden|orientation|screenSize"
             android:screenOrientation="portrait" />
-
         <activity
             android:name=".SignUpActivity"
             android:configChanges="keyboardHidden|orientation|screenSize"
             android:label="@string/title_activity_sign_up"
             android:screenOrientation="portrait" />
         <activity android:name=".PlayOnlineActivity" />
-        <activity android:name=".PlayOnlineSetupActivity"></activity>
+        <activity android:name=".ChallengeActivity"></activity>
     </application>
 
 </manifest>

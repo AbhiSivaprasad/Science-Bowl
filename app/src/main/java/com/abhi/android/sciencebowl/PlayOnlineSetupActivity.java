@@ -1,9 +1,13 @@
 package com.abhi.android.sciencebowl;
 
 import android.content.Intent;
+import android.support.annotation.Nullable;
+import android.support.v4.app.Fragment;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.view.LayoutInflater;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ListView;
 import android.widget.Toast;
@@ -19,18 +23,19 @@ import org.json.JSONObject;
 
 import java.util.ArrayList;
 
-public class PlayOnlineSetupActivity extends AppCompatActivity implements AdapterView.OnItemClickListener {
+public class PlayOnlineSetupActivity extends Fragment{
 
     FriendAdapter f;
     ArrayList<User> data;
 
+    @Nullable
     @Override
-    protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_play_online_setup);
-        ListView lv = (ListView) findViewById(R.id.lvFriends);
+    public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
+        super.onCreateView(inflater, container, savedInstanceState);
+        View v = inflater.inflate(R.layout.activity_play_online_setup,container,false);
+        ListView lv = (ListView) v.findViewById(R.id.lvFriends);
         data = new ArrayList<User>();
-        f = new FriendAdapter(this,data,getResources());
+        f = new FriendAdapter(getActivity(),data,getResources(),false);
         lv.setAdapter(f);
         GraphRequest request1 = GraphRequest.newMyFriendsRequest(UserInformation.getFbToken(), new GraphRequest.GraphJSONArrayCallback() {
             JSONObject j;
@@ -49,19 +54,10 @@ public class PlayOnlineSetupActivity extends AppCompatActivity implements Adapte
                     e.printStackTrace();
                 }
                 f.notifyDataSetChanged();
-                Toast.makeText(PlayOnlineSetupActivity.this, "" + jsonArray.length(), Toast.LENGTH_SHORT).show();
+                Toast.makeText(getActivity(), "" + jsonArray.length(), Toast.LENGTH_SHORT).show();
             }
         });
         request1.executeAsync();
-    }
-
-    @Override
-    public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
-        String link = data.get(i).getUid();
-        if (link != null) {
-            Intent intent = new Intent(this, Class.class);
-            intent.putExtra(PlayOnlineActivity.UID_KEY, data.get(i).getUid());
-            startActivity(intent);
-        }
+        return v;
     }
 }

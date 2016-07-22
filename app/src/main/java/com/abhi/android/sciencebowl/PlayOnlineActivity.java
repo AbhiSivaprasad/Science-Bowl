@@ -1,7 +1,6 @@
 package com.abhi.android.sciencebowl;
 
 import android.graphics.Color;
-import android.media.MediaPlayer;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
@@ -21,16 +20,19 @@ import java.util.List;
 public class PlayOnlineActivity extends QuestionActivity implements RandomQuestion.QuestionInterface, View.OnClickListener{
 
 
+    public static String GAME_KEY = "game_key";
     private RandomQuestion rq;
     private Button mNextButton;
     private Settings userSetting;
     private List<Question> questionBank;
-    private String opponent = "1234";
+    private String opId = "1234";
+    private String opName = "lmao";
     final static String UID_KEY = "uid_key";
+    final static String NAME_KEY = "name_key";
     boolean gameExists = false;
     private Question q;
     private Question mCurrentQuestion;
-    private String key;
+    private String gameKey;
     private boolean mSelfAnswered = false;
     private int mScore = 0;
     private int mScoreOpp = 0;
@@ -42,21 +44,28 @@ public class PlayOnlineActivity extends QuestionActivity implements RandomQuesti
     final static String ANSWER_REF = "choice";
     private boolean mOppAnswered = false;
     private Firebase mGames;
+    private int numQuest = 1;
+    private Firebase firebaseRef;
+    private ValueEventListener listener;
+    private TextView tvScoreS;
+    private TextView tvScoreO;
 
     @Override
     protected void onCreate(Bundle savedInstanceState){
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_play_online);
         initializeVariables();
-        opponent = getIntent().getStringExtra(UID_KEY);
-        opponent = "1234";
-        generateQuestions(3);
+        opId = getIntent().getStringExtra(UID_KEY);
+        opName = getIntent().getStringExtra(NAME_KEY);
+        gameKey = getIntent().getStringExtra(GAME_KEY);
+        generateQuestions(numQuest);
         //startGame
 
     }
 
     private void updateOpponentAnswer(Choice c){
         Toast.makeText(this,"Opponent answered: "+c+ " His/her score: "+ String.valueOf(mScoreOpp),Toast.LENGTH_LONG).show();
+        tvScoreO.setText(String.valueOf(mScoreOpp));
         boolean correct = (c == mCurrentQuestion.getCorrect());
         mOppAnswered = true;
         if(correct){
@@ -105,7 +114,8 @@ public class PlayOnlineActivity extends QuestionActivity implements RandomQuesti
         } else {
             mReviewQuestionsBank.add(new QuestionUserAnswerPair(mCurrentQuestion, userChoice));
         }
-        Firebase mRef = new Firebase(getString(R.string.firebase_database_url)+getString(R.string.active_games_url)+"/"+key+"/"+UserInformation.getFbUid());
+        tvScoreS.setText(String.valueOf(mScore));
+        Firebase mRef = new Firebase(getString(R.string.firebase_database_url)+getString(R.string.active_games_url)+"/"+ gameKey +"/"+UserInformation.getFbUid());
         mRef.setValue(new GameAttribute(mScore, userChoice.toString()));
     }
 
@@ -125,28 +135,30 @@ public class PlayOnlineActivity extends QuestionActivity implements RandomQuesti
 
     //
     private void generateQuestions(int i) {
-        checkExistingGame(opponent);
-        if(!gameExists) {
-            setQuestions(opponent, i);
+        checkExistingGame(opId);
+        if(gameKey == null) {
+            setQuestions(opId, i);
         }else{
-            fetchQuestions(opponent);
+            fetchQuestions(opId);
         }
     }
 
     private void fetchQuestions(String opponent) {
         questionBank = new LinkedList<Question>();
-        Firebase firebaseRef = new Firebase(getString(R.string.firebase_database_url)+getString(R.string.user_states)+"/"+UserInformation.getUid()+"/"+opponent);
+        Firebase firebaseRef = new Firebase(getString(R.string.firebase_database_url)+getString(R.string.user_states)+"/"+UserInformation.getUid());
         firebaseRef.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
-                String key = dataSnapshot.getValue().toString();
-                Firebase firebaseRef = new Firebase(getString(R.string.firebase_database_url)+getString(R.string.active_games_url)+"/"+key);
+                Firebase firebaseRef = new Firebase(getString(R.string.firebase_database_url)+getString(R.string.active_games_url)+"/"+gameKey+"/"+"questions");
                 firebaseRef.addListenerForSingleValueEvent(new ValueEventListener() {
                     @Override
                     public void onDataChange(DataSnapshot dataSnapshot) {
                        for(DataSnapshot s : dataSnapshot.getChildren()){
                            questionBank.add(s.getValue(Question.class));
                        }
+                        mPlaying = true;
+                        if(questionBank.size()>0)
+                        setQuestion(questionBank.get(0));
                     }
 
                     @Override
@@ -168,10 +180,10 @@ public class PlayOnlineActivity extends QuestionActivity implements RandomQuesti
         Firebase firebaseRef = new Firebase(getString(R.string.firebase_database_url));
         mGames = firebaseRef.child(getString(R.string.active_games_url).substring(1));
         Firebase p1 = firebaseRef.child(getString(R.string.user_states).substring(1));
-        key = mGames.push().getKey();
+        gameKey = mGames.push().getKey();
         String id = UserInformation.getFbUid();
-        p1.child(UserInformation.getFbUid()+"/"+opponent).setValue(key);
-        p1.child(opponent + "/" + UserInformation.getFbUid()).setValue(key);
+        p1.child(UserInformation.getFbUid()+"/"+ gameKey).setValue(new User(opName,opId));
+        p1.child(opponent + "/" + gameKey).setValue(new User(UserInformation.getName(),UserInformation.getFbUid()));
         questionBank = new LinkedList<Question>();
         makeBank(i);
     }
@@ -210,11 +222,14 @@ public class PlayOnlineActivity extends QuestionActivity implements RandomQuesti
         /*mQuestionsCorrect = UserInformation.getQuestionsCorrect();
         userSetting = UserInformation.getUserSettings();*/
         ArrayList<Subject> subjs = new ArrayList<Subject>();
-        for(int i = 0;i<Subject.values().length;i++){
+        for(int i = 0;i<1;i++){
             subjs.add(Subject.values()[i]);
         }
         userSetting = new Settings(subjs, 0);
         rq = new RandomQuestion(this, userSetting);
+
+        tvScoreS = (TextView) findViewById(R.id.tvScore1);
+        tvScoreO = (TextView) findViewById(R.id.tvScore2);
 
         mQuestionButton = (TextView) findViewById(R.id.question);
         mChoiceW = (Button) findViewById(R.id.choiceW);
@@ -233,11 +248,11 @@ public class PlayOnlineActivity extends QuestionActivity implements RandomQuesti
     public void setQuestion(Question question) {
         if(!mPlaying) {
             questionBank.add(question);
-            if(questionBank.size()>=3){
+            if(questionBank.size()>=numQuest){
                 mPlaying = true;
-                mGames.child(key+"/"+"questions").setValue(questionBank);
-                final Firebase firebaseRef = new Firebase(getString(R.string.firebase_database_url)+getString(R.string.active_games_url)+"/"+key+"/"+opponent);
-                firebaseRef.addValueEventListener(new ValueEventListener() {
+                mGames.child(gameKey +"/"+"questions").setValue(questionBank);
+                firebaseRef = new Firebase(getString(R.string.firebase_database_url)+getString(R.string.active_games_url)+"/"+ gameKey +"/"+ opId);
+                listener = new ValueEventListener() {
                     @Override
                     public void onDataChange(DataSnapshot dataSnapshot) {
                         if(dataSnapshot.child(ANSWER_REF).getValue() == null) {
@@ -247,14 +262,15 @@ public class PlayOnlineActivity extends QuestionActivity implements RandomQuesti
                         String c = dataSnapshot.child(ANSWER_REF).getValue().toString();
                         mScoreOpp = Integer.parseInt(dataSnapshot.child(SCORE_REF).getValue().toString());
                         if(!c.equals(""))
-                        updateOpponentAnswer(Choice.valueOf(c));
+                            updateOpponentAnswer(Choice.valueOf(c));
                     }
 
                     @Override
                     public void onCancelled(FirebaseError firebaseError) {
 
                     }
-                });
+                };
+                firebaseRef.addValueEventListener(listener);
                 mCurrentQuestion = questionBank.get(index++);
                 updateQuestionWidgets(mCurrentQuestion);
                 setChoiceButtonsEnabled(true);
@@ -266,6 +282,20 @@ public class PlayOnlineActivity extends QuestionActivity implements RandomQuesti
             setChoiceButtonsEnabled(true);
         }
         index = index % questionBank.size();
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        if(listener != null && firebaseRef != null)
+        firebaseRef.removeEventListener(listener);
+    }
+
+    @Override
+    protected void onStart() {
+        super.onStart();
+        if(listener != null)
+        firebaseRef.addValueEventListener(listener);
     }
 
     private class GameAttribute {

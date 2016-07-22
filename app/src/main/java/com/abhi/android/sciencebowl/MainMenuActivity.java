@@ -7,7 +7,9 @@ import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
+import android.widget.Toast;
 
+import com.facebook.AccessToken;
 import com.firebase.client.DataSnapshot;
 import com.firebase.client.Firebase;
 import com.firebase.client.FirebaseError;
@@ -20,6 +22,7 @@ import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.games.Games;
 import com.google.example.games.basegameutils.GameHelper;
+import com.google.firebase.auth.UserInfo;
 
 
 public class MainMenuActivity extends AppCompatActivity implements GoogleApiClient.ConnectionCallbacks,
@@ -50,7 +53,7 @@ public class MainMenuActivity extends AppCompatActivity implements GoogleApiClie
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main_menu);
-
+        Toast.makeText(this, UserInformation.getFbUid(),Toast.LENGTH_SHORT).show();
         mUid = UserInformation.getUid();
         GoogleSignInOptions gso = new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
                 .requestEmail()
@@ -134,7 +137,7 @@ public class MainMenuActivity extends AppCompatActivity implements GoogleApiClie
         mPlayOnlineButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Intent intent = new Intent(MainMenuActivity.this, PlayOnlineSetupActivity.class);
+                Intent intent = new Intent(MainMenuActivity.this, ChallengeActivity.class);
                 startActivity(intent);
             }
         });
