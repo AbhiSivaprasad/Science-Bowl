@@ -35,7 +35,7 @@ dependencies {
     compile fileTree(dir: 'libs', include: ['*.jar'])
     testCompile 'junit:junit:4.12'
 
-    androidTestCompile 'com.android.support:support-annotations:24.0.0'
+    androidTestCompile 'com.android.support:support-annotations:24.1.1'
 
     androidTestCompile 'com.android.support.test:runner:0.5'
     androidTestCompile 'com.android.support.test.espresso:espresso-core:2.2.2'
@@ -45,8 +45,7 @@ dependencies {
     compile 'com.google.android.gms:play-services-auth:9.2.0'
     compile 'com.facebook.android:facebook-android-sdk:4.+'
     compile 'com.google.android.gms:play-services-games:9.2.0'
-    compile project(':BaseGameUtils')
-    compile 'com.android.support:appcompat-v7:24.0.0'
+    compile 'com.android.support:appcompat-v7:24.1.1'
     compile 'com.android.support:multidex:1.0.1'
 }
 

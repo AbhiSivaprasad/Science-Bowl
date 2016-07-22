@@ -2,27 +2,21 @@ package com.abhi.android.sciencebowl;
 
 import android.content.Intent;
 import android.os.Bundle;
-import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
-import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.Toast;
 
-import com.facebook.AccessToken;
 import com.firebase.client.DataSnapshot;
 import com.firebase.client.Firebase;
 import com.firebase.client.FirebaseError;
 import com.firebase.client.ValueEventListener;
 import com.google.android.gms.auth.api.Auth;
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions;
-import com.google.firebase.auth.FirebaseAuth;
-import com.google.firebase.auth.FirebaseUser;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.games.Games;
-import com.google.example.games.basegameutils.GameHelper;
-import com.google.firebase.auth.UserInfo;
+import com.google.firebase.auth.FirebaseAuth;
 
 
 public class MainMenuActivity extends AppCompatActivity implements GoogleApiClient.ConnectionCallbacks,
@@ -44,10 +38,6 @@ public class MainMenuActivity extends AppCompatActivity implements GoogleApiClie
 
     private String mUid;
     private FirebaseAuth.AuthStateListener mAuthListener;
-
-    private GoogleApiClient mGoogleApiClient;
-
-    private GameHelper mGameHelper;
     private GoogleApiClient mGoogleApiClient1;
 
     protected void onCreate(Bundle savedInstanceState) {
@@ -62,8 +52,6 @@ public class MainMenuActivity extends AppCompatActivity implements GoogleApiClie
                 .enableAutoManage(this /* FragmentActivity */, this /* OnConnectionFailedListener */)
                 .addApi(Auth.GOOGLE_SIGN_IN_API, gso)
                 .build();
-        mGoogleApiClient = new GoogleApiClient.Builder(this)
-                .addConnectionCallbacks(this).addOnConnectionFailedListener(this).addApi(Games.API).addScope(Games.SCOPE_GAMES).build();
 
         //Get user settings from Firebase. Ideally should be done during login
         Firebase.setAndroidContext(this);
@@ -97,7 +85,6 @@ public class MainMenuActivity extends AppCompatActivity implements GoogleApiClie
         mLeaderboardButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                mGoogleApiClient.connect();
             }
         });
 
@@ -146,23 +133,17 @@ public class MainMenuActivity extends AppCompatActivity implements GoogleApiClie
     @Override
     public void onStart() {
         super.onStart();
-        mGoogleApiClient.connect();
         mGoogleApiClient1.connect();
     }
 
     @Override
     public void onStop() {
         super.onStop();
-        mGoogleApiClient.disconnect();
         mGoogleApiClient1.disconnect();
     }
 
     @Override
-    public void onConnected(Bundle connectionHint) {
-        String leaderboardIdQuestionsAnswered = getResources().getString(R.string.leaderboard_id_questions_answered);
-        startActivityForResult(Games.Leaderboards.getLeaderboardIntent(mGoogleApiClient,
-                leaderboardIdQuestionsAnswered), RC_LB_QUESTIONS_ANSWERED);
-    }
+    public void onConnected(Bundle connectionHint) {}
 
     @Override
     public void onConnectionSuspended(int cause) {}
