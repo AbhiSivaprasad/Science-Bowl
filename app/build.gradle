@@ -47,6 +47,7 @@ dependencies {
     compile 'com.google.android.gms:play-services-games:9.2.0'
     compile project(':BaseGameUtils')
     compile 'com.android.support:appcompat-v7:24.0.0'
+    compile 'com.android.support:multidex:1.0.1'
 }
 
 apply plugin: 'com.google.gms.google-services'
