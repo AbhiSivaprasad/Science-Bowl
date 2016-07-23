@@ -21,6 +21,7 @@ import com.facebook.FacebookCallback;
 import com.facebook.FacebookException;
 import com.facebook.FacebookSdk;
 import com.facebook.Profile;
+import com.facebook.ProfileTracker;
 import com.facebook.login.LoginManager;
 import com.facebook.login.LoginResult;
 import com.facebook.login.widget.LoginButton;
@@ -73,6 +74,8 @@ public class LoginActivity extends AppCompatActivity
     private AuthCredential credential;
     boolean go = true;
     private FirebaseUser currentUser;
+    private ProfileTracker mProfileTracker;
+    private Profile p;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -205,13 +208,24 @@ public class LoginActivity extends AppCompatActivity
     }
     private void handleFacebookAccessToken(AccessToken token) {
         Log.d(TAG, "handleFacebookAccessToken:" + token);
-
+        p = Profile.getCurrentProfile();
+        if(p == null){
+            mProfileTracker = new ProfileTracker() {
+                @Override
+                protected void onCurrentProfileChanged(Profile profile, Profile profile2) {
+                    // profile2 is the new profile
+                    Log.v("facebook - profile", profile2.getFirstName());
+                    p = profile2;
+                    mProfileTracker.stopTracking();
+                }
+            };
+        }
         credential = FacebookAuthProvider.getCredential(token.getToken());
         LoginTask login = new LoginTask();
         login.execute(false,false);
         UserInformation.setFbToken(token);
-        UserInformation.setFbUid(Profile.getCurrentProfile().getId());
-        UserInformation.setName(Profile.getCurrentProfile().getName());
+        UserInformation.setFbUid(p.getId());
+        UserInformation.setName(p.getName());
     }
 
     @Override
