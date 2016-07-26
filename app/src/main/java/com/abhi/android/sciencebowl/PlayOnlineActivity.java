@@ -2,9 +2,12 @@ package com.abhi.android.sciencebowl;
 
 import android.graphics.Color;
 import android.os.Bundle;
+import android.os.CountDownTimer;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
+import android.widget.LinearLayout;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -44,12 +47,13 @@ public class PlayOnlineActivity extends QuestionActivity implements RandomQuesti
     final static String ANSWER_REF = "choice";
     private boolean mOppAnswered = false;
     private Firebase mGames;
-    private int numQuest = 1;
+    private int numQuest = 3;
     private Firebase firebaseRef;
     private ValueEventListener listener;
     private TextView tvScoreS;
     private TextView tvScoreO;
     private boolean mFirst = true;
+    private ValueEventListener onlineChecker;
 
     @Override
     protected void onCreate(Bundle savedInstanceState){
@@ -59,12 +63,51 @@ public class PlayOnlineActivity extends QuestionActivity implements RandomQuesti
         opId = getIntent().getStringExtra(UID_KEY);
         opName = getIntent().getStringExtra(NAME_KEY);
         gameKey = getIntent().getStringExtra(GAME_KEY);
+        firebaseRef = new Firebase(getString(R.string.firebase_database_url));
+        mGames = firebaseRef.child(getString(R.string.active_games_url).substring(1));
         generateQuestions(numQuest);
+        checkIfOnline();
         //startGame
 
     }
 
+    private void checkIfOnline() {
+        onlineChecker = new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                if(!dataSnapshot.exists()){
+                    setOverlay(true);
+                    return;
+                }
+                if(!dataSnapshot.getValue(Boolean.class)){
+                    setOverlay(true);
+                }else{
+                    setOverlay(false);
+                }
+            }
+
+            @Override
+            public void onCancelled(FirebaseError firebaseError) {
+                setOverlay(true);
+            }
+        };
+        mGames.child(gameKey).child(opId).child("online").addValueEventListener(onlineChecker);
+    }
+
+    private void setOverlay(boolean on) {
+        LinearLayout ln = (LinearLayout) findViewById(R.id.linGame);
+        RelativeLayout rl = (RelativeLayout) findViewById(R.id.offlineOverlay);
+        if(on){
+            ln.setVisibility(View.GONE);
+            rl.setVisibility(View.VISIBLE);
+        }else {
+            ln.setVisibility(View.VISIBLE);
+            rl.setVisibility(View.GONE);
+        }
+    }
+
     private void updateOpponentAnswer(Choice c){
+        Log.v("ASFDSAF","Opponent answered: "+c+ " His/her score: "+ String.valueOf(mScoreOpp));
         Toast.makeText(this,"Opponent answered: "+c+ " His/her score: "+ String.valueOf(mScoreOpp),Toast.LENGTH_LONG).show();
         tvScoreO.setText(String.valueOf(mScoreOpp));
         boolean correct = (c == mCurrentQuestion.getCorrect());
@@ -88,7 +131,22 @@ public class PlayOnlineActivity extends QuestionActivity implements RandomQuesti
         } catch (InterruptedException e) {
 
         }
-        setQuestion(null);
+        final TextView textic = (TextView) findViewById(R.id.tvTicker);
+
+        CountDownTimer count = new CountDownTimer(10000, 1000) {
+            public void onTick(long millisUntilFinished) {
+                textic.setText("Time till next question: " + millisUntilFinished / 1000);
+            }
+
+            public void onFinish() {
+                setQuestion(null);
+                textic.setText("");
+
+            }
+        };
+
+        count.start();
+
     }
 
     @Override
@@ -122,9 +180,9 @@ public class PlayOnlineActivity extends QuestionActivity implements RandomQuesti
 
     private void updateWidgetsOnAnswer(boolean isAnswerCorrect, Choice userChoice, Choice answer) {
         String result = isAnswerCorrect ? "Correct" : "Incorrect";
-
         setChoiceButtonColor(answer, Color.GREEN);
-        if(!isAnswerCorrect)
+        Log.v("ASDFASDF",result);
+        if(isAnswerCorrect)
             setChoiceButtonColor(userChoice, Color.RED);
 
         Toast t = Toast.makeText(this, result, Toast.LENGTH_SHORT);
@@ -142,7 +200,13 @@ public class PlayOnlineActivity extends QuestionActivity implements RandomQuesti
         }else{
             fetchQuestions(opId);
         }
+        setStatus(true);
     }
+
+    private void setStatus(boolean online) {
+        mGames.child(gameKey).child(UserInformation.getFbUid()).child("online").setValue(online);
+    }
+
 
     private void fetchQuestions(String opponent) {
         questionBank = new LinkedList<Question>();
@@ -150,12 +214,29 @@ public class PlayOnlineActivity extends QuestionActivity implements RandomQuesti
         firebaseRef.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
-                Firebase firebaseRef = new Firebase(getString(R.string.firebase_database_url)+getString(R.string.active_games_url)+"/"+gameKey+"/"+"questions");
+                Firebase firebaseRef = new Firebase(getString(R.string.firebase_database_url)+getString(R.string.active_games_url)+"/"+gameKey);
                 firebaseRef.addListenerForSingleValueEvent(new ValueEventListener() {
                     @Override
                     public void onDataChange(DataSnapshot dataSnapshot) {
-                       for(DataSnapshot s : dataSnapshot.getChildren()){
-                           questionBank.add(s.getValue(Question.class));
+                       for(DataSnapshot d : dataSnapshot.getChildren()){
+                           if(d.getKey().equals("questions")){
+                               for(DataSnapshot s : d.getChildren()) {
+                                   questionBank.add(s.getValue(Question.class));
+                               }
+                           }else{
+                               if(d.getKey().equals(UserInformation.getFbUid())){
+                                   for(DataSnapshot f : d.getChildren()){
+                                       if(f.getKey().equals("score")){
+                                           mScore = f.getValue(Integer.class);
+                                           tvScoreS.setText(String.valueOf(mScore));
+                                       }
+                                   }
+                               }else{
+                                   if(d.getKey().equals("index"))
+                                       index = d.getValue(Integer.class);
+                               }
+                           }
+
                        }
                         mPlaying = true;
                         if(questionBank.size()>0)
@@ -179,13 +260,14 @@ public class PlayOnlineActivity extends QuestionActivity implements RandomQuesti
     private void setQuestions(String opponent, int i) {
         //push new game
         Firebase firebaseRef = new Firebase(getString(R.string.firebase_database_url));
-        mGames = firebaseRef.child(getString(R.string.active_games_url).substring(1));
+
         Firebase p1 = firebaseRef.child(getString(R.string.user_states).substring(1));
         gameKey = mGames.push().getKey();
         String id = UserInformation.getFbUid();
         p1.child(UserInformation.getFbUid()+"/"+ gameKey).setValue(new User(opName,opId));
         p1.child(opponent + "/" + gameKey).setValue(new User(UserInformation.getName(),UserInformation.getFbUid()));
         questionBank = new LinkedList<Question>();
+        mGames.child(gameKey).child("index").setValue(index);
         makeBank(i);
     }
 
@@ -283,6 +365,8 @@ public class PlayOnlineActivity extends QuestionActivity implements RandomQuesti
         }
         else{
             mCurrentQuestion = questionBank.get(index++);
+
+            mGames.child(gameKey).child("index").setValue(index);
             updateQuestionWidgets(mCurrentQuestion);
             setChoiceButtonsEnabled(true);
         }
@@ -292,15 +376,20 @@ public class PlayOnlineActivity extends QuestionActivity implements RandomQuesti
     @Override
     protected void onDestroy() {
         super.onDestroy();
+        setStatus(false);
         if(listener != null && firebaseRef != null)
-        firebaseRef.removeEventListener(listener);
+            firebaseRef.removeEventListener(listener);
+        if(onlineChecker != null && mGames != null)
+            mGames.child(gameKey).child(opId).child("online").removeEventListener(onlineChecker);
     }
 
     @Override
     protected void onStart() {
         super.onStart();
         if(listener != null)
-        firebaseRef.addValueEventListener(listener);
+            firebaseRef.addValueEventListener(listener);
+        if(onlineChecker != null)
+            mGames.child(gameKey).child(opId).child("online").addValueEventListener(onlineChecker);
     }
 
     private class GameAttribute {
