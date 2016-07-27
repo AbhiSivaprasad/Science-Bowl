@@ -3,6 +3,7 @@ package com.abhi.android.sciencebowl;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.os.CountDownTimer;
+import android.provider.ContactsContract;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
@@ -71,6 +72,103 @@ public class PlayOnlineActivity extends QuestionActivity implements RandomQuesti
 
     }
 
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        setStatus(false);
+        if(listener != null && firebaseRef != null)
+            firebaseRef.removeEventListener(listener);
+        if(onlineChecker != null && mGames != null)
+            mGames.child(gameKey).child(opId).child("online").removeEventListener(onlineChecker);
+    }
+
+    @Override
+    protected void onStart() {
+        super.onStart();
+        if(listener != null)
+            firebaseRef.addValueEventListener(listener);
+        if(onlineChecker != null)
+            mGames.child(gameKey).child(opId).child("online").addValueEventListener(onlineChecker);
+    }
+
+    private void generateQuestions(int i) {
+        checkExistingGame(opId);
+        if(gameKey == null) {
+            setQuestions(opId, i);
+        }else{
+            fetchQuestions(opId);
+        }
+        setStatus(true);
+    }
+
+    private void fetchQuestions(String opponent) {
+        questionBank = new LinkedList<Question>();
+        Firebase firebaseRef = new Firebase(getString(R.string.firebase_database_url)+getString(R.string.user_states)+"/"+UserInformation.getUid());
+        firebaseRef.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                Firebase firebaseRef = new Firebase(getString(R.string.firebase_database_url)+getString(R.string.active_games_url)+"/"+gameKey);
+                firebaseRef.addListenerForSingleValueEvent(new ValueEventListener() {
+                    @Override
+                    public void onDataChange(DataSnapshot dataSnapshot) {
+                        for(DataSnapshot d : dataSnapshot.getChildren()){
+                            if(d.getKey().equals("questions")){
+                                for(DataSnapshot s : d.getChildren()) {
+                                    questionBank.add(s.getValue(Question.class));
+                                }
+                            }else{
+                                if(d.getKey().equals(UserInformation.getFbUid())){
+                                    for(DataSnapshot o : d.getChildren()) {
+                                        for(DataSnapshot f : o.getChildren()) {
+                                            if (o.getKey().equals("state")) {
+                                                if (f.getKey().equals("score")) {
+                                                    mScore = f.getValue(Integer.class);
+                                                    tvScoreS.setText(String.valueOf(mScore));
+                                                }
+                                            }
+                                        }
+                                    }
+                                }else{
+                                    if(d.getKey().equals("index"))
+                                        index = d.getValue(Integer.class);
+                                }
+                            }
+
+                        }
+                        mPlaying = true;
+                        if(questionBank.size()>0)
+                            setQuestion(questionBank.get(0));
+                    }
+
+                    @Override
+                    public void onCancelled(FirebaseError firebaseError) {
+                        Toast.makeText(PlayOnlineActivity.this,"The fetch was cancelled: 1",Toast.LENGTH_SHORT).show();;
+                    }
+                });
+            }
+
+            @Override
+            public void onCancelled(FirebaseError firebaseError) {
+                Toast.makeText(PlayOnlineActivity.this,"The fetch was cancelled.",Toast.LENGTH_SHORT).show();;
+            }
+        });
+    }
+
+    private void setQuestions(String opponent, int i) {
+        //push new game
+        Toast.makeText(this,"SET QUESTIONS",Toast.LENGTH_SHORT).show();
+        Firebase firebaseRef = new Firebase(getString(R.string.firebase_database_url));
+
+        Firebase p1 = firebaseRef.child(getString(R.string.user_states).substring(1));
+        gameKey = mGames.push().getKey();
+        String id = UserInformation.getFbUid();
+        p1.child(UserInformation.getFbUid()+"/"+ gameKey).setValue(new User(opName,opId));
+        p1.child(opponent + "/" + gameKey).setValue(new User(UserInformation.getName(),UserInformation.getFbUid()));
+        questionBank = new LinkedList<Question>();
+        mGames.child(gameKey).child("index").setValue(index);
+        makeBank(i);
+    }
+
     private void checkIfOnline() {
         onlineChecker = new ValueEventListener() {
             @Override
@@ -125,7 +223,10 @@ public class PlayOnlineActivity extends QuestionActivity implements RandomQuesti
 
     private void nextQuestion() {
         mOppAnswered = false;
+        mSelfAnswered = false;
         Toast.makeText(this,"Starting next question.",Toast.LENGTH_SHORT).show();
+        mGames.child(gameKey).child(opId).child("state").child("choice").setValue("");
+        mGames.child(gameKey).child(UserInformation.getFbUid()).child("state").child("choice").setValue("");
         try {
             Thread.sleep(1000);
         } catch (InterruptedException e) {
@@ -144,9 +245,8 @@ public class PlayOnlineActivity extends QuestionActivity implements RandomQuesti
 
             }
         };
-
+        Toast.makeText(this,"Starting countdown",Toast.LENGTH_SHORT).show();
         count.start();
-
     }
 
     @Override
@@ -174,7 +274,7 @@ public class PlayOnlineActivity extends QuestionActivity implements RandomQuesti
             mReviewQuestionsBank.add(new QuestionUserAnswerPair(mCurrentQuestion, userChoice));
         }
         tvScoreS.setText(String.valueOf(mScore));
-        Firebase mRef = new Firebase(getString(R.string.firebase_database_url)+getString(R.string.active_games_url)+"/"+ gameKey +"/"+UserInformation.getFbUid());
+        Firebase mRef = new Firebase(getString(R.string.firebase_database_url)+getString(R.string.active_games_url)+"/"+ gameKey +"/"+UserInformation.getFbUid()+"/state");
         mRef.setValue(new GameAttribute(mScore, userChoice.toString()));
     }
 
@@ -182,7 +282,7 @@ public class PlayOnlineActivity extends QuestionActivity implements RandomQuesti
         String result = isAnswerCorrect ? "Correct" : "Incorrect";
         setChoiceButtonColor(answer, Color.GREEN);
         Log.v("ASDFASDF",result);
-        if(isAnswerCorrect)
+        if(!isAnswerCorrect)
             setChoiceButtonColor(userChoice, Color.RED);
 
         Toast t = Toast.makeText(this, result, Toast.LENGTH_SHORT);
@@ -193,83 +293,11 @@ public class PlayOnlineActivity extends QuestionActivity implements RandomQuesti
     }
 
     //
-    private void generateQuestions(int i) {
-        checkExistingGame(opId);
-        if(gameKey == null) {
-            setQuestions(opId, i);
-        }else{
-            fetchQuestions(opId);
-        }
-        setStatus(true);
-    }
 
     private void setStatus(boolean online) {
         mGames.child(gameKey).child(UserInformation.getFbUid()).child("online").setValue(online);
     }
 
-
-    private void fetchQuestions(String opponent) {
-        questionBank = new LinkedList<Question>();
-        Firebase firebaseRef = new Firebase(getString(R.string.firebase_database_url)+getString(R.string.user_states)+"/"+UserInformation.getUid());
-        firebaseRef.addListenerForSingleValueEvent(new ValueEventListener() {
-            @Override
-            public void onDataChange(DataSnapshot dataSnapshot) {
-                Firebase firebaseRef = new Firebase(getString(R.string.firebase_database_url)+getString(R.string.active_games_url)+"/"+gameKey);
-                firebaseRef.addListenerForSingleValueEvent(new ValueEventListener() {
-                    @Override
-                    public void onDataChange(DataSnapshot dataSnapshot) {
-                       for(DataSnapshot d : dataSnapshot.getChildren()){
-                           if(d.getKey().equals("questions")){
-                               for(DataSnapshot s : d.getChildren()) {
-                                   questionBank.add(s.getValue(Question.class));
-                               }
-                           }else{
-                               if(d.getKey().equals(UserInformation.getFbUid())){
-                                   for(DataSnapshot f : d.getChildren()){
-                                       if(f.getKey().equals("score")){
-                                           mScore = f.getValue(Integer.class);
-                                           tvScoreS.setText(String.valueOf(mScore));
-                                       }
-                                   }
-                               }else{
-                                   if(d.getKey().equals("index"))
-                                       index = d.getValue(Integer.class);
-                               }
-                           }
-
-                       }
-                        mPlaying = true;
-                        if(questionBank.size()>0)
-                        setQuestion(questionBank.get(0));
-                    }
-
-                    @Override
-                    public void onCancelled(FirebaseError firebaseError) {
-                        Toast.makeText(PlayOnlineActivity.this,"The fetch was cancelled: 1",Toast.LENGTH_SHORT).show();;
-                    }
-                });
-            }
-
-            @Override
-            public void onCancelled(FirebaseError firebaseError) {
-                Toast.makeText(PlayOnlineActivity.this,"The fetch was cancelled.",Toast.LENGTH_SHORT).show();;
-            }
-        });
-    }
-
-    private void setQuestions(String opponent, int i) {
-        //push new game
-        Firebase firebaseRef = new Firebase(getString(R.string.firebase_database_url));
-
-        Firebase p1 = firebaseRef.child(getString(R.string.user_states).substring(1));
-        gameKey = mGames.push().getKey();
-        String id = UserInformation.getFbUid();
-        p1.child(UserInformation.getFbUid()+"/"+ gameKey).setValue(new User(opName,opId));
-        p1.child(opponent + "/" + gameKey).setValue(new User(UserInformation.getName(),UserInformation.getFbUid()));
-        questionBank = new LinkedList<Question>();
-        mGames.child(gameKey).child("index").setValue(index);
-        makeBank(i);
-    }
 
     public void makeBank(int num){
         List<Question> ret = new LinkedList<Question>();
@@ -331,7 +359,7 @@ public class PlayOnlineActivity extends QuestionActivity implements RandomQuesti
     public void setQuestion(Question question) {
         if(mFirst){
             mFirst = false;
-            firebaseRef = new Firebase(getString(R.string.firebase_database_url)+getString(R.string.active_games_url)+"/"+ gameKey +"/"+ opId);
+            firebaseRef = new Firebase(getString(R.string.firebase_database_url)+getString(R.string.active_games_url)+"/"+ gameKey +"/"+ opId+"/state");
             listener = new ValueEventListener() {
                 @Override
                 public void onDataChange(DataSnapshot dataSnapshot) {
@@ -365,32 +393,15 @@ public class PlayOnlineActivity extends QuestionActivity implements RandomQuesti
         }
         else{
             mCurrentQuestion = questionBank.get(index++);
-
+            index = index % questionBank.size();
             mGames.child(gameKey).child("index").setValue(index);
             updateQuestionWidgets(mCurrentQuestion);
             setChoiceButtonsEnabled(true);
         }
-        index = index % questionBank.size();
+
     }
 
-    @Override
-    protected void onDestroy() {
-        super.onDestroy();
-        setStatus(false);
-        if(listener != null && firebaseRef != null)
-            firebaseRef.removeEventListener(listener);
-        if(onlineChecker != null && mGames != null)
-            mGames.child(gameKey).child(opId).child("online").removeEventListener(onlineChecker);
-    }
 
-    @Override
-    protected void onStart() {
-        super.onStart();
-        if(listener != null)
-            firebaseRef.addValueEventListener(listener);
-        if(onlineChecker != null)
-            mGames.child(gameKey).child(opId).child("online").addValueEventListener(onlineChecker);
-    }
 
     private class GameAttribute {
 

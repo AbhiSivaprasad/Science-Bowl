@@ -101,9 +101,10 @@ public class LoginActivity extends AppCompatActivity
         loginButton.registerCallback(mCallbackManager, new FacebookCallback<LoginResult>() {
             @Override
             public void onSuccess(LoginResult loginResult) {
-                Log.d(TAG, "facebook:onSuccess:" + loginResult);
+                Log.d(TAG, "facebook:onSuccess:");
                 openAnimation();
-                handleFacebookAccessToken(loginResult.getAccessToken());
+                //Profile p = Profile.getCurrentProfile();
+                handleFacebookAccessToken(loginResult);
             }
 
             @Override
@@ -206,7 +207,8 @@ public class LoginActivity extends AppCompatActivity
             mCallbackManager.onActivityResult(requestCode, resultCode, data);
         }
     }
-    private void handleFacebookAccessToken(AccessToken token) {
+    private void handleFacebookAccessToken(LoginResult result) {
+        AccessToken token = result.getAccessToken();
         Log.d(TAG, "handleFacebookAccessToken:" + token);
         p = Profile.getCurrentProfile();
         if(p == null){
@@ -216,16 +218,22 @@ public class LoginActivity extends AppCompatActivity
                     // profile2 is the new profile
                     Log.v("facebook - profile", profile2.getFirstName());
                     p = profile2;
+                    UserInformation.setFbToken(AccessToken.getCurrentAccessToken());
+                    UserInformation.setFbUid(p.getId());
+                    UserInformation.setName(p.getName());
+                    Toast.makeText(getBaseContext(),p.getId(),Toast.LENGTH_LONG).show();
                     mProfileTracker.stopTracking();
                 }
             };
+        }else{
+            UserInformation.setFbToken(AccessToken.getCurrentAccessToken());
+            UserInformation.setFbUid(p.getId());
+            UserInformation.setName(p.getName());
         }
         credential = FacebookAuthProvider.getCredential(token.getToken());
         LoginTask login = new LoginTask();
         login.execute(false,false);
-        UserInformation.setFbToken(token);
-        UserInformation.setFbUid(p.getId());
-        UserInformation.setName(p.getName());
+
     }
 
     @Override

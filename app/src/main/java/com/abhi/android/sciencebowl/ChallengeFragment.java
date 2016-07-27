@@ -58,14 +58,8 @@ public class ChallengeFragment extends Fragment {
                 public void onDataChange(DataSnapshot dataSnapshot) {
                     for(DataSnapshot d: dataSnapshot.getChildren()){
                         User u = new User("","");
-                        for(DataSnapshot f : dataSnapshot.getChildren()){
-                            for(DataSnapshot e : f.getChildren()) {
-                                if (e.getKey().equals("name"))
-                                    u.setName(e.getValue().toString());
-                                else if (e.getKey().equals("uid"))
-                                    u.setUid(e.getValue().toString());
-                            }
-                        }
+                        u.setName(d.child("name").getValue().toString());
+                        u.setUid(d.child("uid").getValue().toString());
                         data.add(u);
                         keys.add(d.getKey());
                     }
