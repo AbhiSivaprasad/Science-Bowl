@@ -20,8 +20,6 @@ public abstract class QuestionFragment extends Fragment {
     protected Button mChoiceZ;
     protected Button[] mChoiceButtonList;
 
-    protected abstract void initializeVariables();
-
     protected TextView getChoiceButton(Choice choice) {
         switch(choice) {
             case W: return mChoiceW;

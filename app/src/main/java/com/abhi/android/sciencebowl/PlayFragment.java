@@ -1,5 +1,6 @@
 package com.abhi.android.sciencebowl;
 
+import android.app.Activity;
 import android.content.Intent;
 import android.graphics.Color;
 import android.support.v7.app.AppCompatActivity;
@@ -20,7 +21,9 @@ import com.google.android.gms.games.Games;
 import java.util.List;
 
 public class PlayFragment extends QuestionFragment implements View.OnClickListener, GoogleApiClient.ConnectionCallbacks,
-        GoogleApiClient.OnConnectionFailedListener, RandomQuestion.QuestionInterface  {
+        GoogleApiClient.OnConnectionFailedListener, RandomQuestion.QuestionInterface {
+
+    private StatisticsInterface mStatistics;
 
     private static Button mNextButton;
     private static Question mCurrentQuestion;
@@ -33,6 +36,10 @@ public class PlayFragment extends QuestionFragment implements View.OnClickListen
 
     private Settings userSetting;
 
+    public interface StatisticsInterface {
+        void onScore(int score);
+    }
+
     @Override
     public void onDestroy() {
         super.onDestroy();
@@ -43,26 +50,36 @@ public class PlayFragment extends QuestionFragment implements View.OnClickListen
     }
 
     @Override
-    public void onBackPressed() {
-        Intent intent = new Intent();
-        intent.putExtra(MainMenuActivity.EXTRA_SCORE, mQuestionsCorrect);
-        getActivity().setResult(getActivity().RESULT_OK, intent);
+    public void onAttach(Activity activity) {
+        super.onAttach(activity);
 
-        super.onBackPressed();
+        try {
+            mStatistics = (StatisticsInterface) activity;
+        } catch (ClassCastException e) {
+            throw new ClassCastException(activity.toString()
+                    + " must implement StatisticsInterface");
+        }
     }
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        initializeVariables();
+
+        mReviewQuestionsBank = UserInformation.getReviewQuestionBank();
+        mQuestionsCorrect = UserInformation.getQuestionsCorrect();
+        userSetting = UserInformation.getUserSettings();
+
+        rq = new RandomQuestion(this, userSetting);
+
+        mGoogleApiClient = new GoogleApiClient.Builder(getActivity())
+                .addConnectionCallbacks(this).addOnConnectionFailedListener(this)
+                .addApi(Games.API).addScope(Games.SCOPE_GAMES).build();
 
         rq.next();
 
         //Initalize transparent background for choice buttons and set listeners
-        for(TextView choiceButton : mChoiceButtonList) {
-            //    choiceButton.setBackgroundColor(Color.TRANSPARENT);
+        for(TextView choiceButton : mChoiceButtonList)
             choiceButton.setOnClickListener(this);
-        }
 
         //Make next button initially invisible and set a listener
         mNextButton.setVisibility(View.INVISIBLE);
@@ -90,6 +107,20 @@ public class PlayFragment extends QuestionFragment implements View.OnClickListen
         return view;
     }
 
+    @Override
+    public void onClick(View view) {
+        TextView selectedChoice = (TextView) view;
+
+        Choice userChoice = Choice.valueOf(selectedChoice.getText().toString().substring(0, 1).toUpperCase()); // Letter comes first in answer choice
+        Choice answer = mCurrentQuestion.getCorrect();
+
+        boolean isAnswerCorrect = (answer == userChoice);
+
+        onAnswerResult(isAnswerCorrect, userChoice);
+        updateWidgetsOnAnswer(isAnswerCorrect, userChoice, answer);
+        mStatistics.onScore(mQuestionsCorrect);
+    }
+
     private void updateWidgetsOnAnswer(boolean isAnswerCorrect, Choice userChoice, Choice answer) {
         String result = isAnswerCorrect ? "Correct" : "Incorrect";
 
@@ -104,19 +135,6 @@ public class PlayFragment extends QuestionFragment implements View.OnClickListen
         mNextButton.setVisibility(View.VISIBLE);
     }
 
-    @Override
-    public void onClick(View view) {
-        TextView selectedChoice = (TextView) view;
-
-        Choice userChoice = Choice.valueOf(selectedChoice.getText().toString().substring(0, 1).toUpperCase()); // Letter comes first in answer choice
-        Choice answer = mCurrentQuestion.getCorrect();
-
-        boolean isAnswerCorrect = (answer == userChoice);
-
-        onAnswerResult(isAnswerCorrect, userChoice);
-        updateWidgetsOnAnswer(isAnswerCorrect, userChoice, answer);
-    }
-
     private void onAnswerResult(boolean isAnswerCorrect, Choice userChoice) {
         if(isAnswerCorrect) {
             mQuestionsCorrect++;
@@ -125,29 +143,16 @@ public class PlayFragment extends QuestionFragment implements View.OnClickListen
         }
     }
 
-    @Override
-    public void setQuestion(Question question) {
-        mCurrentQuestion = question;
-        updateQuestionWidgets(question);
-        setChoiceButtonsEnabled(true);
-    }
-
     private void writeToFirebaseLeaderboard(String userName, int toWrite) {
         Firebase mFirebaseRef = new Firebase("https://science-bowl.firebaseio.com/leaderboard");
         mFirebaseRef.child(userName).setValue(toWrite);
     }
 
     @Override
-    protected void initializeVariables() {
-        mReviewQuestionsBank = UserInformation.getReviewQuestionBank();
-        mQuestionsCorrect = UserInformation.getQuestionsCorrect();
-        userSetting = UserInformation.getUserSettings();
-
-        rq = new RandomQuestion(this, userSetting);
-
-        mGoogleApiClient = new GoogleApiClient.Builder(getActivity())
-                .addConnectionCallbacks(this).addOnConnectionFailedListener(this)
-                .addApi(Games.API).addScope(Games.SCOPE_GAMES).build();
+    public void setQuestion(Question question) {
+        mCurrentQuestion = question;
+        updateQuestionWidgets(question);
+        setChoiceButtonsEnabled(true);
     }
 
     @Override
