@@ -25,7 +25,7 @@
             android:name=".StartupActivity"
             android:noHistory="false" />
         <activity
-            android:name=".MainActivity"
+            android:name=".PlayActivity"
             android:configChanges="keyboardHidden|orientation|screenSize"
             android:screenOrientation="portrait" />
         <activity
