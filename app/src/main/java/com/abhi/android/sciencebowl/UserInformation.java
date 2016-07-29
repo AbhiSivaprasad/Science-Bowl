@@ -31,6 +31,8 @@ public final class UserInformation {
     private static Settings userSettings;
     private static List<QuestionUserAnswerPair> reviewQuestionBank;
     private static int questionsCorrect; //tracked statistics
+    private static boolean isScoreCached;
+    private static int cachedScore;
 
     public static AccessToken getFbToken() {
         return fbToken;
@@ -70,5 +72,15 @@ public final class UserInformation {
     public static int getQuestionsCorrect() {return questionsCorrect; }
     public static void setQuestionsCorrect(int questionsCorrect) {
         UserInformation.questionsCorrect = questionsCorrect;
+    }
+
+    public static int getCachedScore() {return cachedScore; }
+    public static void setCachedScore(int score) {
+        UserInformation.cachedScore = score;
+    }
+
+    public static boolean getIsScoreCached() {return isScoreCached;}
+    public static void setIsScoreCached(boolean isCached) {
+        UserInformation.isScoreCached = isCached;
     }
 }

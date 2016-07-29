@@ -19,11 +19,12 @@ import com.google.android.gms.games.Games;
 import com.google.firebase.auth.FirebaseAuth;
 
 
-public class MainMenuActivity extends AppCompatActivity implements GoogleApiClient.ConnectionCallbacks,
-        GoogleApiClient.OnConnectionFailedListener {
+public class MainMenuActivity extends AppCompatActivity {
+    public static final String EXTRA_SCORE = "com.abhi.android.sciencebowl.EXTRA_SCORE";
+
+    private static final int RC_MAIN = 10000;
     private static final int RC_LB_QUESTIONS_ANSWERED = 10001;
 
-    private static final int REQUEST_CODE_MAIN = 0;
     private static final String TAG = "MAIN_MENU";
 
     private Button mPlayButton;
@@ -33,8 +34,6 @@ public class MainMenuActivity extends AppCompatActivity implements GoogleApiClie
     private Button mSettingsButton;
     private Button mReviewButton;
     private Button mSignOutButton;
-
-    private int mQuestionsCorrect;
 
     private String mUid;
     private FirebaseAuth.AuthStateListener mAuthListener;
@@ -47,10 +46,6 @@ public class MainMenuActivity extends AppCompatActivity implements GoogleApiClie
         mUid = UserInformation.getUid();
         GoogleSignInOptions gso = new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
                 .requestEmail()
-                .build();
-        mGoogleApiClient1 = new GoogleApiClient.Builder(this)
-                .enableAutoManage(this /* FragmentActivity */, this /* OnConnectionFailedListener */)
-                .addApi(Auth.GOOGLE_SIGN_IN_API, gso)
                 .build();
 
         //Get user settings from Firebase. Ideally should be done during login
@@ -77,7 +72,7 @@ public class MainMenuActivity extends AppCompatActivity implements GoogleApiClie
             @Override
             public void onClick(View view) {
                 Intent intent = new Intent(MainMenuActivity.this, MainActivity.class); //start MainActivity
-                startActivity(intent);
+                startActivityForResult(intent, RC_MAIN);
             }
         });
 
@@ -89,6 +84,12 @@ public class MainMenuActivity extends AppCompatActivity implements GoogleApiClie
         });
 
         mStatisticsButton = (Button) findViewById(R.id.statistics_button);
+        mStatisticsButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                setLeaderboard(getString(R.string.leaderboard_id_questions_answered), UserInformation.getQuestionsCorrect());
+            }
+        });
 
         mSettingsButton = (Button) findViewById(R.id.settings_button);
         mSettingsButton.setOnClickListener(new View.OnClickListener() {
@@ -142,28 +143,29 @@ public class MainMenuActivity extends AppCompatActivity implements GoogleApiClie
         mGoogleApiClient1.disconnect();
     }
 
-    @Override
-    public void onConnected(Bundle connectionHint) {}
 
-    @Override
-    public void onConnectionSuspended(int cause) {}
 
-    @Override
-    public void onConnectionFailed(ConnectionResult result) {}
+    private boolean setLeaderboard(String leaderboardId, int value) {
+        /*if (mGameHelper.isSignedIn()) {
+            Games.Leaderboards.submitScore(mGameHelper.getApiClient(), leaderboardId, value);
+            Toast.makeText(this,
+                    getString(R.string.toast_leaderboard_questions_answered_submitted, value),
+                    Toast.LENGTH_SHORT).show();
+            return true;
+        }
+        UserInformation.setIsScoreCached(true);
+        UserInformation.setCachedScore(value);*/
+        return false;
+    }
 
-    /*
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data)
     {
-        if(resultCode != Activity.RESULT_OK)
-            return;
-
-        if(requestCode == REQUEST_CODE_MAIN)
-        {
-            if(data != null){
-                mQuestionsCorrect = MainActivity.getAmountOfCorrectQuestions(data);
-                writeToFirebaseLeaderboard(mUsername, mQuestionsCorrect);
+        if (resultCode == RESULT_OK) {
+            if (requestCode == RC_MAIN) {
+                setLeaderboard(getString(R.string.leaderboard_id_questions_answered), data.getIntExtra(EXTRA_SCORE, -1));
             }
         }
-    } */
+        else System.out.println("RESULT BAD: " + Integer.toString(resultCode) + ": " + Integer.toString(requestCode));
+    }
 }

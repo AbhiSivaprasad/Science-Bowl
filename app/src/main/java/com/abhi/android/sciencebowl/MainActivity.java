@@ -1,6 +1,7 @@
 package com.abhi.android.sciencebowl;
 
 import android.content.Context;
+import android.content.Intent;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
@@ -39,12 +40,16 @@ public class MainActivity extends QuestionActivity implements View.OnClickListen
         UserInformation.setReviewQuestionBank(mReviewQuestionsBank); //should this be here
         UserInformation.setQuestionsCorrect(mQuestionsCorrect); //set statistics
 
-        // fetch leaderboard ID from res/strings.xml and submit to Google Play Games Leaderboard
-        String leaderboardIdQuestionsAnswered = getResources().getString(R.string.leaderboard_id_questions_answered);
-        if (mGoogleApiClient.isConnected())
-            Games.Leaderboards.submitScore(mGoogleApiClient, leaderboardIdQuestionsAnswered, mQuestionsCorrect);
-
         writeToFirebaseLeaderboard(UserInformation.getUid(), mQuestionsCorrect);
+    }
+
+    @Override
+    public void onBackPressed() {
+        Intent intent = new Intent();
+        intent.putExtra(MainMenuActivity.EXTRA_SCORE, mQuestionsCorrect);
+        setResult(RESULT_OK, intent);
+
+        super.onBackPressed();
     }
 
     @Override
@@ -52,7 +57,6 @@ public class MainActivity extends QuestionActivity implements View.OnClickListen
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         initializeVariables();
-
 
         rq.next();
 
