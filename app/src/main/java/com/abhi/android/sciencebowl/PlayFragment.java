@@ -23,6 +23,8 @@ import java.util.List;
 public class PlayFragment extends QuestionFragment implements View.OnClickListener, GoogleApiClient.ConnectionCallbacks,
         GoogleApiClient.OnConnectionFailedListener, RandomQuestion.QuestionInterface {
 
+    private static final String ARG_QUESTION = "QUESTION";
+
     private StatisticsInterface mStatistics;
 
     private static Button mNextButton;
@@ -74,22 +76,6 @@ public class PlayFragment extends QuestionFragment implements View.OnClickListen
         mGoogleApiClient = new GoogleApiClient.Builder(getActivity())
                 .addConnectionCallbacks(this).addOnConnectionFailedListener(this)
                 .addApi(Games.API).addScope(Games.SCOPE_GAMES).build();
-
-        rq.next();
-
-        //Initalize transparent background for choice buttons and set listeners
-        for(TextView choiceButton : mChoiceButtonList)
-            choiceButton.setOnClickListener(this);
-
-        //Make next button initially invisible and set a listener
-        mNextButton.setVisibility(View.INVISIBLE);
-        mNextButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                mNextButton.setVisibility(View.INVISIBLE);
-                rq.next();
-            }
-        });
     }
 
     @Override
@@ -103,6 +89,22 @@ public class PlayFragment extends QuestionFragment implements View.OnClickListen
         mChoiceZ = (Button) view.findViewById(R.id.choiceZ);
         mNextButton = (Button) view.findViewById(R.id.next_button);
         mChoiceButtonList = new Button[] {mChoiceW, mChoiceX, mChoiceY, mChoiceZ};
+
+        //Initalize transparent background for choice buttons and set listeners
+        for(TextView choiceButton : mChoiceButtonList)
+            choiceButton.setOnClickListener(this);
+
+        rq.next();
+
+        //Make next button initially invisible and set a listener
+        mNextButton.setVisibility(View.INVISIBLE);
+        mNextButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                mNextButton.setVisibility(View.INVISIBLE);
+                rq.next();
+            }
+        });
 
         return view;
     }

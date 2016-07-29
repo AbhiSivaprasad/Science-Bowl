@@ -31,8 +31,7 @@ public class ReviewActivity extends FragmentActivity {
         mViewPager.setAdapter(new FragmentStatePagerAdapter(fm) {
             @Override
             public Fragment getItem(int position) {
-
-                return null;
+                return ReviewFragment.newInstance(position);
             }
 
             @Override
