@@ -1,48 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout
+<android.support.v4.view.ViewPager
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/activity_review_activity_view_pager"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:orientation="vertical"
-    android:paddingBottom="@dimen/activity_vertical_margin"
-    android:paddingLeft="@dimen/activity_horizontal_margin"
-    android:paddingRight="@dimen/activity_horizontal_margin"
-    android:paddingTop="@dimen/activity_vertical_margin"
-    android:weightSum="1"
-    tools:context="com.abhi.android.sciencebowl.MainActivity">
-    <LinearLayout
-        android:layout_width="wrap_content"
-        android:layout_height="match_parent"
-        android:layout_weight="0.1">
-        <include layout="@layout/question" />
-    </LinearLayout>
+    tools:context="com.abhi.android.sciencebowl.ReviewActivity">
 
-    <LinearLayout
-        android:orientation="horizontal"
-        android:layout_width="wrap_content"
-        android:layout_height="match_parent"
-        android:layout_gravity="center_horizontal"
-        android:layout_weight="0.9"
-        android:gravity="center_horizontal">
 
-        <Button
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="@string/prev_button"
-            android:id="@+id/prev_button"
-            android:layout_gravity="center_horizontal"
-            android:drawableLeft="@drawable/arrow_left"
-            android:drawablePadding="2dp" />
 
-        <Button
-            android:id="@+id/next_button"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="@string/next_button"
-            android:layout_gravity="center_horizontal"
-            android:drawableRight="@drawable/arrow_right"
-            android:drawablePadding="2dp" />
-    </LinearLayout>
-
-</LinearLayout>
+</android.support.v4.view.ViewPager>

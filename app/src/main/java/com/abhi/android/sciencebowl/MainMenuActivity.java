@@ -71,7 +71,7 @@ public class MainMenuActivity extends AppCompatActivity {
         mPlayButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Intent intent = new Intent(MainMenuActivity.this, MainActivity.class); //start MainActivity
+                Intent intent = new Intent(MainMenuActivity.this, PlayActivity.class); //start PlayActivity
                 startActivityForResult(intent, RC_MAIN);
             }
         });
@@ -87,7 +87,7 @@ public class MainMenuActivity extends AppCompatActivity {
         mStatisticsButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                setLeaderboard(getString(R.string.leaderboard_id_questions_answered), UserInformation.getQuestionsCorrect());
+                startActivity(new Intent(MainMenuActivity.this, StatisticsActivity.class));
             }
         });
 
@@ -113,7 +113,6 @@ public class MainMenuActivity extends AppCompatActivity {
         mSignOutButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Auth.GoogleSignInApi.signOut(mGoogleApiClient1);
                 FirebaseAuth.getInstance().signOut();
                 Intent intent = new Intent(MainMenuActivity.this, LoginActivity.class);
                 intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
@@ -125,6 +124,7 @@ public class MainMenuActivity extends AppCompatActivity {
         mPlayOnlineButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+
                 Intent intent = new Intent(MainMenuActivity.this, ChallengeActivity.class);
                 startActivity(intent);
             }
@@ -134,13 +134,16 @@ public class MainMenuActivity extends AppCompatActivity {
     @Override
     public void onStart() {
         super.onStart();
-        mGoogleApiClient1.connect();
     }
 
     @Override
     public void onStop() {
         super.onStop();
-        mGoogleApiClient1.disconnect();
+    }
+    
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
     }
 
 

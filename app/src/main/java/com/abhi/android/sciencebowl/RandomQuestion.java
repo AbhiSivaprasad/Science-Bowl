@@ -36,7 +36,7 @@ public class RandomQuestion {
         index = (index + 1) % subjectList.size();
     }
 
-    public void next(Subject subject) {
+    public void next(final Subject subject) {
         Firebase firebaseRef = new Firebase(FIREBASE_QUESTIONS_URL + subject.toString());
         firebaseRef.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
@@ -70,7 +70,7 @@ public class RandomQuestion {
                     randomIndex = rand.nextInt(questionCount);
                     for(DataSnapshot questionDataSnapshot : difficultyDataSnapshot.getChildren()) {
                         if (questionIndex == randomIndex) {
-//                            question = questionDataSnapshot.getValue(Question.class);
+//                            question = questionDataSnapshot.getValue(Question.class);  // TODO get this to work instead of the lines below up until the constructor
 
                             String questionStr = questionDataSnapshot.child("question").getValue().toString();
                             String W = questionDataSnapshot.child("w").getValue().toString();
@@ -78,7 +78,7 @@ public class RandomQuestion {
                             String Y = questionDataSnapshot.child("y").getValue().toString();
                             String Z = questionDataSnapshot.child("z").getValue().toString();
                             Choice correct = Choice.valueOf(questionDataSnapshot.child("correct").getValue().toString());
-                            question = new Question(questionStr, W, X, Y, Z, correct);
+                            question = new Question(subject, questionStr, W, X, Y, Z, correct);
 
                             caller.setQuestion(question);
                             break;

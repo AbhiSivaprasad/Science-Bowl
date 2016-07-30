@@ -6,12 +6,9 @@ import android.content.res.Resources;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.AdapterView;
 import android.widget.BaseAdapter;
 import android.widget.Button;
 import android.widget.TextView;
-
-import org.w3c.dom.Text;
 
 import java.util.ArrayList;
 
@@ -81,10 +78,10 @@ public class FriendAdapter extends BaseAdapter implements View.OnClickListener {
         String link = data.get(i).getUid();
         if (link != null) {
             Intent intent = new Intent(context, PlayOnlineActivity.class);
-            intent.putExtra(PlayOnlineActivity.UID_KEY, data.get(i).getUid());
-            intent.putExtra(PlayOnlineActivity.NAME_KEY, data.get(i).getName());
+            intent.putExtra(PlayOnlineFragment.UID_KEY, data.get(i).getUid());
+            intent.putExtra(PlayOnlineFragment.NAME_KEY, data.get(i).getName());
             if(cFrag){
-                intent.putExtra(PlayOnlineActivity.GAME_KEY,ChallengeFragment.keys.get(i));
+                intent.putExtra(PlayOnlineFragment.GAME_KEY,ChallengeFragment.keys.get(i));
             }
             context.startActivity(intent);
         }
