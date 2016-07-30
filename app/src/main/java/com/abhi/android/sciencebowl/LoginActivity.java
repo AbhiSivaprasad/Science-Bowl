@@ -146,7 +146,7 @@ public class LoginActivity extends AppCompatActivity
                     //logIn(currentUser);
                     Log.d(TAG, "onAuthStateChanged:signed_in:" + currentUser.getUid());
                 }else{
-                   LoginManager.getInstance().logOut();
+                   //LoginManager.getInstance().logOut();
                 }
                 // ...
             }
@@ -179,6 +179,9 @@ public class LoginActivity extends AppCompatActivity
                 login.execute(false,true);
             }
         });
+        if(getIntent().getBooleanExtra("FB_SIGN_OUT",false)){
+            LoginManager.getInstance().logOut();
+        }
     }
 
     private void signIn() {
@@ -341,6 +344,26 @@ public class LoginActivity extends AppCompatActivity
         }
         private void logIn(FirebaseUser currentUser) {
             UserInformation.setUid(currentUser.getUid());
+            p = Profile.getCurrentProfile();
+            if(p == null){
+                mProfileTracker = new ProfileTracker() {
+                    @Override
+                    protected void onCurrentProfileChanged(Profile profile, Profile profile2) {
+                        // profile2 is the new profile
+                        Log.v("facebook - profile", profile2.getFirstName());
+                        p = profile2;
+                        UserInformation.setFbToken(AccessToken.getCurrentAccessToken());
+                        UserInformation.setFbUid(p.getId());
+                        UserInformation.setName(p.getName());
+                        Toast.makeText(getBaseContext(),p.getId(),Toast.LENGTH_LONG).show();
+                        mProfileTracker.stopTracking();
+                    }
+                };
+            }else{
+                UserInformation.setFbToken(AccessToken.getCurrentAccessToken());
+                UserInformation.setFbUid(p.getId());
+                UserInformation.setName(p.getName());
+            }
             String c = currentUser.getProviderId();
             String b  = FacebookAuthProvider.PROVIDER_ID;
 

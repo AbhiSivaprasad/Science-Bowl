@@ -116,6 +116,9 @@ public class MainMenuActivity extends AppCompatActivity {
                 FirebaseAuth.getInstance().signOut();
                 Intent intent = new Intent(MainMenuActivity.this, LoginActivity.class);
                 intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+                if(UserInformation.getFbUid()!=null) {
+                    intent.putExtra("FB_SIGN_OUT", true);
+                }
                 startActivity(intent);
             }
         });
