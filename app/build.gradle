@@ -48,6 +48,9 @@ dependencies {
     compile 'com.google.android.gms:play-services-games:9.2.0'
     compile project(':BaseGameUtils')
     compile 'com.android.support:appcompat-v7:24.0.0'
+    // https://mvnrepository.com/artifact/org.apache.commons/commons-math3
+    compile group: 'org.apache.commons', name: 'commons-math3', version: '3.6.1'
+
 }
 
 apply plugin: 'com.google.gms.google-services'
