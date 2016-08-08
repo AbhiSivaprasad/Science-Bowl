@@ -3,12 +3,11 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:orientation="vertical"
-    tools:context="com.abhi.android.sciencebowl.PlayOnlineSetupActivity">
+    tools:context="com.abhi.android.sciencebowl.ChallengeActivity">
 
-    <ListView
+    <android.support.v4.view.ViewPager
+        android:id = "@+id/vpChallenge"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:id="@+id/lvFriends"></ListView>
+        android:layout_height="match_parent"></android.support.v4.view.ViewPager>
 
 </LinearLayout>

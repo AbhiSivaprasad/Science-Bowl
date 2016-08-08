@@ -6,6 +6,7 @@ import com.firebase.client.FirebaseError;
 import com.firebase.client.ValueEventListener;
 
 import java.util.Collections;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Random;
 
@@ -74,10 +75,10 @@ public class RandomQuestion {
 //                            question = questionDataSnapshot.getValue(Question.class);  // TODO get this to work instead of the lines below up until the constructor
 
                             String questionStr = questionDataSnapshot.child("question").getValue().toString();
-                            String W = questionDataSnapshot.child("W").getValue().toString();
-                            String X = questionDataSnapshot.child("X").getValue().toString();
-                            String Y = questionDataSnapshot.child("Y").getValue().toString();
-                            String Z = questionDataSnapshot.child("Z").getValue().toString();
+                            String W = questionDataSnapshot.child("w").getValue().toString();
+                            String X = questionDataSnapshot.child("x").getValue().toString();
+                            String Y = questionDataSnapshot.child("y").getValue().toString();
+                            String Z = questionDataSnapshot.child("z").getValue().toString();
                             Choice correct = Choice.valueOf(questionDataSnapshot.child("correct").getValue().toString());
                             question = new Question(subject, questionStr, W, X, Y, Z, correct);
 
@@ -95,6 +96,8 @@ public class RandomQuestion {
             }
         });
     }
+
+
 
     public interface QuestionInterface {
         void setQuestion(Question question);

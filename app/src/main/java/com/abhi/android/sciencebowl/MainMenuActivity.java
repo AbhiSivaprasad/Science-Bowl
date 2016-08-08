@@ -11,13 +11,15 @@ import com.firebase.client.DataSnapshot;
 import com.firebase.client.Firebase;
 import com.firebase.client.FirebaseError;
 import com.firebase.client.ValueEventListener;
-
+import com.google.android.gms.auth.api.Auth;
+import com.google.android.gms.auth.api.signin.GoogleSignInOptions;
+import com.google.android.gms.common.ConnectionResult;
+import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.games.Games;
-import com.google.example.games.basegameutils.GameHelper;
 import com.google.firebase.auth.FirebaseAuth;
 
 
-public class MainMenuActivity extends AppCompatActivity implements GameHelper.GameHelperListener {
+public class MainMenuActivity extends AppCompatActivity {
     public static final String EXTRA_SCORE = "com.abhi.android.sciencebowl.EXTRA_SCORE";
 
     private static final int RC_MAIN = 10000;
@@ -35,16 +37,16 @@ public class MainMenuActivity extends AppCompatActivity implements GameHelper.Ga
 
     private String mUid;
     private FirebaseAuth.AuthStateListener mAuthListener;
-    private GameHelper mGameHelper;
+    private GoogleApiClient mGoogleApiClient1;
 
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main_menu);
-
+        Toast.makeText(this, UserInformation.getFbUid(),Toast.LENGTH_SHORT).show();
         mUid = UserInformation.getUid();
-
-        mGameHelper = new GameHelper(this, GameHelper.CLIENT_GAMES);
-        mGameHelper.setup(this);
+        GoogleSignInOptions gso = new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
+                .requestEmail()
+                .build();
 
         //Get user settings from Firebase. Ideally should be done during login
         Firebase.setAndroidContext(this);
@@ -69,7 +71,7 @@ public class MainMenuActivity extends AppCompatActivity implements GameHelper.Ga
         mPlayButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Intent intent = new Intent(MainMenuActivity.this, MainActivity.class); //start MainActivity
+                Intent intent = new Intent(MainMenuActivity.this, PlayActivity.class); //start PlayActivity
                 startActivityForResult(intent, RC_MAIN);
             }
         });
@@ -78,12 +80,6 @@ public class MainMenuActivity extends AppCompatActivity implements GameHelper.Ga
         mLeaderboardButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                if(mGameHelper.isSignedIn())
-                    startLeaderboard(getString(R.string.leaderboard_id_questions_answered));
-                else if(mGameHelper.isConnecting())
-                    Toast.makeText(MainMenuActivity.this, "Connecting... Please try again shortly.", Toast.LENGTH_SHORT).show();
-                else
-                    mGameHelper.beginUserInitiatedSignIn();
             }
         });
 
@@ -117,7 +113,6 @@ public class MainMenuActivity extends AppCompatActivity implements GameHelper.Ga
         mSignOutButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                mGameHelper.signOut();
                 FirebaseAuth.getInstance().signOut();
                 Intent intent = new Intent(MainMenuActivity.this, LoginActivity.class);
                 intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
@@ -129,7 +124,8 @@ public class MainMenuActivity extends AppCompatActivity implements GameHelper.Ga
         mPlayOnlineButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Intent intent = new Intent(MainMenuActivity.this, PlayOnlineSetupActivity.class);
+
+                Intent intent = new Intent(MainMenuActivity.this, ChallengeActivity.class);
                 startActivity(intent);
             }
         });
@@ -138,50 +134,22 @@ public class MainMenuActivity extends AppCompatActivity implements GameHelper.Ga
     @Override
     public void onStart() {
         super.onStart();
-        if(!mGameHelper.isConnecting())
-            mGameHelper.onStart(this);
     }
 
     @Override
     public void onStop() {
-        // mGameHelper.onStop();
         super.onStop();
     }
     
     @Override
     public void onDestroy() {
-        mGameHelper.onStop();
         super.onDestroy();
     }
 
-    @Override
-    public void onSignInSucceeded() {
-        // if score was cached last time (due to lack of connection), try to submit score to leaderboard.
-        // set value of isScoreCached to the opposite of the success result of submission.
-        // if score was submitted successfully, mark score as no longer cached, and vice versa.
-        if(UserInformation.getIsScoreCached()) {
-            UserInformation.setIsScoreCached(
-                    !setLeaderboard(
-                            getString(R.string.leaderboard_id_questions_answered),
-                            UserInformation.getCachedScore()
-                    )
-            );
-        }
-    }
 
-    @Override
-    public void onSignInFailed() {
-        mGameHelper.beginUserInitiatedSignIn();
-    }
-
-    private void startLeaderboard(String leaderboardId) {
-        if (mGameHelper.isSignedIn())
-            startActivityForResult(Games.Leaderboards.getLeaderboardIntent(mGameHelper.getApiClient(),
-                leaderboardId), RC_LB_QUESTIONS_ANSWERED);
-    }
 
     private boolean setLeaderboard(String leaderboardId, int value) {
-        if (mGameHelper.isSignedIn()) {
+        /*if (mGameHelper.isSignedIn()) {
             Games.Leaderboards.submitScore(mGameHelper.getApiClient(), leaderboardId, value);
             Toast.makeText(this,
                     getString(R.string.toast_leaderboard_questions_answered_submitted, value),
@@ -189,7 +157,7 @@ public class MainMenuActivity extends AppCompatActivity implements GameHelper.Ga
             return true;
         }
         UserInformation.setIsScoreCached(true);
-        UserInformation.setCachedScore(value);
+        UserInformation.setCachedScore(value);*/
         return false;
     }
 

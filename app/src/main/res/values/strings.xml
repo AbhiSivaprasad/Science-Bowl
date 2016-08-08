@@ -36,6 +36,8 @@
     <string name="DIR_QUIZ">/quizlist</string>
     <string name="leaderboard_id_questions_answered">CgkIpdeQrqoZEAIQAA</string>
     <string name="sign_up_text"><u>Need an account? Sign up here.</u></string>
+    <string name="user_states">/user_states</string>
+    <string name="active_games_url">/active_games</string>
 
     <!-- statistics activity -->
     <string name="statistics_title_text">%1$s Statistics</string>
@@ -46,4 +48,5 @@
 
     <!-- toasts -->
     <string name="toast_leaderboard_questions_answered_submitted">Score submitted to leaderboard! (%1$d)</string>
+    <string name="title_activity_play_online">PlayOnlineActivity</string>
 </resources>

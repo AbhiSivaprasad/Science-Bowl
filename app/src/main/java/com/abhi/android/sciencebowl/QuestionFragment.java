@@ -2,6 +2,8 @@ package com.abhi.android.sciencebowl;
 
 import android.graphics.Color;
 import android.os.Bundle;
+import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentActivity;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.widget.Button;
@@ -10,15 +12,13 @@ import android.widget.TextView;
 /**
  * Created by abhi on 7/7/2016.
  */
-public abstract class QuestionActivity extends AppCompatActivity {
+public abstract class QuestionFragment extends Fragment {
     protected TextView mQuestionButton;
     protected Button mChoiceW;
     protected Button mChoiceX;
     protected Button mChoiceY;
     protected Button mChoiceZ;
     protected Button[] mChoiceButtonList;
-
-    protected abstract void initializeVariables();
 
     protected TextView getChoiceButton(Choice choice) {
         switch(choice) {
