@@ -15,22 +15,22 @@ public enum DifficultyDistribution {
         double[] difficulties;
         switch (difficulty) {
             case 0:
-                difficulties = new double[] {0.5, 0.3, 0.2, 0, 0, 0};
+                difficulties = new double[] {0.6, 0.3, 0.1, 0, 0, 0};
                 break;
             case 1:
-                difficulties = new double[] {0.2, 0.5, 0.2, 0.1, 0, 0};
+                difficulties = new double[] {0.175, 0.6, 0.175, 0.05, 0, 0};
                 break;
             case 2:
-                difficulties = new double[] {0.1, 0.15, 0.5, 0.15, 0.1, 0};
+                difficulties = new double[] {0.05, 0.15, 0.6, 0.15, 0.05, 0};
                 break;
             case 3:
-                difficulties = new double[] {0, 0.1, 0.15, 0.5, 0.15, 0.1};
+                difficulties = new double[] {0, 0.05, 0.15, 0.6, 0.15, 0.05};
                 break;
             case 4:
-                difficulties = new double[] {0, 0, 0.1, 0.2, 0.5, 0.2};
+                difficulties = new double[] {0, 0, 0.05, 0.175, 0.6, 0.175};
                 break;
             case 5:
-                difficulties = new double[] {0, 0, 0, 0.2, 0.3, 0.5};
+                difficulties = new double[] {0, 0, 0, 0.1, 0.3, 0.6};
                 break;
             default:
                 throw new IllegalArgumentException("Difficulty must be an integer between 0 and 5");
@@ -40,4 +40,23 @@ public enum DifficultyDistribution {
     }
 
     public int getRandomDifficulty() { return eid.sample(); }
+
+    public static DifficultyDistribution getDistribution(int difficulty) {
+        switch (difficulty) {
+            case 0:
+                return DifficultyDistribution.ZERO;
+            case 1:
+                return DifficultyDistribution.ONE;
+            case 2:
+                return DifficultyDistribution.TWO;
+            case 3:
+                return DifficultyDistribution.THREE;
+            case 4:
+                return DifficultyDistribution.FOUR;
+            case 5:
+                return DifficultyDistribution.FIVE;
+            default:
+                throw new IllegalArgumentException("Difficulty must be an integer between 0 and 5");
+        }
+    }
 }

@@ -59,10 +59,9 @@ public class RandomQuestion {
                 }
 
                 if (subsubjectDataSnapshot != null) {
-                    int difficulty = DifficultyDistribution.valueOf(Integer.toString(settings.getDifficulty())).getRandomDifficulty();
-                    System.out.println(difficulty);
+                    int difficulty = DifficultyDistribution.getDistribution(settings.getDifficulty()).getRandomDifficulty();
                     DataSnapshot difficultyDataSnapshot =
-                            subsubjectDataSnapshot.child(Integer.toString(difficulty));
+                            subsubjectDataSnapshot.child(Integer.toString(settings.getDifficulty()));  // TODO replace "settings.getDifficulty()" with "difficulty" once enough questions in db
                     // get random question. hacky because no way to access firebase node by index
                     int questionCount = (int)difficultyDataSnapshot.getChildrenCount();
                     if (questionCount == 0) return;
