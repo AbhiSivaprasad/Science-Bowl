@@ -1,10 +1,10 @@
 package com.abhi.android.sciencebowl;
 
 public enum Choice {
-    W("W"),
-    X("X"),
-    Y("Y"),
-    Z("Z");
+    w("W"),
+    x("X"),
+    y("Y"),
+    z("Z");
 
     private final String choice;
 

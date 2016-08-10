@@ -84,7 +84,7 @@ public class RandomQuestion {
                             String X = questionDataSnapshot.child("x").getValue().toString();
                             String Y = questionDataSnapshot.child("y").getValue().toString();
                             String Z = questionDataSnapshot.child("z").getValue().toString();
-                            Choice correct = Choice.valueOf(questionDataSnapshot.child("correct").getValue().toString());
+                            Choice correct = Choice.valueOf(questionDataSnapshot.child("correct").getValue().toString().toLowerCase());
                             question = new Question(subject, questionStr, W, X, Y, Z, correct);
 
                             caller.setQuestion(question);

@@ -22,10 +22,10 @@ public abstract class QuestionFragment extends Fragment {
 
     protected TextView getChoiceButton(Choice choice) {
         switch(choice) {
-            case W: return mChoiceW;
-            case X: return mChoiceX;
-            case Y: return mChoiceY;
-            case Z: return mChoiceZ;
+            case w: return mChoiceW;
+            case x: return mChoiceX;
+            case y: return mChoiceY;
+            case z: return mChoiceZ;
             default:  throw new IllegalArgumentException("Invalid letter choice: " + choice.toString());
         }
     }

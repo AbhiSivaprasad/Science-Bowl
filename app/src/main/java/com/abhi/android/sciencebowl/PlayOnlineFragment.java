@@ -259,7 +259,7 @@ public class PlayOnlineFragment extends QuestionFragment implements RandomQuesti
         mSelfAnswered = true;
         TextView selectedChoice = (TextView) view;
 
-        Choice userChoice = Choice.valueOf(selectedChoice.getText().toString().substring(0, 1).toUpperCase()); // Letter comes first in answer choice
+        Choice userChoice = Choice.valueOf(selectedChoice.getText().toString().substring(0, 1).toLowerCase()); // Letter comes first in answer choice
         Choice answer = mCurrentQuestion.getCorrect();
 
         boolean isAnswerCorrect = (answer == userChoice);
@@ -376,7 +376,7 @@ public class PlayOnlineFragment extends QuestionFragment implements RandomQuesti
                         firebaseRef.setValue(new GameAttribute(0,""));
                         return;
                     }
-                    String c = dataSnapshot.child(ANSWER_REF).getValue().toString();
+                    String c = dataSnapshot.child(ANSWER_REF).getValue().toString().toLowerCase();
                     mScoreOpp = Integer.parseInt(dataSnapshot.child(SCORE_REF).getValue().toString());
                     if(!c.equals(""))
                         updateOpponentAnswer(Choice.valueOf(c));
