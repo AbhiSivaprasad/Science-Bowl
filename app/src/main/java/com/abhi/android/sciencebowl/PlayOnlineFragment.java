@@ -23,6 +23,7 @@ import com.firebase.client.ValueEventListener;
 import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Set;
 
 public class PlayOnlineFragment extends QuestionFragment implements RandomQuestion.QuestionInterface, View.OnClickListener{
 
@@ -45,7 +46,7 @@ public class PlayOnlineFragment extends QuestionFragment implements RandomQuesti
     private int mScoreOpp = 0;
     protected boolean mPlaying = false;
     private int mQuestionsCorrect  =0;
-    private List<QuestionUserAnswerPair> mReviewQuestionsBank;
+    private Set<QuestionUserAnswerPair> mReviewQuestionsBank;
     private int index = 0;
     final static String SCORE_REF = "score";
     final static String ANSWER_REF = "choice";

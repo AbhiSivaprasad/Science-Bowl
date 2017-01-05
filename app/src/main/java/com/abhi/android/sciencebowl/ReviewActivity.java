@@ -13,10 +13,11 @@ import android.widget.Button;
 import android.widget.TextView;
 
 import java.util.List;
+import java.util.Set;
 
 public class ReviewActivity extends FragmentActivity {
 
-    private List<QuestionUserAnswerPair> mReviewQuestionBank;
+    private Set<QuestionUserAnswerPair> mReviewQuestionBank;
     ViewPager mViewPager;
 
     @Override

@@ -4,8 +4,10 @@ import com.facebook.AccessToken;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 public final class UserInformation {
 
@@ -31,7 +33,7 @@ public final class UserInformation {
 
     private static String name;
     private static Settings userSettings;
-    private static List<QuestionUserAnswerPair> reviewQuestionBank;
+    private static Set<QuestionUserAnswerPair> reviewQuestionBank;
     private static int questionsCorrect; //tracked statistics
     private static boolean isScoreCached;
     private static int cachedScore;
@@ -61,13 +63,13 @@ public final class UserInformation {
         UserInformation.userSettings = userSettings;
     }
 
-    public static List<QuestionUserAnswerPair> getReviewQuestionBank() {
+    public static Set<QuestionUserAnswerPair> getReviewQuestionBank() {
         if(reviewQuestionBank == null)
-            return new ArrayList<QuestionUserAnswerPair>();
+            return new HashSet<QuestionUserAnswerPair>();
 
         return reviewQuestionBank;
     }
-    public static void setReviewQuestionBank(List<QuestionUserAnswerPair> reviewQuestionBank) {
+    public static void setReviewQuestionBank(Set<QuestionUserAnswerPair> reviewQuestionBank) {
         UserInformation.reviewQuestionBank = reviewQuestionBank;
     }
 

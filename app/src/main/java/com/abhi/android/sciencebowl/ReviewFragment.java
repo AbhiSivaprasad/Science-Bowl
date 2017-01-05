@@ -10,6 +10,7 @@ import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.TextView;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class ReviewFragment extends QuestionFragment {
@@ -24,7 +25,7 @@ public class ReviewFragment extends QuestionFragment {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        mReviewQuestionBank = UserInformation.getReviewQuestionBank();
+        mReviewQuestionBank = new ArrayList<QuestionUserAnswerPair>(UserInformation.getReviewQuestionBank());
 
         mCurrentQuestionIndex = getArguments().getInt(ARG_QUESTION);
 

@@ -19,6 +19,7 @@ import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.games.Games;
 
 import java.util.List;
+import java.util.Set;
 
 public class PlayFragment extends QuestionFragment implements View.OnClickListener, GoogleApiClient.ConnectionCallbacks,
         GoogleApiClient.OnConnectionFailedListener, RandomQuestion.QuestionInterface {
@@ -31,7 +32,7 @@ public class PlayFragment extends QuestionFragment implements View.OnClickListen
     private static Question mCurrentQuestion;
 
     private int mQuestionsCorrect;
-    private List<QuestionUserAnswerPair> mReviewQuestionsBank;
+    private Set<QuestionUserAnswerPair> mReviewQuestionsBank;
     private RandomQuestion rq;
 
     private GoogleApiClient mGoogleApiClient;
