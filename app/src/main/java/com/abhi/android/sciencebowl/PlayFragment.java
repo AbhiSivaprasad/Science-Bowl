@@ -48,7 +48,7 @@ public class PlayFragment extends QuestionFragment implements View.OnClickListen
         super.onDestroy();
         UserInformation.setReviewQuestionBank(mReviewQuestionsBank); //should this be here
         UserInformation.setQuestionsCorrect(mQuestionsCorrect); //set statistics
-
+        updateFirebaseStats(UserInformation.getUid());
         writeToFirebaseLeaderboard(UserInformation.getUid(), mQuestionsCorrect);
     }
 
@@ -155,6 +155,11 @@ public class PlayFragment extends QuestionFragment implements View.OnClickListen
     private void writeToFirebaseLeaderboard(String userId, int toWrite) {
         Firebase mFirebaseRef = new Firebase("https://science-bowl.firebaseio.com/leaderboard");
         mFirebaseRef.child(userId).setValue(toWrite);
+    }
+
+    private void updateFirebaseStats(String userId) {
+        Firebase mFirebaseRef = new Firebase("https://science-bowl.firebaseio.com/user-stats");
+        mFirebaseRef.child(userId).setValue(UserInformation.getStats());
     }
 
     @Override

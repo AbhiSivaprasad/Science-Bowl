@@ -3,7 +3,7 @@ package com.abhi.android.sciencebowl;
 import java.util.HashMap;
 import java.util.Map;
 
-public final class Statistics {
+public class Statistics {
     class SubjectStatistics {
         Subject subject;
         int questionsCorrect, questionsWrong;
@@ -14,6 +14,7 @@ public final class Statistics {
             this.subject = subject;
         }
 
+        public Subject getSubject() {return subject;}
         public int getQuestionsCorrect() {return questionsCorrect;}
         public int getQuestionsWrong() {return questionsWrong;}
         public int getQuestionsTotal() {return getQuestionsCorrect() + getQuestionsWrong();}
@@ -25,11 +26,13 @@ public final class Statistics {
     Map<Subject, SubjectStatistics> subjectStatisticsMap;
 
     Statistics(Subject[] subjects) {
-        subjectStatisticsMap = new HashMap<>();
+        subjectStatisticsMap = new HashMap<Subject, SubjectStatistics>();
         for (Subject subject : subjects) {
             subjectStatisticsMap.put(subject, new SubjectStatistics(subject));
         }
     }
+
+    public Map getSubjectStatisticsMap(){return subjectStatisticsMap;}
 
     public int getQuestionsCorrect(Subject subject) {
         return subjectStatisticsMap.get(subject).getQuestionsCorrect();
