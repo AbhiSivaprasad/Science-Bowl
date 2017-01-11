@@ -27,6 +27,7 @@ public class RandomQuestion {
         this.caller = caller;
     }
 
+    //returns difficulty of question
     public void next() {
         // if we have gone through the subjects, shuffle the order TODO revise implementation (not all subjects equal frequency?)
         if (index == 0)
@@ -41,6 +42,7 @@ public class RandomQuestion {
         firebaseRef.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot subjectDataSnapshot) {
+                int diff = -1;
                 Random rand = new Random();
 
                 int subsubjectCount = (int)subjectDataSnapshot.getChildrenCount();
@@ -58,9 +60,11 @@ public class RandomQuestion {
                     subsubjectIndex++;
                 }
 
+
                 if (subsubjectDataSnapshot != null) {
+                    diff = settings.getRandomDiff();
                     DataSnapshot difficultyDataSnapshot =
-                            subsubjectDataSnapshot.child(Integer.toString(settings.getDifficulty()));
+                            subsubjectDataSnapshot.child(Integer.toString(diff));
                     // get random question. hacky because no way to access firebase node by index
                     int questionCount = (int)difficultyDataSnapshot.getChildrenCount();
                     if (questionCount == 0) return;
@@ -80,7 +84,7 @@ public class RandomQuestion {
                             Choice correct = Choice.valueOf(questionDataSnapshot.child("correct").getValue().toString());
                             question = new Question(subject, questionStr, W, X, Y, Z, correct);
 
-                            caller.setQuestion(question);
+                            caller.setQuestion(question, diff);
                             break;
                         }
                         questionIndex++;
@@ -98,6 +102,6 @@ public class RandomQuestion {
 
 
     public interface QuestionInterface {
-        void setQuestion(Question question);
+        void setQuestion(Question question, int difficulty);
     }
 }

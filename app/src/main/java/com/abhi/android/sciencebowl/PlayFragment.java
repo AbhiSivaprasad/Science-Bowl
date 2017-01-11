@@ -38,6 +38,7 @@ public class PlayFragment extends QuestionFragment implements View.OnClickListen
     private GoogleApiClient mGoogleApiClient;
 
     private Settings userSetting;
+    private int mDifficulty;
 
     public interface StatisticsInterface {
         void onScore(int score);
@@ -141,11 +142,13 @@ public class PlayFragment extends QuestionFragment implements View.OnClickListen
     private void onAnswerResult(boolean isAnswerCorrect, Choice userChoice) {
         if(isAnswerCorrect) {
             mQuestionsCorrect++;
+            userSetting.adjCorrect(mDifficulty);
             Statistics stats = UserInformation.getStats();
             stats.incrementQuestionsCorrect(mCurrentQuestion.getSubject());
             UserInformation.setStats(stats);
         } else {
             mReviewQuestionsBank.add(new QuestionUserAnswerPair(mCurrentQuestion, userChoice));
+            userSetting.adjWrong(mDifficulty);
             Statistics stats = UserInformation.getStats();
             stats.incrementQuestionsWrong(mCurrentQuestion.getSubject());
             UserInformation.setStats(stats);
@@ -163,8 +166,9 @@ public class PlayFragment extends QuestionFragment implements View.OnClickListen
     }
 
     @Override
-    public void setQuestion(Question question) {
+    public void setQuestion(Question question, int difficulty) {
         mCurrentQuestion = question;
+        mDifficulty = difficulty;
         updateQuestionWidgets(question);
         setChoiceButtonsEnabled(true);
     }
