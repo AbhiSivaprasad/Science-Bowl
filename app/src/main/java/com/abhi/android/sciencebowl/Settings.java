@@ -14,6 +14,10 @@ public class Settings {
     public Settings(List<Subject> subjects, int difficulty) {
         this.subjects = subjects;
         this.difficulty = difficulty;
+        initProbs(difficulty);
+    }
+
+    private void initProbs(int difficulty){
         probs = new int[6];
         probs[difficulty] = 70;
         int h = difficulty + 1;
@@ -83,7 +87,10 @@ public class Settings {
     }
 
     public void setSubjects(List<Subject> subjects) {this.subjects = subjects; }
-    public void setDifficulty(int difficulty) {this.difficulty = difficulty; }
+    public void setDifficulty(int difficulty) {
+        this.difficulty = difficulty;
+        initProbs(difficulty);
+    }
 
     public static Settings getDefault(){
         List<Subject> subj = new LinkedList<Subject>();
